@@ -50,7 +50,9 @@ namespace CPUTests{
         }
 
         [Theory]
-        [InlineData(0b0000_0000_0000_0011, 0b1111_1111_1111_1100, ALU.FLAG.OFF)]
+        [InlineData(0b11, 0b1111_1111_1111_1100, ALU.FLAG.OFF)]
+        [InlineData(0b1111_1111_1111_1111, 0b0, ALU.FLAG.Z)]
+        [InlineData(0b0,0b1111_1111_1111_1111, ALU.FLAG.OFF)]
         public void ALU_NOT_flipsAllBitsCorrectly_andModifiesFlagZCorrectly(ushort A, ushort expected_A, ALU.FLAG expected_flags){
             alu.NOT(ref A);
             Assert.Equal(A,expected_A);
@@ -59,5 +61,6 @@ namespace CPUTests{
                 "Expected: " + expected_flags + "\tRecieved: " + alu.getFlags()
             );
         }
+        
     }
 }
