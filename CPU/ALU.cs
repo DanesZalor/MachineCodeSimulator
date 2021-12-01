@@ -17,12 +17,18 @@ namespace CPU{
             );
         }
 
-        public bool evaluateFlags(FLAG mask){
-            return (((FLAG)flags) & mask)>0;
+        /// <summary> evaluate the current flags if one of the mask matches the current flags </summary>
+        /// <param name="mask"> the mask to be compared to the current flag bits </param>
+        /// <param name="exact"> set to true to match ALL bits. Only used for testing (I think) </param>
+        /// <returns> boolean true if the mask bits match one of the flags. if exact=true, returns true if all bits match </returns>
+        public bool evaluateFlags(FLAG mask, bool exact=false){
+            if(exact) return flags == mask;
+            else return (((FLAG)flags) & mask)>0;
         }
-
-        public void printFlags(){
-            Console.WriteLine((FLAG)flags);
+        
+        /// <remarks> only used for debugging </summary>
+        public FLAG getFlags(){
+            return flags;
         }
         
         /// <summary> compares A and B. Affected flags [A,E,Z] </summary> 
