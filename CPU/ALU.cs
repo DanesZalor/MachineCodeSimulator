@@ -7,7 +7,7 @@ namespace CPU{
             ON =  0b0000_1111,
             C = 0b1000,
             A = 0b0100,
-            E = 0b0010,
+            E = 0b0001,
             Z = 0b0001,
         };
 
@@ -45,7 +45,7 @@ namespace CPU{
         /// <summary> compares A and B. Affected flags [A,E,Z] </summary> 
         public void CMP(ushort A, ushort B){
             setFlagsIf(A>B, FLAG.A);
-            setFlagsIf(A==B, FLAG.E | FLAG.Z);
+            setFlagsIf(A==B, FLAG.Z);
         }
 
         /// <summary same as CMP(A,B) but also does A xor B and put the result in A </summary>

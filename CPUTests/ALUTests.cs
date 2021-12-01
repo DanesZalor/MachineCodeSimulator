@@ -18,9 +18,9 @@ namespace CPUTests{
             );
         }
         [Theory]
-        [InlineData( ALU.FLAG.Z | ALU.FLAG.E, ALU.FLAG.E, false )]
-        [InlineData( ALU.FLAG.Z | ALU.FLAG.E, ALU.FLAG.E | ALU.FLAG.Z, false )]
-        [InlineData( ALU.FLAG.Z | ALU.FLAG.E, ALU.FLAG.E | ALU.FLAG.Z, true )]
+        [InlineData( ALU.FLAG.Z, ALU.FLAG.Z, false )]
+        [InlineData( ALU.FLAG.Z | ALU.FLAG.A, ALU.FLAG.A | ALU.FLAG.Z, false )]
+        [InlineData( ALU.FLAG.Z | ALU.FLAG.A, ALU.FLAG.A | ALU.FLAG.Z, true )]
         public void ALU_evaluateFlags_correctly(ALU.FLAG flags, ALU.FLAG mask, bool exact){
             alu.setFlags(flags);
             Assert.True(
@@ -32,7 +32,7 @@ namespace CPUTests{
         }
 
         [Theory]
-        [InlineData(200,200, (ALU.FLAG.E | ALU.FLAG.Z) )]
+        [InlineData(200,200, (ALU.FLAG.Z) )]
         [InlineData(100,101, (ALU.FLAG.OFF) )]
         [InlineData(102,99 , (ALU.FLAG.A) )]
         public void ALU_CMP_modifiesFlagsCorrectly(ushort A, ushort B, ALU.FLAG expected_flags){
@@ -42,7 +42,7 @@ namespace CPUTests{
         
         [Theory]
         [InlineData(0b1010, 0b0110, 0b1100,ALU.FLAG.A)]
-        [InlineData(0b0011, 0b0011, 0b0000,ALU.FLAG.E | ALU.FLAG.Z)]
+        [InlineData(0b0011, 0b0011, 0b0000,ALU.FLAG.Z)]
         [InlineData(0b0011, 0b1100, 0b1111)]
         public void ALU_XOR_modifiesFlagsCorrectlyAndChangesA(ushort A, ushort B, ushort expected_A, ALU.FLAG expected_flags = ALU.FLAG.OFF){
             alu.XOR(ref A, B);
