@@ -2,7 +2,9 @@
 namespace CPU{
     public class ALU {
         [Flags]
-        public enum FLAG : ushort{
+        public enum FLAG : byte{
+            OFF = 0b0000_0000,
+            ON =  0b1111_1111,
             C = 0b1000,
             A = 0b0100,
             E = 0b0010,
