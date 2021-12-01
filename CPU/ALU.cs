@@ -9,11 +9,11 @@ namespace CPU{
             Z = 0b0001,
         };
 
-        private ushort flags = 0b0000;
+        private FLAG flags = 0b0000;
         private void setFlagsIf(bool cond, FLAG mask){
-            flags = (ushort)((cond) ? 
-                (flags | ((ushort)mask) ) :  // set to true
-                (flags & ~((ushort)mask) ) // set to false
+            flags = ((cond) ? 
+                (flags | mask ) :  // set to true
+                (flags & ~mask ) // set to false
             );
         }
 
