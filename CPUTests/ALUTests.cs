@@ -99,5 +99,16 @@ namespace CPUTests{
             Assert.Equal(A,expected_A);
             AssertFlags(alu,expected_flags);
         }
+
+        [Theory]
+        [InlineData(300,4,75)]
+        [InlineData(420,6,70)]
+        [InlineData(0,17013,0, ALU.FLAG.Z)]
+        [InlineData(2,0,2)] //if divided by 0, doesn't change anything
+        public void ALU_DIV_changesAcorrectly_andAffectsFlagZ(ushort A, ushort B, ushort expected_A, ALU.FLAG expected_flags=ALU.FLAG.OFF){
+            alu.DIV(ref A, B);
+            Assert.Equal(A, expected_A);
+            AssertFlags(alu,expected_flags);
+        }
     }
 }
