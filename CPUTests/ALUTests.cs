@@ -142,5 +142,17 @@ namespace CPUTests{
             Assert.Equal(A, expected_A);
             AssertFlags(alu,expected_flags);
         }
+
+        [Fact]
+        public void ALU_appendsFlagsCorrectly(){
+            alu.CMP(255,254);
+            ushort A = 65535, B = 1;
+            alu.ADD(ref A,B);
+
+            // expect flag to be A|C|Z because 
+            //  CMP set A on
+            //  ADD set C and Z on
+            AssertFlags(alu, ALU.FLAG.A | ALU.FLAG.C | ALU.FLAG.Z);
+        }
     }
 }

@@ -4,7 +4,7 @@ namespace CPU{
         [Flags]
         public enum FLAG : byte{
             OFF = 0b0000_0000,
-            ON =  0b1111_1111,
+            ON =  0b0000_1111,
             C = 0b1000,
             A = 0b0100,
             E = 0b0010,
@@ -26,6 +26,11 @@ namespace CPU{
         public bool evaluateFlags(FLAG mask, bool exact=false){
             if(exact) return flags == mask;
             else return (((FLAG)flags) & mask)>0;
+        }
+
+        /// <summary> sets flags to turn all bits off </summary>
+        public void clearFlags(){
+            flags = FLAG.OFF;
         }
         
         /// <remarks> debugging purposes only </remarks>
