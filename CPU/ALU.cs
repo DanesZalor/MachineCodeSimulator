@@ -82,6 +82,7 @@ namespace CPU{
             int res = A>>B;
             setFlagsIf(res != A/(Math.Pow(2,B)), FLAG.C);
             A = (ushort)res;
+            setFlagsIf(A==0, FLAG.Z);
         }
 
         /// <summary> changes A into A / B. Affected flags [Z] </summary>

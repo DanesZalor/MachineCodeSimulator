@@ -83,8 +83,19 @@ namespace CPUTests{
         [InlineData(0b0011, 2, 0b1100)]
         [InlineData(0b0011_0000_0000_0000, 3, 0b1000_0000_0000_0000, ALU.FLAG.C)]
         [InlineData(0b0011_0000_0000_0000, 4, 0b0000_0000_0000_0000, ALU.FLAG.C | ALU.FLAG.Z)]
-        public void ALU_SHL_shiftsCorrectly_andOnlyAffectsCFlag(ushort A, ushort B, ushort expected_A, ALU.FLAG expected_flags=ALU.FLAG.OFF){
+        public void ALU_SHL_shiftsCorrectly_andAffectsFlagCZ(ushort A, ushort B, ushort expected_A, ALU.FLAG expected_flags=ALU.FLAG.OFF){
             alu.SHL(ref A,B);
+            Assert.Equal(A,expected_A);
+            AssertFlags(alu,expected_flags);
+        }
+
+        [Theory]
+        [InlineData(0b1100, 2, 0b11)]
+        [InlineData(0b0, 1, 0b0, ALU.FLAG.Z)]
+        [InlineData(0b0100_1100, 3, 0b0000_1001, ALU.FLAG.C)]
+        [InlineData(0b0000_1001, 4, 0b0, ALU.FLAG.C | ALU.FLAG.Z)]
+        public void ALU_SHR_shiftsCorrectly_andAffectsFlagCZ(ushort A, ushort B, ushort expected_A, ALU.FLAG expected_flags=ALU.FLAG.OFF){
+            alu.SHR(ref A, B);
             Assert.Equal(A,expected_A);
             AssertFlags(alu,expected_flags);
         }
