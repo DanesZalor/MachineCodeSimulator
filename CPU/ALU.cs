@@ -26,9 +26,13 @@ namespace CPU{
             else return (((FLAG)flags) & mask)>0;
         }
         
-        /// <remarks> only used for debugging </summary>
+        /// <remarks> debugging purposes only </remarks>
         public FLAG getFlags(){
             return flags;
+        }
+        /// <remarks> debugging purposes only </remarks>
+        public void setFlags(FLAG f){
+            flags = f;
         }
         
         /// <summary> compares A and B. Affected flags [A,E,Z] </summary> 
