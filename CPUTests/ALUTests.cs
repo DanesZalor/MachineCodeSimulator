@@ -39,6 +39,7 @@ namespace CPUTests{
         [Theory]
         [InlineData(0b1010, 0b0110, ALU.FLAG.A, 0b1100)]
         [InlineData(0b0011, 0b1100, null, 0b1111)]
+        [InlineData(0b0011, 0b1100, null, 0b1111)]
         public void ALU_XOR_modifiesFlagsCorrectlyAndChangesA(ushort A, ushort B, ALU.FLAG expected_flags, ushort expected_A){
             alu.XOR(ref A, ref B);
             Assert.Equal(A, expected_A);

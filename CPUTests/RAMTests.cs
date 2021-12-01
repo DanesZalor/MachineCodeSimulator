@@ -5,6 +5,10 @@ namespace CPUTests{
     public class RAMTests{
         RAM ram;
         
+        public RAMTests(){
+            ram = new RAM(16);
+        }
+
         [Theory]
         [InlineData(16,16)]
         [InlineData(69,69)]
@@ -16,7 +20,6 @@ namespace CPUTests{
 
         [Fact]
         public void RAM_shouldWriteToTwoAdjacentCells(){
-            ram = new RAM(16);
             ushort data = 17013;
             ram.write(5,data);
             byte b1 = ram.read1(5);
@@ -30,7 +33,6 @@ namespace CPUTests{
         [InlineData(255,255)]
         [InlineData(65432,65432)]
         public void RAM_read_shouldReturnTheCorrectData(ushort data, ushort expected){
-            ram = new RAM(13);
             ram.write(5,data);
             Assert.Equal(ram.read(5),expected);
         }
