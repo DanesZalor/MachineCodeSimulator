@@ -110,5 +110,16 @@ namespace CPUTests{
             Assert.Equal(A, expected_A);
             AssertFlags(alu,expected_flags);
         }
+
+        [Theory]
+        [InlineData(120,3,360)]
+        [InlineData(33000,2,464, ALU.FLAG.C)] // 330000 * 2 = 660000 >> 464 because of ushort conversion
+        [InlineData(0,2,0, ALU.FLAG.Z)]
+        [InlineData(2,0,0, ALU.FLAG.Z)]
+        public void ALU_MUL_changesAcorrectly_andAffectsFlagCZ(ushort A, ushort B, ushort expected_A, ALU.FLAG expected_flags=ALU.FLAG.OFF){
+            alu.MUL(ref A, B);
+            Assert.Equal(A, expected_A);
+            AssertFlags(alu,expected_flags);
+        }
     }
 }
