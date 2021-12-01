@@ -10,6 +10,13 @@ namespace CPUTests{
             alu = new ALU();
         }
 
+        /// <summary> compares alu flags and expected flags. displays a detailed error message </summary>
+        private void AssertFlags(ALU alu, ALU.FLAG expected_flags ){
+            Assert.True(
+                alu.evaluateFlags(expected_flags,true),
+                "Expected: " + expected_flags + "\tRecieved: " + alu.getFlags()
+            );
+        }
         [Theory]
         [InlineData( ALU.FLAG.Z | ALU.FLAG.E, ALU.FLAG.E, false )]
         [InlineData( ALU.FLAG.Z | ALU.FLAG.E, ALU.FLAG.E | ALU.FLAG.Z, false )]
@@ -30,37 +37,46 @@ namespace CPUTests{
         [InlineData(102,99 , (ALU.FLAG.A) )]
         public void ALU_CMP_modifiesFlagsCorrectly(ushort A, ushort B, ALU.FLAG expected_flags){
             alu.CMP(A,B);
-            Assert.True(
-                alu.evaluateFlags(expected_flags,true),
-                "Expected: " + expected_flags + "\tRecieved: " + alu.getFlags()
-            );
+            AssertFlags(alu,expected_flags);
         }
         
         [Theory]
-        [InlineData(0b1010, 0b0110, ALU.FLAG.A, 0b1100)]
-        [InlineData(0b0011, 0b0011, ALU.FLAG.E | ALU.FLAG.Z, 0b0000)]
-        [InlineData(0b0011, 0b1100, ALU.FLAG.OFF, 0b1111)]
-        public void ALU_XOR_modifiesFlagsCorrectlyAndChangesA(ushort A, ushort B, ALU.FLAG expected_flags, ushort expected_A){
+        [InlineData(0b1010, 0b0110, 0b1100,ALU.FLAG.A)]
+        [InlineData(0b0011, 0b0011, 0b0000,ALU.FLAG.E | ALU.FLAG.Z)]
+        [InlineData(0b0011, 0b1100, 0b1111)]
+        public void ALU_XOR_modifiesFlagsCorrectlyAndChangesA(ushort A, ushort B, ushort expected_A, ALU.FLAG expected_flags = ALU.FLAG.OFF){
             alu.XOR(ref A, ref B);
             Assert.Equal(A, expected_A);
-            Assert.True(
-                alu.evaluateFlags(expected_flags,true),
-                "Expected: " + expected_flags + "\tRecieved: " + alu.getFlags()
-            );
+            AssertFlags(alu,expected_flags);
         }
 
         [Theory]
-        [InlineData(0b11, 0b1111_1111_1111_1100, ALU.FLAG.OFF)]
+        [InlineData(0b11, 0b1111_1111_1111_1100)]
         [InlineData(0b1111_1111_1111_1111, 0b0, ALU.FLAG.Z)]
-        [InlineData(0b0,0b1111_1111_1111_1111, ALU.FLAG.OFF)]
-        public void ALU_NOT_flipsAllBitsCorrectly_andModifiesFlagZCorrectly(ushort A, ushort expected_A, ALU.FLAG expected_flags){
+        [InlineData(0b0,0b1111_1111_1111_1111)]
+        public void ALU_NOT_flipsAllBitsCorrectly_andModifiesFlagZCorrectly(ushort A, ushort expected_A, ALU.FLAG expected_flags=ALU.FLAG.OFF){
             alu.NOT(ref A);
             Assert.Equal(A,expected_A);
-            Assert.True(
-                alu.evaluateFlags(expected_flags,true),
-                "Expected: " + expected_flags + "\tRecieved: " + alu.getFlags()
-            );
+            AssertFlags(alu, expected_flags);
         }
         
+        [Theory]
+        [InlineData(0b1110, 0b0111, 0b0110)]
+        [InlineData(0b1100, 0b0011, 0b0, ALU.FLAG.Z)]
+        [InlineData(0b1011, 0b1010, 0b1010)]
+        public void ALU_AND_changesACorrectly_andOnlyAffectzZFlag(ushort A, ushort B, ushort expected_A, ALU.FLAG expected_flags=ALU.FLAG.OFF){
+            alu.AND(ref A, ref B);
+            Assert.Equal(A,expected_A);
+            AssertFlags(alu, expected_flags);
+        }
+
+        [Theory]
+        [InlineData(0b0, 0b0111, 0b0111)]
+        [InlineData(0b0, 0b00, 0b0, ALU.FLAG.Z)]
+        public void ALU_OR_changesACorrectly_andOnlyAffectzZFlag(ushort A, ushort B, ushort expected_A, ALU.FLAG expected_flags=ALU.FLAG.OFF){
+            alu.OR(ref A, ref B);
+            Assert.Equal(A,expected_A);
+            AssertFlags(alu, expected_flags);
+        }
     }
 }
