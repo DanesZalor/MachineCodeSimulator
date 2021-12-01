@@ -121,5 +121,26 @@ namespace CPUTests{
             Assert.Equal(A, expected_A);
             AssertFlags(alu,expected_flags);
         }
+
+        [Theory]
+        [InlineData(255,55,200)]
+        [InlineData(55,55,0, ALU.FLAG.Z )]
+        [InlineData(55,56,65535, ALU.FLAG.C )] // -1 turns into 65535
+        public void ALU_SUB_changesAcorrectly_andAffectsFlagCZ(ushort A, ushort B, ushort expected_A, ALU.FLAG expected_flags=ALU.FLAG.OFF){
+            alu.SUB(ref A, B);
+            Assert.Equal(A, expected_A);
+            AssertFlags(alu,expected_flags);
+        }
+        
+        [Theory]
+        [InlineData(255,45,300)]
+        [InlineData(65535,1,0, ALU.FLAG.C | ALU.FLAG.Z)]
+        [InlineData(65535,3,2, ALU.FLAG.C)]
+        [InlineData(0,0,0, ALU.FLAG.Z)]
+        public void ALU_ADD_changesAcorrectly_andAffectsFlagCZ(ushort A, ushort B, ushort expected_A, ALU.FLAG expected_flags=ALU.FLAG.OFF){
+            alu.ADD(ref A, B);
+            Assert.Equal(A, expected_A);
+            AssertFlags(alu,expected_flags);
+        }
     }
 }

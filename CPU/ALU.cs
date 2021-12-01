@@ -95,23 +95,23 @@ namespace CPU{
         /// <summary> changes A into A * B. Affected flags [C,Z] </summary>
         public void MUL(ref ushort A, ushort B){
             int res = A*B;
-            setFlagsIf(res==0, FLAG.Z);
             setFlagsIf(res>ushort.MaxValue, FLAG.C);
             A = (ushort)res;
+            setFlagsIf(A==0, FLAG.Z);
         }
         /// <summary> changes A into A - B. Affected flags [C,Z] </summary>
         public void SUB(ref ushort A, ushort B){
             int res = A-B;
-            setFlagsIf(res==0, FLAG.Z);
             setFlagsIf(res<0, FLAG.C);
             A = (ushort)res;
+            setFlagsIf(A==0, FLAG.Z);
         }
         /// <summary> changes A into A + B. Affected flags [C,Z] </summary>
         public void ADD(ref ushort A, ushort B){
             int res = A+B;
-            setFlagsIf(res==0, FLAG.Z);
             setFlagsIf(res>ushort.MaxValue, FLAG.C);
             A = (ushort)res;
+            setFlagsIf(A==0, FLAG.Z);
         }
 
     }
