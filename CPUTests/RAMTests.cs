@@ -28,7 +28,7 @@ namespace CPUTests{
             Assert.Equal(b1, (byte)(data>>8));
             Assert.Equal(b2, (byte)data);
         }
-
+	
         [Theory]
         [InlineData(255,255)]
         [InlineData(65432,65432)]
