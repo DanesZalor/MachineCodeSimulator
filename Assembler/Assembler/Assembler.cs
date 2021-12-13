@@ -7,11 +7,21 @@ public static class Assembler
     public static class Terms
     {
         public const string Register = "([a-g]{1,2}|sp)";
-        public const string Decimal = "(1[0-9]{0,2})|" + "(2(([0-4][0-9])|(5[0-6])|([0-9])))|" + "";
-        public const string Address = "\\[" + Register + "\\+" + Decimal + "\\]";
+        public const string Decimal = "(" +
+                                        "(1[0-9]{0,2})|" +  // 1, 10-19, 100-199
+                                        "([1-9][0-9]?)|" +  // 1-99
+                                        "(2[0-4][0-9])|" +  // 200 - 249
+                                        "(25[0-5])" +       // 250-255
+                                    ")";
+        public const string Address = "\\[(" +
+                                        Register + "|" +
+                                        Decimal + "|" +
+                                    ")\\]";
+
     }
-    public static bool match(string line, string pattern)
+    public static bool match(string line, string pattern, bool exact = false)
     {
+        if (exact) pattern = "^" + pattern + "$";
         return Regex.Match(line, pattern, RegexOptions.IgnoreCase).Success;
     }
     public static string evaluate_MOV_R_R(string line)
