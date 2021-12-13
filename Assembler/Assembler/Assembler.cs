@@ -22,7 +22,7 @@ public static class Assembler
         public const string ADDRESS = "\\[(" +
             REGISTER + "|" +    // [Register]
             DECIMAL + "|" +     // [Decimal]
-            "(" +               // [Register+Offset] or [Register-Offset]
+            "(" +               // [Register+Offset]
                 REGISTER + OFFSET +
             ")" +
         ")\\]";
@@ -42,14 +42,16 @@ public static class Assembler
         return Regex.Match(line, pattern, RegexOptions.IgnoreCase).Success;
     }
 
+    public static string evaluateLine(string line)
+    {
+        string error_msg = "";
+        return error_msg;
+    }
+
     public static byte[] TranslateLine(string line)
     {
 
         return new byte[1];
-    }
-    private static string RemoveComments(string code)
-    {
-        return "";
     }
     public static byte[] Compile(string code)
     {
