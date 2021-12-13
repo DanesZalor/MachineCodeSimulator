@@ -9,7 +9,7 @@ namespace AssemblerTest;
 public class AssemblerTest
 {
     [Theory]
-    // Register
+    // Register testing
     [InlineData("a", Assembler.Assembler.Terms.Register)]
     [InlineData("b", Assembler.Assembler.Terms.Register)]
     [InlineData("c", Assembler.Assembler.Terms.Register)]
@@ -44,6 +44,19 @@ public class AssemblerTest
     [InlineData("-13", Assembler.Assembler.Terms.Offset)]
     [InlineData("-16", Assembler.Assembler.Terms.Offset)]
     [InlineData("-17", Assembler.Assembler.Terms.Offset, false)]
+    // Address
+    [InlineData("[a]", Assembler.Assembler.Terms.Address)]
+    [InlineData("[c]", Assembler.Assembler.Terms.Address)]
+    [InlineData("[201]", Assembler.Assembler.Terms.Address)]
+    [InlineData("[D+12]", Assembler.Assembler.Terms.Address)]
+    [InlineData("[D+15]", Assembler.Assembler.Terms.Address)]
+    [InlineData("[D+16]", Assembler.Assembler.Terms.Address, false)]
+    [InlineData("[D-0]", Assembler.Assembler.Terms.Address, false)]
+    [InlineData("[D+0]", Assembler.Assembler.Terms.Address, false)]
+    [InlineData("[D-1]", Assembler.Assembler.Terms.Address)]
+    [InlineData("[D-9]", Assembler.Assembler.Terms.Address)]
+    [InlineData("[D-16]", Assembler.Assembler.Terms.Address)]
+    [InlineData("[D-17]", Assembler.Assembler.Terms.Address, false)]
     public void testMatch(string line, string pattern, bool res = true)
     {
         bool actual_res = Assembler.Assembler.match(line, pattern, true);
