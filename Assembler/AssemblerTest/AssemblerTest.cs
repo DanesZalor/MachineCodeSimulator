@@ -33,6 +33,17 @@ public class AssemblerTest
     [InlineData("279", Assembler.Assembler.Terms.Decimal, false)]
     [InlineData("255", Assembler.Assembler.Terms.Decimal)]
     [InlineData("1100", Assembler.Assembler.Terms.Decimal, false)]
+    // Offset
+    [InlineData("+1", Assembler.Assembler.Terms.Offset)]
+    [InlineData("+5", Assembler.Assembler.Terms.Offset)]
+    [InlineData("+14", Assembler.Assembler.Terms.Offset)]
+    [InlineData("+16", Assembler.Assembler.Terms.Offset, false)]
+    [InlineData("+0", Assembler.Assembler.Terms.Offset, false)]
+    [InlineData("-1", Assembler.Assembler.Terms.Offset)]
+    [InlineData("-5", Assembler.Assembler.Terms.Offset)]
+    [InlineData("-13", Assembler.Assembler.Terms.Offset)]
+    [InlineData("-16", Assembler.Assembler.Terms.Offset)]
+    [InlineData("-17", Assembler.Assembler.Terms.Offset, false)]
     public void testMatch(string line, string pattern, bool res = true)
     {
         bool actual_res = Assembler.Assembler.match(line, pattern, true);

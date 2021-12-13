@@ -13,11 +13,14 @@ public static class Assembler
                                         "(2[0-4][0-9])|" +  // 200 - 249
                                         "(25[0-5])" +       // 250-255
                                     ")";
+        public const string Offset = "(" +
+                                        "(\\+([1-9]|(1[1-5])))|" + // +1 to +15
+                                        "(-([1-9]|(1[1-6])))" +
+                                    ")";
         public const string Address = "\\[(" +
                                         Register + "|" +
                                         Decimal + "|" +
                                     ")\\]";
-
     }
     public static bool match(string line, string pattern, bool exact = false)
     {
