@@ -127,10 +127,7 @@ public static class Assembler
     public static byte[] translateLine(string line)
     {
         byte[] r = new byte[0];
-        if (Translator.match(line, "^mov "))// Start with "mov "
-        {
-            return Translator.translateMOV(line);
-        }
+        if (Translator.match(line, "^mov ")) return Translator.translateMOV(line);
         return r;
     }
 
