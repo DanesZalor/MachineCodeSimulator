@@ -43,6 +43,8 @@ public class AssemblerTest
     // STORE [Const], Reg
     [InlineData("mov [255], c", new byte[2] { 0b0010_1010, 0b_1111_1111 })]
     [InlineData("mov [128], sp", new byte[2] { 0b0010_1111, 0b_1000_0000 })]
+    [InlineData("mov [128], z", new byte[0] { })]
+    [InlineData("mov [257], a", new byte[0] { })]
     // JMP Reg
     [InlineData("jmp b", new byte[1] { 0b0011_0001 })]
     [InlineData("jmp g", new byte[1] { 0b0011_0110 })]
@@ -51,12 +53,20 @@ public class AssemblerTest
     [InlineData("jmp 127", new byte[2] { 0b0011_1000, 0b0111_1111 })]
     [InlineData("jmp   127  ", new byte[2] { 0b0011_1000, 0b0111_1111 })]
     [InlineData("jmp   269  ", new byte[0] { })]
+    [InlineData("jmp   -269  ", new byte[0] { })]
     // JCAZ Reg
     [InlineData("jc a", new byte[2] { 0b0100_0100, 0b0000_0000 })]
-    [InlineData("jc b", new byte[2] { 0b0100_0100, 0b0000_0001 })]
-    [InlineData("jc c", new byte[2] { 0b0100_0100, 0b0000_0010 })]
-    [InlineData("jc sp", new byte[2] { 0b0100_0100, 0b0000_0111 })]
-    public void test_evaluateMov(string line, byte[] expected_res)
+    [InlineData("ja b", new byte[2] { 0b0100_0010, 0b0000_0001 })]
+    [InlineData("jz c", new byte[2] { 0b0100_0001, 0b0000_0010 })]
+    [InlineData("jca sp", new byte[2] { 0b0100_0110, 0b0000_0111 })]
+    [InlineData("jcz y", new byte[0] { })]
+    [InlineData("jc   c", new byte[2] { 0b0100_0100, 0b0000_0010 })]
+    // JCAZ Const
+    [InlineData("jaz 254", new byte[2] { 0b0100_1011, 0b1111_1110 })]
+    [InlineData("jcz   254", new byte[2] { 0b0100_1101, 0b1111_1110 })]
+    [InlineData("jczl   254", new byte[0] { })]
+    [InlineData("jca   -1", new byte[0] { })]
+    public void translatesAssemblyInstructionsToMachineCodeCorrectly(string line, byte[] expected_res)
     {
         byte[] actual_res = Assembler.Assembler.translateLine(line);
         Assert.Equal(expected_res, actual_res);

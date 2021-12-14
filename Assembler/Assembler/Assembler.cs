@@ -61,11 +61,11 @@ public static class Assembler
             public const string JMP_1 = "jmp " + SPACE + TOKENS.CONST + SPACE;
 
 
-            public const string JCAZ = "(jca?z?)|(jc?az?)|(jc?a?z)";
+            public const string JCAZ = "((jca?z?)|(jc?az?)|(jc?a?z)) ";
             ///<summary> jcaz reg </summary>
-            public const string JCAZ_0 = JCAZ + " " + SPACE + TOKENS.REGISTER + SPACE;
+            public const string JCAZ_0 = JCAZ + SPACE + TOKENS.REGISTER + SPACE;
             ///<summary> jcaz const </summary>
-            public const string JCAZ_1 = JCAZ + " " + SPACE + TOKENS.CONST + SPACE;
+            public const string JCAZ_1 = JCAZ + SPACE + TOKENS.CONST + SPACE;
         }
 
 
@@ -184,15 +184,22 @@ public static class Assembler
 
         public static byte[] translateJCAZ(string line)
         {
-            byte[] r = new byte[0];
+            byte[] r = new byte[0] { };
             if (match(line, LEXICON.SYNTAX.JCAZ_0, true))
             {
                 string jcaz = getMatch(line, LEXICON.SYNTAX.JCAZ).Value;
-                r = new byte[2] { 0b0100_0000, 0 };
+                r = new byte[2] { 0b0100_0000, RegToByte(getMatch(line, " " + LEXICON.TOKENS.REGISTER).Value) };
                 if (match(jcaz, "c")) r[0] |= 0b0000_0100;
                 if (match(jcaz, "a")) r[0] |= 0b0000_0010;
                 if (match(jcaz, "z")) r[0] |= 0b0000_0001;
-                r[1] = RegToByte(getMatch(line, "\\b" + LEXICON.TOKENS.REGISTER + "\\b").Value);
+            }
+            else if (match(line, LEXICON.SYNTAX.JCAZ_1, true))
+            {
+                string jcaz = getMatch(line, LEXICON.SYNTAX.JCAZ).Value;
+                r = new byte[2] { 0b0100_1000, Convert.ToByte(getMatch(line, " " + LEXICON.TOKENS.CONST).Value) };
+                if (match(jcaz, "c")) r[0] |= 0b0000_0100;
+                if (match(jcaz, "a")) r[0] |= 0b0000_0010;
+                if (match(jcaz, "z")) r[0] |= 0b0000_0001;
             }
             return r;
         }
@@ -203,7 +210,7 @@ public static class Assembler
     {
         if (Translator.match(line, "^mov ")) return Translator.translateMOV(line);
         else if (Translator.match(line, "^jmp ")) return Translator.translateJMP(line);
-        else if (Translator.match(line, "^jc?a?z? ")) return Translator.translateJCAZ(line);
+        else if (Translator.match(line, "^(jc?a?z?) ")) return Translator.translateJCAZ(line);
         else return new byte[0];
     }
 
