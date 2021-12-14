@@ -33,7 +33,7 @@ public class AssemblerTest
     [InlineData("mov f, [63]", new byte[2] { 0b0001_1101, 0b0011_1111 })]
     public void test_evaluateMov(string line, byte[] expected_res)
     {
-        byte[] actual_res = Assembler.Assembler.translateMOV(line);
+        byte[] actual_res = Assembler.Assembler.translateLine(line);
         Assert.Equal(expected_res, actual_res);
     }
 
