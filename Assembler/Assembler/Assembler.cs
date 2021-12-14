@@ -17,9 +17,13 @@ public static class Assembler
                 "([1-9][0-9]?)" +  // 1-99
             ")";
             public const string OFFSET = "(" +
-                "(\\+([1-9]|(1[1-5])))|" +  // +1 to +15
-                "(-([1-9]|(1[1-6])))" +     // -1 to -16
+                "(\\+((1[1-5])|[1-9]))|" +  // +1 to +15
+                "(-((1[1-6])|[1-9]))" +     // -1 to -16
             ")";
+
+            public const string ADDRESS_REGISTER = "\\[(" + SPACE + REGISTER + SPACE + ")//]";
+            public const string ADDRESS_CONST = "\\[(" + SPACE + CONST + SPACE + ")//]";
+            public const string ADDRESS_REGISTER_OFFSET = "\\[(" + SPACE + REGISTER + SPACE + OFFSET + SPACE + ")//]";
             public const string ADDRESS = "\\[(" +
                 REGISTER + "|" +    // [Register]
                 DECIMAL + "|" +     // [Decimal]
@@ -38,13 +42,7 @@ public static class Assembler
             public const string STORE = "mov " + SPACE + TOKENS.ADDRESS + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
         }
 
-        public static class VAGUE
-        {
-            public const string REGISTER = "(( [a-z]+)|(,[a-z])+)";
-            public const string DECIMAL = "([0-1]*)";
-            public const string CONST = DECIMAL;
-            public const string MOV = "mov " + SPACE + REGISTER + SPACE + "," + SPACE + REGISTER + SPACE;
-        }
+
     }
 
     private static byte RegToByte(string reg)
@@ -54,16 +52,19 @@ public static class Assembler
         return Convert.ToByte(reg[0] - 97); // returns a : 0, b : 1, ... g: 6
     }
 
-    private static bool match(string line, string pattern, bool exact = false)
+    private static byte sbyteToByte(string reg)
     {
-        if (exact) pattern = "^" + pattern + "$";
-        return Regex.Match(line, pattern, RegexOptions.IgnoreCase).Success;
+
     }
 
     public static Match getMatch(string line, string pattern, bool exact = false)
     {
         if (exact) pattern = "^" + pattern + "$";
         return Regex.Match(line, pattern, RegexOptions.IgnoreCase);
+    }
+    public static bool match(string line, string pattern, bool exact = false)
+    {
+        return getMatch(line, pattern, exact).Success;
     }
 
     /// <sumary> returns an empty string if it is grammatically correct, and an error message if otherwise </summary> 
@@ -82,6 +83,19 @@ public static class Assembler
             r = new byte[2] {
                 Convert.ToByte( b1 | 0b0000_1000),
                 Convert.ToByte(getMatch(line,LEXICON.TOKENS.CONST).Value)
+            };
+        }
+        else if (match(line, LEXICON.SYNTAX.LOAD, true))
+        {
+            Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
+            byte b1 = RegToByte(m.Value);
+            byte r2 = RegToByte(m.NextMatch().Value);
+            sbyte offset = Convert.ToSByte(getMatch(line, LEXICON.TOKENS.OFFSET).Value);
+
+            Console.WriteLine(line + "\n=" + (byte)offset);
+
+            r = new byte[2]{
+                Convert.ToByte(b1 | 0b0001_0000),0
             };
         }
         return r;
