@@ -48,7 +48,12 @@ public static class Assembler
             ///<summary> mov reg, [const] </summary> 
             public const string LOAD_2 = "mov " + SPACE + TOKENS.REGISTER + SPACE + "," + SPACE + TOKENS.ADDRESS_CONST + SPACE;
 
-            public const string STORE = "mov " + SPACE + TOKENS.ADDRESS + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
+            ///<summary> mov [reg+offset], reg </summary> 
+            public const string STORE_0 = "mov " + SPACE + TOKENS.ADDRESS_REGISTER_OFFSET + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
+            ///<summary> mov [reg], reg </summary>
+            public const string STORE_1 = "mov " + SPACE + TOKENS.ADDRESS_REGISTER + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
+            ///<summary> mov [const], reg </summary>
+            public const string STORE_2 = "mov " + SPACE + TOKENS.ADDRESS_CONST + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
         }
 
 
@@ -120,6 +125,23 @@ public static class Assembler
                 byte b2 = Convert.ToByte(getMatch(line, LEXICON.TOKENS.CONST).Value);
                 r = new byte[2] { Convert.ToByte(b1 | 0b0001_1000), b2 };
             }
+            else if (match(line, LEXICON.SYNTAX.STORE_0, true))
+            {
+                Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
+                byte b1 = RegToByte(m.Value);
+                byte b2 = RegToByte(m.NextMatch().Value);
+
+                {// Assign the <5:offset> bytes to b2
+                 // get OFFSET substring and remove all spaces from the match. 
+                    sbyte offset = Convert.ToSByte(getMatch(line, LEXICON.TOKENS.OFFSET).Value.Replace(" ", ""));
+                    if (offset < 0) { b2 |= 0b1000_0000; offset = (sbyte)((offset * -1) - 1); }
+                    if (offset >= 8) { b2 |= 0b0100_0000; offset -= 8; }
+                    if (offset >= 4) { b2 |= 0b0010_0000; offset -= 4; }
+                    if (offset >= 2) { b2 |= 0b0001_0000; offset -= 2; }
+                    if (offset >= 1) { b2 |= 0b0000_1000; offset -= 1; }
+                }
+                r = new byte[2] { Convert.ToByte(b1 | 0b0010_0000), b2 };
+            }
             return r;
         }
 
@@ -130,6 +152,5 @@ public static class Assembler
         if (Translator.match(line, "^mov ")) return Translator.translateMOV(line);
         return r;
     }
-
 
 }

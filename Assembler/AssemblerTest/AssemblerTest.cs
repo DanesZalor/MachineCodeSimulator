@@ -31,6 +31,11 @@ public class AssemblerTest
     // Test LOAD Reg, [Const] Instruction
     [InlineData("mov e, [255]", new byte[2] { 0b0001_1100, 0b1111_1111 })]
     [InlineData("mov f, [63]", new byte[2] { 0b0001_1101, 0b0011_1111 })]
+    // Test STORE [Reg+Offset], Reg
+    [InlineData("mov [b+7], c", new byte[2] { 0b0010_0001, 0b0011_1010 })]
+    [InlineData("mov [ b + 7 ], c", new byte[2] { 0b0010_0001, 0b0011_1010 })]
+    [InlineData("mov [b-7], c", new byte[2] { 0b0010_0001, 0b1011_0010 })]
+    [InlineData("mov [      b - 7 ], c", new byte[2] { 0b0010_0001, 0b1011_0010 })]
     public void test_evaluateMov(string line, byte[] expected_res)
     {
         byte[] actual_res = Assembler.Assembler.translateLine(line);
