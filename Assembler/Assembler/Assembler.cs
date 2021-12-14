@@ -142,6 +142,19 @@ public static class Assembler
                 }
                 r = new byte[2] { Convert.ToByte(b1 | 0b0010_0000), b2 };
             }
+            else if (match(line, LEXICON.SYNTAX.STORE_1, true))
+            {
+                Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
+                byte b1 = RegToByte(m.Value);
+                byte b2 = RegToByte(m.NextMatch().Value);
+                r = new byte[2] { Convert.ToByte(b1 | 0b0010_0000), b2 };
+            }
+            else if (match(line, LEXICON.SYNTAX.STORE_2, true))
+            {
+                byte b1 = RegToByte(getMatch(line, LEXICON.TOKENS.REGISTER).Value);
+                byte b2 = Convert.ToByte(getMatch(line, LEXICON.TOKENS.CONST).Value);
+                r = new byte[2] { Convert.ToByte(b1 | 0b0010_1000), b2 };
+            }
             return r;
         }
 
