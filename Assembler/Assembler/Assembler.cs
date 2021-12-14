@@ -17,20 +17,18 @@ public static class Assembler
                 "([1-9][0-9]?)" +  // 1-99
             ")";
             public const string OFFSET = "(" +
-                "(\\+((1[1-5])|[1-9]))|" +  // +1 to +15
-                "(-((1[1-6])|[1-9]))" +     // -1 to -16
+                "(\\+" + SPACE + "((1[1-5])|[1-9]))|" +  // +1 to +15
+                "(-" + SPACE + "((1[1-6])|[1-9]))" +     // -1 to -16
             ")";
 
-            public const string ADDRESS_REGISTER = "\\[(" + SPACE + REGISTER + SPACE + ")//]";
-            public const string ADDRESS_CONST = "\\[(" + SPACE + CONST + SPACE + ")//]";
-            public const string ADDRESS_REGISTER_OFFSET = "\\[(" + SPACE + REGISTER + SPACE + OFFSET + SPACE + ")//]";
-            public const string ADDRESS = "\\[(" +
-                REGISTER + "|" +    // [Register]
-                DECIMAL + "|" +     // [Decimal]
-                "(" +               // [Register+Offset]
-                    REGISTER + OFFSET +
-                ")" +
-            ")\\]";
+            public const string ADDRESS_REGISTER = "\\[" + SPACE + REGISTER + SPACE + "\\]";
+            public const string ADDRESS_CONST = "\\[" + SPACE + CONST + SPACE + "\\]";
+            public const string ADDRESS_REGISTER_OFFSET = "\\[" + SPACE + REGISTER + SPACE + OFFSET + SPACE + "\\]";
+            public const string ADDRESS = "(" +
+                ADDRESS_REGISTER_OFFSET + "|" +
+                ADDRESS_CONST + "|" +
+                ADDRESS_REGISTER +
+            ")";
             public const string CONST = DECIMAL;
         }
 
@@ -86,7 +84,7 @@ public static class Assembler
             byte b2 = RegToByte(m.NextMatch().Value);
 
             {// Assign the <5:offset> bytes to b2
-                sbyte offset = Convert.ToSByte(getMatch(line, LEXICON.TOKENS.OFFSET).Value);
+                sbyte offset = Convert.ToSByte(getMatch(line, LEXICON.TOKENS.OFFSET).Value.Replace(" ", ""));
                 if (offset < 0) { b2 |= 0b1000_0000; offset = (sbyte)((offset * -1) - 1); }
                 if (offset >= 8) { b2 |= 0b0100_0000; offset -= 8; }
                 if (offset >= 4) { b2 |= 0b0010_0000; offset -= 4; }
