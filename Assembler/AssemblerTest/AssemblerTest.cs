@@ -8,24 +8,16 @@ namespace AssemblerTest;
 
 public class AssemblerTest
 {
-    [Theory]
-    [InlineData("mov a, sp", Assembler.Assembler.LEXICON.SYNTAX.MOV)]
-    [InlineData("mov G,  B", Assembler.Assembler.LEXICON.SYNTAX.MOV)]
-    [InlineData("mov C,D", Assembler.Assembler.LEXICON.SYNTAX.MOV)]
-    [InlineData("mov     E     ,      F     ", Assembler.Assembler.LEXICON.SYNTAX.MOV)]
-    [InlineData("movE,F", Assembler.Assembler.LEXICON.SYNTAX.MOV, false)]
-    public void testMatch(string line, string pattern, bool res = true)
-    {
-        bool actual_res = Assembler.Assembler.match(line, pattern, true);
-        Assert.Equal(actual_res, res);
-    }
 
-    [Fact]
-    public void testMov()
+
+    [Theory]
+    [InlineData("mov a, b", new byte[2] { 0b0000_0000, 0b0000_0001 })]
+    [InlineData("mov g,c", new byte[2] { 0b0000_0110, 0b0000_0010 })]
+    [InlineData("mov a, bcd", new byte[0] { })]
+    public void test_evaluateMov(string line, byte[] expected_res)
     {
-        string s = "";
-        s = Assembler.Assembler.evaluate_MOV("mov a, b"); Console.WriteLine(s);
-        s = Assembler.Assembler.evaluate_MOV("mov a, asasf"); Console.WriteLine(s);
+        byte[] actual_res = Assembler.Assembler.evaluateMOV(line);
+        Assert.Equal(expected_res, actual_res);
 
     }
 

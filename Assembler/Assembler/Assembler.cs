@@ -5,10 +5,10 @@ namespace Assembler;
 public static class Assembler
 {
 
-    public static class LEXICON
+    private static class LEXICON
     {
-        private const string SPACE = "(\\s)*";
-        private static class TOKENS
+        public const string SPACE = "(\\s)*";
+        public static class TOKENS
         {
             public const string REGISTER = "([a-g]|sp)";
             public const string DECIMAL = "(" +
@@ -35,15 +35,25 @@ public static class Assembler
         {
             public const string MOV = "mov " + SPACE + TOKENS.REGISTER + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
             public const string DATA = "mov " + SPACE + TOKENS.REGISTER + SPACE + "," + SPACE + TOKENS.CONST + SPACE;
+            public const string LOAD = "mov " + SPACE + TOKENS.REGISTER + SPACE + "," + SPACE + TOKENS.ADDRESS + SPACE;
+            public const string STORE = "mov " + SPACE + TOKENS.ADDRESS + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
         }
 
         public static class VAGUE
         {
-            private const string REGISTER = "(( [a-z]+)|(,[a-z])+)";
+            public const string REGISTER = "(( [a-z]+)|(,[a-z])+)";
+            public const string DECIMAL = "([0-1]*)";
+            public const string CONST = DECIMAL;
             public const string MOV = "mov " + SPACE + REGISTER + SPACE + "," + SPACE + REGISTER + SPACE;
         }
     }
 
+    private static byte RegToByte(string reg)
+    {
+        reg = reg.Trim().ToLower();
+        if (reg == "sp") return 0b0000_0111;
+        return Convert.ToByte(reg[0] - 97); // returns a : 0, b : 1, ... g: 6
+    }
 
     public static bool match(string line, string pattern, bool exact = false)
     {
@@ -51,17 +61,16 @@ public static class Assembler
         return Regex.Match(line, pattern, RegexOptions.IgnoreCase).Success;
     }
 
-    public static string evaluate_MOV(string line)
+    /// <sumary> returns an empty string if it is grammatically correct, and an error message if otherwise </summary> 
+    public static byte[] evaluateMOV(string line)
     {
-        string error_msg = line;
-
-        if (!match(line, LEXICON.SYNTAX.MOV))
+        byte[] r = new byte[0];
+        if (match(line, LEXICON.SYNTAX.MOV, true))
         {
-            //Match m = Regex.Match(line, LEXICON.VAGUE.MOV);
-            //for (int i = 0; i < m.Length; i++) error_msg += String.Format("\"{0}\" is not a valid Register", (i == 0 ? m.Value : m.NextMatch()));
-            error_msg = "wrong grammar";
+            Match m = Regex.Match(line, LEXICON.TOKENS.REGISTER);
+            r = new byte[2] { RegToByte(m.Value), RegToByte(m.NextMatch().Value) };
         }
-        return error_msg;
+        return r;
     }
 
     public static string evaluateLine(string line)
