@@ -12,10 +12,10 @@ public static class Assembler
         {
             public const string REGISTER = "([a-g]|sp)";
             public const string DECIMAL = "(" +
-                "(1[0-9]{0,2})|" +  // 1, 10-19, 100-199
-                "([1-9][0-9]?)|" +  // 1-99
+                "(25[0-5])|" +       // 250-255
                 "(2[0-4][0-9])|" +  // 200 - 249
-                "(25[0-5])" +       // 250-255
+                "(1[0-9]{0,2})|" +  // 1, 10-19, 100-199
+                "([1-9][0-9]?)" +  // 1-99
             ")";
             public const string OFFSET = "(" +
                 "(\\+([1-9]|(1[1-5])))|" +  // +1 to +15
@@ -61,14 +61,29 @@ public static class Assembler
         return Regex.Match(line, pattern, RegexOptions.IgnoreCase).Success;
     }
 
+    public static Match getMatch(string line, string pattern, bool exact = false)
+    {
+        if (exact) pattern = "^" + pattern + "$";
+        return Regex.Match(line, pattern, RegexOptions.IgnoreCase);
+    }
+
     /// <sumary> returns an empty string if it is grammatically correct, and an error message if otherwise </summary> 
     public static byte[] evaluateMOV(string line)
     {
         byte[] r = new byte[0];
         if (match(line, LEXICON.SYNTAX.MOV, true))
         {
-            Match m = Regex.Match(line, LEXICON.TOKENS.REGISTER);
+            Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
             r = new byte[2] { RegToByte(m.Value), RegToByte(m.NextMatch().Value) };
+        }
+        else if (match(line, LEXICON.SYNTAX.DATA, true))
+        {
+            Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
+            byte b1 = RegToByte(getMatch(line, LEXICON.TOKENS.REGISTER).Value);
+            r = new byte[2] {
+                Convert.ToByte( b1 | 0b0000_1000),
+                Convert.ToByte(getMatch(line,LEXICON.TOKENS.CONST).Value)
+            };
         }
         return r;
     }
