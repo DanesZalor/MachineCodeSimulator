@@ -4,7 +4,6 @@ namespace Assembler;
 
 public static class Assembler
 {
-
     private static class LEXICON
     {
         public const string SPACE = "(\\s)*";
@@ -55,7 +54,7 @@ public static class Assembler
         return Convert.ToByte(reg[0] - 97); // returns a : 0, b : 1, ... g: 6
     }
 
-    public static bool match(string line, string pattern, bool exact = false)
+    private static bool match(string line, string pattern, bool exact = false)
     {
         if (exact) pattern = "^" + pattern + "$";
         return Regex.Match(line, pattern, RegexOptions.IgnoreCase).Success;
