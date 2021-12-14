@@ -51,24 +51,18 @@ public static class Assembler
         if (reg == "sp") return 0b0000_0111;
         return Convert.ToByte(reg[0] - 97); // returns a : 0, b : 1, ... g: 6
     }
-
-    private static byte sbyteToByte(string reg)
-    {
-
-    }
-
-    public static Match getMatch(string line, string pattern, bool exact = false)
+    private static Match getMatch(string line, string pattern, bool exact = false)
     {
         if (exact) pattern = "^" + pattern + "$";
         return Regex.Match(line, pattern, RegexOptions.IgnoreCase);
     }
-    public static bool match(string line, string pattern, bool exact = false)
+    private static bool match(string line, string pattern, bool exact = false)
     {
         return getMatch(line, pattern, exact).Success;
     }
 
-    /// <sumary> returns an empty string if it is grammatically correct, and an error message if otherwise </summary> 
-    public static byte[] evaluateMOV(string line)
+    /// <sumary>translated the line into its corresponding byte[] that represents machine code. returns an empty array if it is grammatically incorrect</summary> 
+    public static byte[] translateMOV(string line)
     {
         byte[] r = new byte[0];
         if (match(line, LEXICON.SYNTAX.MOV, true))
@@ -89,13 +83,19 @@ public static class Assembler
         {
             Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
             byte b1 = RegToByte(m.Value);
-            byte r2 = RegToByte(m.NextMatch().Value);
-            sbyte offset = Convert.ToSByte(getMatch(line, LEXICON.TOKENS.OFFSET).Value);
+            byte b2 = RegToByte(m.NextMatch().Value);
 
-            Console.WriteLine(line + "\n=" + (byte)offset);
-
+            {// Assign the <5:offset> bytes to b2
+                sbyte offset = Convert.ToSByte(getMatch(line, LEXICON.TOKENS.OFFSET).Value);
+                if (offset < 0) { b2 |= 0b1000_0000; offset = (sbyte)((offset * -1) - 1); }
+                if (offset >= 8) { b2 |= 0b0100_0000; offset -= 8; }
+                if (offset >= 4) { b2 |= 0b0010_0000; offset -= 4; }
+                if (offset >= 2) { b2 |= 0b0001_0000; offset -= 2; }
+                if (offset >= 1) { b2 |= 0b0000_1000; offset -= 1; }
+            }
             r = new byte[2]{
-                Convert.ToByte(b1 | 0b0001_0000),0
+                Convert.ToByte(b1 | 0b0001_0000),
+                b2
             };
         }
         return r;
