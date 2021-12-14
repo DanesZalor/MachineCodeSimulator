@@ -54,6 +54,11 @@ public static class Assembler
             public const string STORE_1 = "mov " + SPACE + TOKENS.ADDRESS_REGISTER + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
             ///<summary> mov [const], reg </summary>
             public const string STORE_2 = "mov " + SPACE + TOKENS.ADDRESS_CONST + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
+
+            ///<summary> jmp reg </summary>
+            public const String JMP_0 = "jmp " + SPACE + TOKENS.REGISTER + SPACE;
+            ///<summary> jmp const </summary>
+            public const String JMP_1 = "jmp " + SPACE + TOKENS.CONST + SPACE;
         }
 
 
@@ -158,11 +163,30 @@ public static class Assembler
             return r;
         }
 
+        public static byte[] translateJMP(string line)
+        {
+            byte[] r = new byte[0];
+            if (match(line, LEXICON.SYNTAX.JMP_0, true))
+            {
+                r = new byte[1] { RegToByte(getMatch(line, LEXICON.TOKENS.REGISTER).Value) };
+                r[0] |= 0b0011_0000;
+            }
+            else if (match(line, LEXICON.SYNTAX.JMP_1, true))
+            {
+                r = new byte[2] { 0b0011_1000,
+                    Convert.ToByte(getMatch(line,LEXICON.TOKENS.CONST).Value)
+                };
+            }
+
+            return r;
+        }
     }
     public static byte[] translateLine(string line)
     {
+        //line = line.Trim();
         byte[] r = new byte[0];
         if (Translator.match(line, "^mov ")) return Translator.translateMOV(line);
+        else if (Translator.match(line, "^jmp ")) return Translator.translateJMP(line);
         return r;
     }
 

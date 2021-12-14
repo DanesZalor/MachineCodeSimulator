@@ -43,6 +43,14 @@ public class AssemblerTest
     // STORE [Const], Reg
     [InlineData("mov [255], c", new byte[2] { 0b0010_1010, 0b_1111_1111 })]
     [InlineData("mov [128], sp", new byte[2] { 0b0010_1111, 0b_1000_0000 })]
+    // JMP Reg
+    [InlineData("jmp b", new byte[1] { 0b0011_0001 })]
+    [InlineData("jmp g", new byte[1] { 0b0011_0110 })]
+    [InlineData("jmp   g  ", new byte[1] { 0b0011_0110 })]
+    // JMP Const
+    [InlineData("jmp 127", new byte[2] { 0b0011_1000, 0b0111_1111 })]
+    [InlineData("jmp   127  ", new byte[2] { 0b0011_1000, 0b0111_1111 })]
+    [InlineData("jmp   269  ", new byte[0] { })]
     public void test_evaluateMov(string line, byte[] expected_res)
     {
         byte[] actual_res = Assembler.Assembler.translateLine(line);
