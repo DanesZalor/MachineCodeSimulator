@@ -51,6 +51,11 @@ public class AssemblerTest
     [InlineData("jmp 127", new byte[2] { 0b0011_1000, 0b0111_1111 })]
     [InlineData("jmp   127  ", new byte[2] { 0b0011_1000, 0b0111_1111 })]
     [InlineData("jmp   269  ", new byte[0] { })]
+    // JCAZ Reg
+    [InlineData("jc a", new byte[2] { 0b0100_0100, 0b0000_0000 })]
+    [InlineData("jc b", new byte[2] { 0b0100_0100, 0b0000_0001 })]
+    [InlineData("jc c", new byte[2] { 0b0100_0100, 0b0000_0010 })]
+    [InlineData("jc sp", new byte[2] { 0b0100_0100, 0b0000_0111 })]
     public void test_evaluateMov(string line, byte[] expected_res)
     {
         byte[] actual_res = Assembler.Assembler.translateLine(line);

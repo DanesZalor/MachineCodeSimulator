@@ -56,9 +56,16 @@ public static class Assembler
             public const string STORE_2 = "mov " + SPACE + TOKENS.ADDRESS_CONST + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
 
             ///<summary> jmp reg </summary>
-            public const String JMP_0 = "jmp " + SPACE + TOKENS.REGISTER + SPACE;
+            public const string JMP_0 = "jmp " + SPACE + TOKENS.REGISTER + SPACE;
             ///<summary> jmp const </summary>
-            public const String JMP_1 = "jmp " + SPACE + TOKENS.CONST + SPACE;
+            public const string JMP_1 = "jmp " + SPACE + TOKENS.CONST + SPACE;
+
+
+            public const string JCAZ = "(jca?z?)|(jc?az?)|(jc?a?z)";
+            ///<summary> jcaz reg </summary>
+            public const string JCAZ_0 = JCAZ + " " + SPACE + TOKENS.REGISTER + SPACE;
+            ///<summary> jcaz const </summary>
+            public const string JCAZ_1 = JCAZ + " " + SPACE + TOKENS.CONST + SPACE;
         }
 
 
@@ -82,7 +89,6 @@ public static class Assembler
             return getMatch(line, pattern, exact).Success;
         }
 
-        /// <sumary>translated the line into its corresponding byte[] that represents machine code. returns an empty array if it is grammatically incorrect</summary> 
         public static byte[] translateMOV(string line)
         {
             byte[] r = new byte[0];
@@ -172,22 +178,33 @@ public static class Assembler
                 r[0] |= 0b0011_0000;
             }
             else if (match(line, LEXICON.SYNTAX.JMP_1, true))
-            {
-                r = new byte[2] { 0b0011_1000,
-                    Convert.ToByte(getMatch(line,LEXICON.TOKENS.CONST).Value)
-                };
-            }
+                r = new byte[2] { 0b0011_1000, Convert.ToByte(getMatch(line, LEXICON.TOKENS.CONST).Value) };
+            return r;
+        }
 
+        public static byte[] translateJCAZ(string line)
+        {
+            byte[] r = new byte[0];
+            if (match(line, LEXICON.SYNTAX.JCAZ_0, true))
+            {
+                string jcaz = getMatch(line, LEXICON.SYNTAX.JCAZ).Value;
+                r = new byte[2] { 0b0100_0000, 0 };
+                if (match(jcaz, "c")) r[0] |= 0b0000_0100;
+                if (match(jcaz, "a")) r[0] |= 0b0000_0010;
+                if (match(jcaz, "z")) r[0] |= 0b0000_0001;
+                r[1] = RegToByte(getMatch(line, "\\b" + LEXICON.TOKENS.REGISTER + "\\b").Value);
+            }
             return r;
         }
     }
+
+    /// <sumary>translated the line into its corresponding byte[] that represents machine code. returns an empty array if it is grammatically incorrect</summary> 
     public static byte[] translateLine(string line)
     {
-        //line = line.Trim();
-        byte[] r = new byte[0];
         if (Translator.match(line, "^mov ")) return Translator.translateMOV(line);
         else if (Translator.match(line, "^jmp ")) return Translator.translateJMP(line);
-        return r;
+        else if (Translator.match(line, "^jc?a?z? ")) return Translator.translateJCAZ(line);
+        else return new byte[0];
     }
 
 }
