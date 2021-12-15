@@ -74,9 +74,14 @@ public class AssemblerTest
     }
     */
 
-    [Fact]
-    public void testTest()
+    [Theory]
+    [InlineData("mov c, b")]
+    [InlineData("mov d,   sp")]
+    [InlineData("mov mov,   sp", "'mov' is not a valid register")]
+    [InlineData("mov  MoV  ,   sp", "'MoV' is not a valid register")]
+    public void evaluatesAssemblyInstructionsCorrectly(string line, string expected_res = "")
     {
-
+        string actual_res = SyntaxChecker.evaluateLine(line);
+        Assert.Equal(expected_res, actual_res);
     }
 }

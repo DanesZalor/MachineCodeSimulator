@@ -6,7 +6,7 @@ public static class LEXICON
     public const string SPACE = "( )*";
     public static class TOKENS
     {
-        public const string REGISTER = "([a-g]|sp)";
+        public const string REGISTER = "([a-g]|(sp))";
         private const string DECIMAL = "(" +
             "(25[0-5])|" +       // 250-255
             "(2[0-4][0-9])|" +  // 200 - 249
