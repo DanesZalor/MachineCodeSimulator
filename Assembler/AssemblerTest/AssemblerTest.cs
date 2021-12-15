@@ -68,7 +68,7 @@ public class AssemblerTest
     [InlineData("jca   -1", new byte[0] { })]
     public void translatesAssemblyInstructionsToMachineCodeCorrectly(string line, byte[] expected_res)
     {
-        byte[] actual_res = Assembler.Assembler.Translator.translateLine(line);
+        byte[] actual_res = Assembler.Translator.translateLine(line);
         Assert.Equal(expected_res, actual_res);
     }
 
