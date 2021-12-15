@@ -152,11 +152,11 @@ public static class Translator
     public static byte[] translateLine(string line)
     {
         line = line.Trim();
-        if (match(line, "^(" + LEXICON.SPACE + "mov) "))
+        if (match(line, LEXICON.ETC.mov_starter))
             return Translator.translateMOV(line);
-        else if (match(line, "^(" + LEXICON.SPACE + "jmp) "))
+        else if (match(line, LEXICON.ETC.jmp_starter))
             return Translator.translateJMP(line);
-        else if (match(line, "^" + LEXICON.SPACE + LEXICON.SYNTAX.JCAZ + " "))
+        else if (match(line, LEXICON.ETC.jcaz_starter))
             return Translator.translateJCAZ(line);
         else
         {
