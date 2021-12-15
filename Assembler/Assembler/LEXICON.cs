@@ -1,4 +1,6 @@
 namespace Assembler;
+
+
 public static class LEXICON
 {
     public const string SPACE = "(\\s)*";
@@ -53,8 +55,8 @@ public static class LEXICON
         ///<summary> jcaz const </summary>
         public const string JCAZ_1 = SPACE + JCAZ + " " + SPACE + TOKENS.CONST + SPACE;
 
-        public const string PUSH_0 = "push " + SPACE + TOKENS.REGISTER + SPACE;
-        public const string PUSH_1 = "push " + SPACE + TOKENS.ADDRESS + SPACE;
+        public const string PUSH_0 = SPACE + "push " + SPACE + TOKENS.REGISTER + SPACE;
+        public const string PUSH_1 = SPACE + "push " + SPACE + TOKENS.ADDRESS + SPACE;
     }
 
 
