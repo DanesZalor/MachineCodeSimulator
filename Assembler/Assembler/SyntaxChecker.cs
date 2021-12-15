@@ -6,6 +6,7 @@ public static class VAGUE_LEXICON
     public static class TOKENS
     {
         public const string REGISTER = "[a-z]+";
+        private const string DECIMAL = "";
     }
     public static class SYNTAX
     {
@@ -15,6 +16,7 @@ public static class VAGUE_LEXICON
             public const string R_R = R + "," + R;
         }
         public const string MOV_R_R = LEXICON.SPACE + "mov " + ARGUEMENTS.R_R;
+        public const string MOV_R_C = LEXICON.SPACE + "mov " + ARGUEMENTS.R_R;
     }
 }
 
@@ -62,7 +64,7 @@ public static class SyntaxChecker
     /// <summary> evaluates instructions' grammar. if grammatically correct, returns an empty string </summary>
     public static string evaluateLine(string line)
     {
-        line = line.Split(";")[0];
+        line = line.Split(";")[0]; // remove comments
         if (match(line, LEXICON.ETC.mov_starter)) return evaluateMOV(line);
         return "";
     }

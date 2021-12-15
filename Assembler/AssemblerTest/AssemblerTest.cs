@@ -9,7 +9,7 @@ namespace AssemblerTest;
 public class AssemblerTest
 {
 
-    /*
+
     [Theory]
     // MOV Instruction
     [InlineData("mov a, b", new byte[2] { 0b0000_0000, 0b0000_0001 })]
@@ -17,8 +17,9 @@ public class AssemblerTest
     [InlineData("mov d, SP", new byte[2] { 0b0000_0011, 0b0000_0111 })]
     [InlineData("mov a, bcd", new byte[0] { })]
     // DATA Instruction
-    [InlineData("mov D,254", new byte[2] { 0b000_1011, 0b1111_1110 })]
-    [InlineData("mov D   ,  31", new byte[2] { 0b000_1011, 0b0001_1111 })]
+    [InlineData("mov D,254", new byte[2] { 0b000_1011, 254 })]
+    [InlineData("mov D   ,  31", new byte[2] { 0b000_1011, 31 })]
+    [InlineData("mov D   ,  0", new byte[2] { 0b000_1011, 0 })]
     // LOAD Reg, [Reg+Offset] Instruction
     [InlineData("mov a, [a+12]", new byte[2] { 0b001_0000, 0b0110_0000 })]
     [InlineData("mov a, [ a - 12 ]", new byte[2] { 0b001_0000, 0b1101_1000 })]
@@ -72,7 +73,7 @@ public class AssemblerTest
         byte[] actual_res = Assembler.Translator.translateLine(line);
         Assert.Equal(expected_res, actual_res);
     }
-    */
+
 
     [Theory]
     [InlineData("mov c, b")]
