@@ -34,33 +34,29 @@ public static class Assembler
 
         public static class SYNTAX
         {
+
             ///<summary> mov reg, reg </summary> 
-            public const string MOV = "mov " + SPACE + TOKENS.REGISTER + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
+            public const string MOV = SPACE + "mov " + SPACE + TOKENS.REGISTER + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
 
             ///<summary> mov reg, const </summary> 
-            public const string DATA = "mov " + SPACE + TOKENS.REGISTER + SPACE + "," + SPACE + TOKENS.CONST + SPACE;
+            public const string DATA = SPACE + "mov " + SPACE + TOKENS.REGISTER + SPACE + "," + SPACE + TOKENS.CONST + SPACE;
 
 
-            public const string LOAD = "mov " + SPACE + TOKENS.REGISTER + SPACE + "," + SPACE + TOKENS.ADDRESS + SPACE;
+            public const string LOAD = SPACE + "mov " + SPACE + TOKENS.REGISTER + SPACE + "," + SPACE + TOKENS.ADDRESS + SPACE;
 
-            ///<summary> mov [reg+offset], reg </summary> 
-            public const string STORE_0 = "mov " + SPACE + TOKENS.ADDRESS_REGISTER_OFFSET + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
-            ///<summary> mov [reg], reg </summary>
-            public const string STORE_1 = "mov " + SPACE + TOKENS.ADDRESS_REGISTER + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
-            ///<summary> mov [const], reg </summary>
-            public const string STORE_2 = "mov " + SPACE + TOKENS.ADDRESS_CONST + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
+            public const string STORE = SPACE + "mov " + SPACE + TOKENS.ADDRESS + SPACE + "," + SPACE + TOKENS.REGISTER + SPACE;
 
             ///<summary> jmp reg </summary>
-            public const string JMP_0 = "jmp " + SPACE + TOKENS.REGISTER + SPACE;
+            public const string JMP_0 = SPACE + "jmp " + SPACE + TOKENS.REGISTER + SPACE;
             ///<summary> jmp const </summary>
-            public const string JMP_1 = "jmp " + SPACE + TOKENS.CONST + SPACE;
+            public const string JMP_1 = SPACE + "jmp " + SPACE + TOKENS.CONST + SPACE;
 
 
-            public const string JCAZ = "((jca?z?)|(jc?az?)|(jc?a?z)) ";
+            public const string JCAZ = "(j((ca?z?)|(c?az?)|(c?a?z)))";
             ///<summary> jcaz reg </summary>
-            public const string JCAZ_0 = JCAZ + SPACE + TOKENS.REGISTER + SPACE;
+            public const string JCAZ_0 = SPACE + JCAZ + " " + SPACE + TOKENS.REGISTER + SPACE;
             ///<summary> jcaz const </summary>
-            public const string JCAZ_1 = JCAZ + SPACE + TOKENS.CONST + SPACE;
+            public const string JCAZ_1 = SPACE + JCAZ + " " + SPACE + TOKENS.CONST + SPACE;
 
             public const string PUSH_0 = "push " + SPACE + TOKENS.REGISTER + SPACE;
             public const string PUSH_1 = "push " + SPACE + TOKENS.ADDRESS + SPACE;
@@ -69,7 +65,8 @@ public static class Assembler
 
     }
 
-    private static class Translator
+    /// <summary> Contains the necessary function for the translation 
+    public static class Translator
     {
         private static byte RegToByte(string reg)
         {
@@ -82,12 +79,12 @@ public static class Assembler
             if (exact) pattern = "^" + pattern + "$";
             return Regex.Match(line, pattern, RegexOptions.IgnoreCase);
         }
-        public static bool match(string line, string pattern, bool exact = false)
+        private static bool match(string line, string pattern, bool exact = false)
         {
             return getMatch(line, pattern, exact).Success;
         }
 
-        public static byte[] translateMOV(string line)
+        private static byte[] translateMOV(string line)
         {
             byte[] r = new byte[0];
             if (match(line, LEXICON.SYNTAX.MOV, true))
@@ -137,40 +134,43 @@ public static class Assembler
                     r = new byte[2] { Convert.ToByte(b1 | 0b0001_1000), b2 };
                 }
             }
-            else if (match(line, LEXICON.SYNTAX.STORE_0, true))
+            else if (match(line, LEXICON.SYNTAX.STORE, true))
             {
-                Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
-                byte b1 = RegToByte(m.Value);
-                byte b2 = RegToByte(m.NextMatch().Value);
+                if (match(line, LEXICON.TOKENS.ADDRESS_REGISTER_OFFSET))
+                {
+                    Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
+                    byte b1 = RegToByte(m.Value);
+                    byte b2 = RegToByte(m.NextMatch().Value);
 
-                {// Assign the <5:offset> bytes to b2
-                 // get OFFSET substring and remove all spaces from the match. 
-                    sbyte offset = Convert.ToSByte(getMatch(line, LEXICON.TOKENS.OFFSET).Value.Replace(" ", ""));
-                    if (offset < 0) { b2 |= 0b1000_0000; offset = (sbyte)((offset * -1) - 1); }
-                    if (offset >= 8) { b2 |= 0b0100_0000; offset -= 8; }
-                    if (offset >= 4) { b2 |= 0b0010_0000; offset -= 4; }
-                    if (offset >= 2) { b2 |= 0b0001_0000; offset -= 2; }
-                    if (offset >= 1) { b2 |= 0b0000_1000; offset -= 1; }
+                    {// Assign the <5:offset> bytes to b2
+                     // get OFFSET substring and remove all spaces from the match. 
+                        sbyte offset = Convert.ToSByte(getMatch(line, LEXICON.TOKENS.OFFSET).Value.Replace(" ", ""));
+                        if (offset < 0) { b2 |= 0b1000_0000; offset = (sbyte)((offset * -1) - 1); }
+                        if (offset >= 8) { b2 |= 0b0100_0000; offset -= 8; }
+                        if (offset >= 4) { b2 |= 0b0010_0000; offset -= 4; }
+                        if (offset >= 2) { b2 |= 0b0001_0000; offset -= 2; }
+                        if (offset >= 1) { b2 |= 0b0000_1000; offset -= 1; }
+                    }
+                    r = new byte[2] { Convert.ToByte(b1 | 0b0010_0000), b2 };
                 }
-                r = new byte[2] { Convert.ToByte(b1 | 0b0010_0000), b2 };
-            }
-            else if (match(line, LEXICON.SYNTAX.STORE_1, true))
-            {
-                Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
-                byte b1 = RegToByte(m.Value);
-                byte b2 = RegToByte(m.NextMatch().Value);
-                r = new byte[2] { Convert.ToByte(b1 | 0b0010_0000), b2 };
-            }
-            else if (match(line, LEXICON.SYNTAX.STORE_2, true))
-            {
-                byte b1 = RegToByte(getMatch(line, LEXICON.TOKENS.REGISTER).Value);
-                byte b2 = Convert.ToByte(getMatch(line, LEXICON.TOKENS.CONST).Value);
-                r = new byte[2] { Convert.ToByte(b1 | 0b0010_1000), b2 };
+                else if (match(line, LEXICON.TOKENS.ADDRESS_REGISTER))
+                {
+                    Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
+                    byte b1 = RegToByte(m.Value);
+                    byte b2 = RegToByte(m.NextMatch().Value);
+                    r = new byte[2] { Convert.ToByte(b1 | 0b0010_0000), b2 };
+                }
+                else if (match(line, LEXICON.TOKENS.ADDRESS_CONST))
+                {
+                    byte b1 = RegToByte(getMatch(line, LEXICON.TOKENS.REGISTER).Value);
+                    byte b2 = Convert.ToByte(getMatch(line, LEXICON.TOKENS.CONST).Value);
+                    r = new byte[2] { Convert.ToByte(b1 | 0b0010_1000), b2 };
+                }
             }
             return r;
         }
 
-        public static byte[] translateJMP(string line)
+        private static byte[] translateJMP(string line)
         {
             byte[] r = new byte[0];
             if (match(line, LEXICON.SYNTAX.JMP_0, true))
@@ -183,7 +183,7 @@ public static class Assembler
             return r;
         }
 
-        public static byte[] translateJCAZ(string line)
+        private static byte[] translateJCAZ(string line)
         {
             byte[] r = new byte[0] { };
             if (match(line, LEXICON.SYNTAX.JCAZ_0, true))
@@ -205,20 +205,29 @@ public static class Assembler
             return r;
         }
 
-        public static byte[] translatePUSH(string line)
+        private static byte[] translatePUSH(string line)
         {
             byte[] r = new byte[0] { };
             return r;
         }
+
+        /// <sumary>translated the line into its corresponding byte[] that represents machine code. returns an empty array if it is grammatically incorrect</summary> 
+        public static byte[] translateLine(string line)
+        {
+            if (match(line, "^(" + LEXICON.SPACE + "mov) "))
+                return Translator.translateMOV(line);
+            else if (match(line, "^(" + LEXICON.SPACE + "jmp) "))
+                return Translator.translateJMP(line);
+            else if (match(line, "^" + LEXICON.SPACE + LEXICON.SYNTAX.JCAZ + " "))
+                return Translator.translateJCAZ(line);
+            else
+            {
+                Console.WriteLine("Ignored:" + line);
+                return new byte[0];
+            }
+        }
     }
 
-    /// <sumary>translated the line into its corresponding byte[] that represents machine code. returns an empty array if it is grammatically incorrect</summary> 
-    public static byte[] translateLine(string line)
-    {
-        if (Translator.match(line, "^mov ")) return Translator.translateMOV(line);
-        else if (Translator.match(line, "^jmp ")) return Translator.translateJMP(line);
-        else if (Translator.match(line, "^(jc?a?z?) ")) return Translator.translateJCAZ(line);
-        else return new byte[0];
-    }
+
 
 }

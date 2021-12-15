@@ -41,8 +41,8 @@ public class AssemblerTest
     [InlineData("mov [ b ], c", new byte[2] { 0b0010_0001, 0b0000_0010 })]
     [InlineData("mov [f], sp", new byte[2] { 0b0010_0101, 0b0000_0111 })]
     // STORE [Const], Reg
-    [InlineData("mov [255], c", new byte[2] { 0b0010_1010, 0b_1111_1111 })]
-    [InlineData("mov [128], sp", new byte[2] { 0b0010_1111, 0b_1000_0000 })]
+    [InlineData("mov [255], c", new byte[2] { 0b0010_1010, 255 })]
+    [InlineData("mov [128], sp", new byte[2] { 0b0010_1111, 128 })]
     [InlineData("mov [128], z", new byte[0] { })]
     [InlineData("mov [257], a", new byte[0] { })]
     // JMP Reg
@@ -50,8 +50,8 @@ public class AssemblerTest
     [InlineData("jmp g", new byte[1] { 0b0011_0110 })]
     [InlineData("jmp   g  ", new byte[1] { 0b0011_0110 })]
     // JMP Const
-    [InlineData("jmp 127", new byte[2] { 0b0011_1000, 0b0111_1111 })]
-    [InlineData("jmp   127  ", new byte[2] { 0b0011_1000, 0b0111_1111 })]
+    [InlineData("   jmp 127", new byte[2] { 0b0011_1000, 127 })]
+    [InlineData("   jmp   127  ", new byte[2] { 0b0011_1000, 127 })]
     [InlineData("jmp   269  ", new byte[0] { })]
     [InlineData("jmp   -269  ", new byte[0] { })]
     // JCAZ Reg
@@ -62,13 +62,13 @@ public class AssemblerTest
     [InlineData("jcz y", new byte[0] { })]
     [InlineData("jc   c", new byte[2] { 0b0100_0100, 0b0000_0010 })]
     // JCAZ Const
-    [InlineData("jaz 254", new byte[2] { 0b0100_1011, 0b1111_1110 })]
-    [InlineData("jcz   254", new byte[2] { 0b0100_1101, 0b1111_1110 })]
+    [InlineData("jaz 254", new byte[2] { 0b0100_1011, 254 })]
+    [InlineData("jcz   254", new byte[2] { 0b0100_1101, 254 })]
     [InlineData("jczl   254", new byte[0] { })]
     [InlineData("jca   -1", new byte[0] { })]
     public void translatesAssemblyInstructionsToMachineCodeCorrectly(string line, byte[] expected_res)
     {
-        byte[] actual_res = Assembler.Assembler.translateLine(line);
+        byte[] actual_res = Assembler.Assembler.Translator.translateLine(line);
         Assert.Equal(expected_res, actual_res);
     }
 
