@@ -9,6 +9,7 @@ namespace AssemblerTest;
 public class AssemblerTest
 {
 
+    /*
     [Theory]
     // MOV Instruction
     [InlineData("mov a, b", new byte[2] { 0b0000_0000, 0b0000_0001 })]
@@ -71,5 +72,11 @@ public class AssemblerTest
         byte[] actual_res = Assembler.Translator.translateLine(line);
         Assert.Equal(expected_res, actual_res);
     }
+    */
 
+    [Fact]
+    public void testTest()
+    {
+
+    }
 }

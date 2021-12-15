@@ -3,7 +3,7 @@ namespace Assembler;
 
 public static class LEXICON
 {
-    public const string SPACE = "(\\s)*";
+    public const string SPACE = "( )*";
     public static class TOKENS
     {
         public const string REGISTER = "([a-g]|sp)";
