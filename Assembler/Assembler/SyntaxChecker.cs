@@ -15,8 +15,8 @@ public static class VAGUE_LEXICON
             public const string R = LEXICON.SPACE + TOKENS.REGISTER + LEXICON.SPACE;
             public const string R_R = R + "," + R;
         }
-        public const string MOV_R_R = LEXICON.SPACE + "mov " + ARGUEMENTS.R_R;
-        public const string MOV_R_C = LEXICON.SPACE + "mov " + ARGUEMENTS.R_R;
+        public const string MOV = LEXICON.SPACE + "mov " + ARGUEMENTS.R_R;
+        public const string DATA = LEXICON.SPACE + "mov " + ARGUEMENTS.R_R;
     }
 }
 
@@ -45,7 +45,7 @@ public static class SyntaxChecker
     {
         string evaluation = "";
         if (match(movline, LEXICON.SYNTAX.MOV, true)) evaluation = ""; // no errors
-        else if (match(movline, VAGUE_LEXICON.SYNTAX.MOV_R_R)) // MOV R R
+        else if (match(movline, VAGUE_LEXICON.SYNTAX.MOV)) // MOV R R
         {
             Match m = getMatch(movline, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R).NextMatch();
             string[] r = new string[2] { m.Value.Trim(), m.NextMatch().Value.Trim() }; // get the 2 registers substring trimmed
