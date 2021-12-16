@@ -39,7 +39,7 @@ public static class SyntaxChecker
         return getMatch(line, pattern, exact).Success;
     }
 
-    /// <summary> find out whats wrong with the arguements based on the basis </summary> 
+    /// <summary> find out whats wrong with the arguements </summary> 
     private static string evaluateArgs(string argsline)
     {
         string evaluation_result = "";
@@ -65,8 +65,11 @@ public static class SyntaxChecker
         string[] args = argsline.Split(",", StringSplitOptions.TrimEntries);
 
         for (int i = 0; i < args.Length; i++)
-            evaluation_result += single_evaluation(args[i]);
-
+        {
+            string s = single_evaluation(args[i]);
+            if (s != "")
+                evaluation_result += (evaluation_result != "" ? "\n" : "") + single_evaluation(args[i]);
+        }
         return evaluation_result;
     }
     private static string evaluateMOV(string movline)
@@ -74,9 +77,8 @@ public static class SyntaxChecker
         string evaluation = "";
         string movline_args = movline.Substring(getMatch(movline, LEXICON.ETC.mov_starter).Value.Length); // get the args line
 
-        if (match(movline, LEXICON.SYNTAX.MOV, true))
-            evaluation = ""; // no errors
-        else evaluation = evaluateArgs(movline_args);
+        if (!match(movline, LEXICON.SYNTAX.MOV, true))
+            evaluation = evaluateArgs(movline_args);
 
         return evaluation;
     }

@@ -48,17 +48,26 @@ public static class LEXICON
             public const string R_C = R + "," + C;
             public const string R_A = R + "," + A;
             public const string A_R = A + "," + R;
+
+            public const string DYADIC = "(" +
+                R_R + "|" +
+                R_C + "|" +
+                R_A + "|" +
+                A_R + "|" +
+            ")";
         }
+
+        public const string MOV = SPACE + "mov " + ARGUEMENTS.DYADIC;
         ///<summary> mov reg, reg </summary> 
-        public const string MOV = SPACE + "mov " + ARGUEMENTS.R_R;
+        public const string MOV_R_R = SPACE + "mov " + ARGUEMENTS.R_R;
 
         ///<summary> mov reg, const </summary> 
-        public const string DATA = SPACE + "mov " + ARGUEMENTS.R_C;
+        public const string MOV_R_C = SPACE + "mov " + ARGUEMENTS.R_C;
 
 
-        public const string LOAD = SPACE + "mov " + ARGUEMENTS.R_A;
+        public const string MOV_R_A = SPACE + "mov " + ARGUEMENTS.R_A;
 
-        public const string STORE = SPACE + "mov " + ARGUEMENTS.A_R;
+        public const string MOV_A_R = SPACE + "mov " + ARGUEMENTS.A_R;
 
         ///<summary> jmp reg </summary>
         public const string JMP_0 = SPACE + "jmp " + ARGUEMENTS.R;

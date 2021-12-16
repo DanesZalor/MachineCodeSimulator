@@ -11,6 +11,18 @@ public static class Translator
         if (reg == "sp") return 0b0000_0111;
         return Convert.ToByte(reg[0] - 97); // returns a : 0, b : 1, ... g: 6
     }
+    private static byte OffsetToByte(string offSetLine)
+    {
+        byte b2 = 0;
+        sbyte offset = Convert.ToSByte(getMatch(offSetLine, LEXICON.TOKENS.OFFSET).Value.Replace(" ", ""));
+        if (offset < 0) { b2 |= 0b1000_0000; offset = (sbyte)((offset * -1) - 1); }
+        if (offset >= 8) { b2 |= 0b0100_0000; offset -= 8; }
+        if (offset >= 4) { b2 |= 0b0010_0000; offset -= 4; }
+        if (offset >= 2) { b2 |= 0b0001_0000; offset -= 2; }
+        if (offset >= 1) { b2 |= 0b0000_1000; offset -= 1; }
+        return b2;
+    }
+
     private static Match getMatch(string line, string pattern, bool exact = false)
     {
         if (exact) pattern = "^" + pattern + "$";
@@ -24,38 +36,31 @@ public static class Translator
     private static byte[] translateMOV(string line)
     {
         byte[] r = new byte[0];
-        if (match(line, LEXICON.SYNTAX.MOV, true))
+        if (match(line, LEXICON.SYNTAX.MOV_R_R, true))
         {
             Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
             r = new byte[2] { RegToByte(m.Value), RegToByte(m.NextMatch().Value) };
         }
-        else if (match(line, LEXICON.SYNTAX.DATA, true))
+        else if (match(line, LEXICON.SYNTAX.MOV_R_C, true))
         {
             Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
-            byte b1 = RegToByte(getMatch(line, LEXICON.TOKENS.REGISTER).Value);
             r = new byte[2] {
-                Convert.ToByte( b1 | 0b0000_1000),
+                Convert.ToByte( RegToByte(getMatch(line, LEXICON.TOKENS.REGISTER).Value) | 0b0000_1000),
                 Convert.ToByte(getMatch(line,LEXICON.TOKENS.CONST).Value)
             };
         }
-        else if (match(line, LEXICON.SYNTAX.LOAD, true))
+        else if (match(line, LEXICON.SYNTAX.MOV_R_A, true))
         {
             if (match(line, LEXICON.TOKENS.ADDRESS_REGISTER_OFFSET))
             {
                 Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
-                byte b1 = RegToByte(m.Value);
-                byte b2 = RegToByte(m.NextMatch().Value);
-
-                {// Assign the <5:offset> bytes to b2
-                 // get OFFSET substring and remove all spaces from the match. 
-                    sbyte offset = Convert.ToSByte(getMatch(line, LEXICON.TOKENS.OFFSET).Value.Replace(" ", ""));
-                    if (offset < 0) { b2 |= 0b1000_0000; offset = (sbyte)((offset * -1) - 1); }
-                    if (offset >= 8) { b2 |= 0b0100_0000; offset -= 8; }
-                    if (offset >= 4) { b2 |= 0b0010_0000; offset -= 4; }
-                    if (offset >= 2) { b2 |= 0b0001_0000; offset -= 2; }
-                    if (offset >= 1) { b2 |= 0b0000_1000; offset -= 1; }
-                }
-                r = new byte[2] { Convert.ToByte(b1 | 0b0001_0000), b2 };
+                r = new byte[2] {
+                    Convert.ToByte(RegToByte(m.Value) | 0b0001_0000),
+                    Convert.ToByte(
+                        RegToByte(m.NextMatch().Value) |
+                        OffsetToByte(getMatch(line, LEXICON.TOKENS.OFFSET).Value.Replace(" ", ""))
+                    )
+                };
             }
             else if (match(line, LEXICON.TOKENS.ADDRESS_REGISTER))
             {
@@ -71,24 +76,18 @@ public static class Translator
                 r = new byte[2] { Convert.ToByte(b1 | 0b0001_1000), b2 };
             }
         }
-        else if (match(line, LEXICON.SYNTAX.STORE, true))
+        else if (match(line, LEXICON.SYNTAX.MOV_A_R, true))
         {
             if (match(line, LEXICON.TOKENS.ADDRESS_REGISTER_OFFSET))
             {
                 Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
-                byte b1 = RegToByte(m.Value);
-                byte b2 = RegToByte(m.NextMatch().Value);
-
-                {// Assign the <5:offset> bytes to b2
-                 // get OFFSET substring and remove all spaces from the match. 
-                    sbyte offset = Convert.ToSByte(getMatch(line, LEXICON.TOKENS.OFFSET).Value.Replace(" ", ""));
-                    if (offset < 0) { b2 |= 0b1000_0000; offset = (sbyte)((offset * -1) - 1); }
-                    if (offset >= 8) { b2 |= 0b0100_0000; offset -= 8; }
-                    if (offset >= 4) { b2 |= 0b0010_0000; offset -= 4; }
-                    if (offset >= 2) { b2 |= 0b0001_0000; offset -= 2; }
-                    if (offset >= 1) { b2 |= 0b0000_1000; offset -= 1; }
-                }
-                r = new byte[2] { Convert.ToByte(b1 | 0b0010_0000), b2 };
+                r = new byte[2] {
+                    Convert.ToByte(RegToByte(m.Value) | 0b0010_0000),
+                    Convert.ToByte(
+                        RegToByte(m.NextMatch().Value) |
+                        OffsetToByte(getMatch(line, LEXICON.TOKENS.OFFSET).Value.Replace(" ", ""))
+                    )
+                };
             }
             else if (match(line, LEXICON.TOKENS.ADDRESS_REGISTER))
             {
@@ -122,22 +121,28 @@ public static class Translator
 
     private static byte[] translateJCAZ(string line)
     {
+        byte getJCAZFlags(string flagstring)
+        {
+            byte return_byte = 0b0000_0000;
+            if (match(flagstring, "c")) return_byte |= 0b0000_0100;
+            if (match(flagstring, "a")) return_byte |= 0b0000_0010;
+            if (match(flagstring, "z")) return_byte |= 0b0000_0001;
+            return return_byte;
+        }
         byte[] r = new byte[0] { };
         if (match(line, LEXICON.SYNTAX.JCAZ_0, true))
         {
-            string jcaz = getMatch(line, LEXICON.SYNTAX.JCAZ).Value;
-            r = new byte[2] { 0b0100_0000, RegToByte(getMatch(line, " " + LEXICON.TOKENS.REGISTER).Value) };
-            if (match(jcaz, "c")) r[0] |= 0b0000_0100;
-            if (match(jcaz, "a")) r[0] |= 0b0000_0010;
-            if (match(jcaz, "z")) r[0] |= 0b0000_0001;
+            r = new byte[2] {
+                (byte)(getJCAZFlags(getMatch(line, LEXICON.SYNTAX.JCAZ).Value) | 0b0100_0000),
+                RegToByte(getMatch(line, " " + LEXICON.TOKENS.REGISTER).Value)
+            };
         }
         else if (match(line, LEXICON.SYNTAX.JCAZ_1, true))
         {
-            string jcaz = getMatch(line, LEXICON.SYNTAX.JCAZ).Value;
-            r = new byte[2] { 0b0100_1000, Convert.ToByte(getMatch(line, " " + LEXICON.TOKENS.CONST).Value) };
-            if (match(jcaz, "c")) r[0] |= 0b0000_0100;
-            if (match(jcaz, "a")) r[0] |= 0b0000_0010;
-            if (match(jcaz, "z")) r[0] |= 0b0000_0001;
+            r = new byte[2] {
+                (byte)(getJCAZFlags(getMatch(line, LEXICON.SYNTAX.JCAZ).Value) | 0b0100_1000),
+                Convert.ToByte(getMatch(line, " " + LEXICON.TOKENS.CONST).Value)
+            };
         }
         return r;
     }
