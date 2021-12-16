@@ -19,7 +19,10 @@ public class AssemblerTest
     // DATA Instruction
     [InlineData("mov D,254", new byte[2] { 0b000_1011, 254 })]
     [InlineData("mov D   ,  31", new byte[2] { 0b000_1011, 31 })]
-    [InlineData("mov D   ,  0", new byte[2] { 0b000_1011, 0 })]
+    [InlineData("mov D   , 031", new byte[2] { 0b000_1011, 31 })]
+    [InlineData("mov D   ,  0000000001", new byte[2] { 0b000_1011, 1 })]
+    [InlineData("mov D   ,  00", new byte[2] { 0b000_1011, 0 })]
+    [InlineData("mov D   ,  1000", new byte[0] { })]
     // LOAD Reg, [Reg+Offset] Instruction
     [InlineData("mov a, [a+12]", new byte[2] { 0b001_0000, 0b0110_0000 })]
     [InlineData("mov a, [ a - 12 ]", new byte[2] { 0b001_0000, 0b1101_1000 })]
@@ -76,10 +79,16 @@ public class AssemblerTest
 
 
     [Theory]
+    // mov r, r
     [InlineData("mov c, b")]
     [InlineData("mov d,   sp")]
-    [InlineData("mov mov,   sp", "'mov' is not a valid register")]
+    [InlineData("mov penis, a", "'penis' is not a valid register")]
     [InlineData("mov  MoV  ,   sp", "'MoV' is not a valid register")]
+    // mov r, c
+    //[InlineData("mov sp, 3")]
+    //[InlineData("mov G , 257", "'257' is not a byte")]
+    //[InlineData("mov oten ,  2", "'oten' is not a valid register")]
+    //[InlineData("mov oten ,  340", "'oten' is not a valid register\n'340' is not a byte")]
     public void evaluatesAssemblyInstructionsCorrectly(string line, string expected_res = "")
     {
         string actual_res = SyntaxChecker.evaluateLine(line);

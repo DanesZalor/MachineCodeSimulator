@@ -159,9 +159,6 @@ public static class Translator
         else if (match(line, LEXICON.ETC.jcaz_starter))
             return Translator.translateJCAZ(line);
         else
-        {
-            Console.WriteLine("Ignored:" + line);
             return new byte[0];
-        }
     }
 }

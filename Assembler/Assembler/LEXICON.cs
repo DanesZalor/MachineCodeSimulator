@@ -7,27 +7,32 @@ public static class LEXICON
     public static class TOKENS
     {
         public const string REGISTER = "([a-g]|(sp))";
-        private const string DECIMAL = "(" +
+        private const string DECIMAL = "(0*(" +
             "(25[0-5])|" +       // 250-255
             "(2[0-4][0-9])|" +  // 200 - 249
             "(1[0-9]{0,2})|" +  // 1, 10-19, 100-199
             "([1-9][0-9]?)|" +  // 1-99
             "(0)" +
-        ")";
+        "))";
         public const string OFFSET = "(" +
             "(\\+" + SPACE + "((1[1-5])|[1-9]))|" +  // +1 to +15
             "(-" + SPACE + "((1[1-6])|[1-9]))" +     // -1 to -16
         ")";
 
-        public const string ADDRESS_REGISTER = "\\[" + SPACE + REGISTER + SPACE + "\\]";
-        public const string ADDRESS_CONST = "\\[" + SPACE + CONST + SPACE + "\\]";
-        public const string ADDRESS_REGISTER_OFFSET = "\\[" + SPACE + REGISTER + SPACE + OFFSET + SPACE + "\\]";
+        public const string ADDRESS_REGISTER = "(\\[" + SPACE + REGISTER + SPACE + "\\])";
+        public const string ADDRESS_CONST = "(\\[" + SPACE + CONST + SPACE + "\\])";
+        public const string ADDRESS_REGISTER_OFFSET = "(\\[" + SPACE + REGISTER + SPACE + OFFSET + SPACE + "\\])";
         public const string ADDRESS = "(" +
             ADDRESS_REGISTER_OFFSET + "|" +
             ADDRESS_CONST + "|" +
             ADDRESS_REGISTER +
         ")";
         public const string CONST = DECIMAL;
+        public const string ANY = "(" +
+            REGISTER + "|" +
+            CONST + "|" +
+            ADDRESS + "|" +
+        ")";
     }
 
 
