@@ -85,8 +85,8 @@ public class AssemblerTest
     [InlineData("mov penis, a", "'penis' is not a valid register")]
     [InlineData("mov  MoV  ,   sp", "'MoV' is not a valid register")]
     // mov r, c
-    //[InlineData("mov sp, 3")]
-    //[InlineData("mov G , 257", "'257' is not a byte")]
+    [InlineData("mov sp, 3")]
+    [InlineData("mov G , 257", "'257' is not an 8-bit constant")]
     //[InlineData("mov oten ,  2", "'oten' is not a valid register")]
     //[InlineData("mov oten ,  340", "'oten' is not a valid register\n'340' is not a byte")]
     public void evaluatesAssemblyInstructionsCorrectly(string line, string expected_res = "")

@@ -40,11 +40,11 @@ public static class SyntaxChecker
     }
 
     /// <summary> find out whats wrong with the arguements based on the basis </summary> 
-    private static string evaluateArgs(string basis, string argsline)
+    private static string evaluateArgs(string argsline)
     {
         string evaluation_result = "";
 
-        string single_evaluation(string single_basis, string single_arg)
+        string single_evaluation(string single_arg)
         {
             string[,] ArgsLexiconTable = new string[3, 3] {
                 {VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R, LEXICON.SYNTAX.ARGUEMENTS.R, "not a valid register"},
@@ -53,7 +53,7 @@ public static class SyntaxChecker
             };
             for (int j = 0; j < ArgsLexiconTable.GetLength(0); j++)
             {
-                if (single_basis == ArgsLexiconTable[j, 0])
+                if (match(single_arg, ArgsLexiconTable[j, 0], true))
                 {
                     if (!match(single_arg, ArgsLexiconTable[j, 1], true))
                         return String.Format("'{0}' is {1}", single_arg, ArgsLexiconTable[j, 2]);
@@ -62,10 +62,10 @@ public static class SyntaxChecker
             return "";
         }
 
-        string[] args_basis = basis.Split(","); string[] args = argsline.Split(",", StringSplitOptions.TrimEntries);
+        string[] args = argsline.Split(",", StringSplitOptions.TrimEntries);
 
         for (int i = 0; i < args.Length; i++)
-            evaluation_result += single_evaluation(args_basis[i], args[i]);
+            evaluation_result += single_evaluation(args[i]);
 
         return evaluation_result;
     }
@@ -76,9 +76,8 @@ public static class SyntaxChecker
 
         if (match(movline, LEXICON.SYNTAX.MOV, true))
             evaluation = ""; // no errors
-        else if (match(movline_args, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R_R))
-            evaluation = evaluateArgs(VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R_R, movline_args);
-        else evaluation = "Invalid MOV operands";
+        else evaluation = evaluateArgs(movline_args);
+
         return evaluation;
     }
 
