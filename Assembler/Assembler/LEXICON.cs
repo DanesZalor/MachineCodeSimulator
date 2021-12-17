@@ -16,7 +16,8 @@ public static class LEXICON
         "))";
         public const string OFFSET = "(" +
             "(\\+" + SPACE + "((1[1-5])|[1-9]))|" +  // +1 to +15
-            "(-" + SPACE + "((1[1-6])|[1-9]))" +     // -1 to -16
+            "(-" + SPACE + "((1[1-6])|[1-9]))|" +     // -1 to -16
+            "([+-]" + SPACE + "0)" +
         ")";
 
         public const string ADDRESS_REGISTER = "(\\[" + SPACE + REGISTER + SPACE + "\\])";
@@ -87,8 +88,8 @@ public static class LEXICON
 
     public static class ETC
     {
-        public const string mov_starter = "^(" + LEXICON.SPACE + "mov) ";
-        public const string jmp_starter = "^(" + LEXICON.SPACE + "jmp) ";
-        public const string jcaz_starter = "^" + LEXICON.SPACE + LEXICON.SYNTAX.JCAZ + " ";
+        public const string mov_starter = "^(" + LEXICON.SPACE + "mov )";
+        public const string jmp_starter = "^(" + LEXICON.SPACE + "jmp )";
+        public const string jcaz_starter = "^(" + LEXICON.SPACE + LEXICON.SYNTAX.JCAZ + " )";
     }
 }

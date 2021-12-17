@@ -17,6 +17,19 @@ public static class SyntaxChecker
             private const string DECIMAL = "";
             public const string CONST = "[0-9]+";
             public const string OFFSET = "([+-]" + LEXICON.SPACE + "(\\d)+)";
+            public const string ADDRESS_REGISTER = "(\\[" + LEXICON.SPACE + REGISTER + LEXICON.SPACE + "\\])";
+            public const string ADDRESS_CONST = "(\\[" + LEXICON.SPACE + CONST + LEXICON.SPACE + "\\])";
+            public const string ADDRESS_REGISTER_OFFSET = "(\\[" + LEXICON.SPACE + REGISTER + LEXICON.SPACE + OFFSET + LEXICON.SPACE + "\\])";
+            public const string ADDRESS = "(" +
+                ADDRESS_REGISTER_OFFSET + "|" +
+                ADDRESS_CONST + "|" +
+                ADDRESS_REGISTER +
+            ")";
+            public const string ANY = "(" +
+            REGISTER + "|" +
+            CONST + "|" +
+            ADDRESS + "|" +
+        ")";
         }
         public static class SYNTAX
         {
@@ -25,10 +38,15 @@ public static class SyntaxChecker
                 public const string R = "(" + LEXICON.SPACE + TOKENS.REGISTER + LEXICON.SPACE + ")";
                 public const string L = "(" + LEXICON.SPACE + TOKENS.LABEL + LEXICON.SPACE + ")";
                 public const string C = "(" + LEXICON.SPACE + TOKENS.CONST + LEXICON.SPACE + ")";
-                public const string R_R = R + "," + R;
-                public const string R_C = R + "," + C;
+                public const string WithOFFSET = "(" + R + TOKENS.OFFSET + LEXICON.SPACE + ")";
+                public const string A = "(" + LEXICON.SPACE + TOKENS.ADDRESS + LEXICON.SPACE + ")";
+                public const string X = "(" + LEXICON.SPACE + TOKENS.ANY + LEXICON.SPACE + ")";
+                public const string R_X = "(" + R + "," + X + ")";
+                public const string A_R = "(" + A + "," + R + ")";
             }
-            public const string MOV = "(" + LEXICON.SPACE + "mov " + ARGUEMENTS.R_R + ")";
+            public const string MOV = LEXICON.ETC.mov_starter + "(" + SYNTAX.ARGUEMENTS.R_X + "|" + SYNTAX.ARGUEMENTS.A_R + ")";
+
+
 
         }
     }
@@ -54,9 +72,15 @@ public static class SyntaxChecker
 
         string single_evaluation(string single_arg)
         {
-            /* each array contains {VagueGrammar, CorrectGrammar, errorMsg}
-            */
-            string[,] ArgsLexiconTable = new string[3, 3] {
+            single_arg = single_arg.Replace("[", "").Replace("]", "").Trim(); // if an address, break it down yo
+            if (match(single_arg, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.WithOFFSET, true)) // if an arguement with an offset, evaluate both R/L and Offset
+            {
+                char splitter = (single_arg.Contains('+') ? '+' : '-');
+                string[] RandOffset = single_arg.Split(splitter, StringSplitOptions.TrimEntries);
+                return evaluateArgs(RandOffset[0] + "," + splitter + RandOffset[1]);
+            }
+            string[,] ArgsLexiconTable = new string[4, 3] { //each array contains {VagueGrammar, CorrectGrammar, errorMsg}
+                {VAGUE_LEXICON.TOKENS.OFFSET, LEXICON.TOKENS.OFFSET, "an offset out of bounds (-16+15)"},
                 {   VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L,
                     "("+LEXICON.SYNTAX.ARGUEMENTS.R +"|"+ VAGUE_LEXICON.TOKENS.EXISTING_LABELS+")",
                     (match(single_arg, VAGUE_LEXICON.TOKENS.REGISTER)?"neither an addressible label or register":"an unrecognized label")
@@ -89,10 +113,14 @@ public static class SyntaxChecker
     {
         string evaluation = "";
         string movline_args = movline.Substring(getMatch(movline, LEXICON.ETC.mov_starter).Value.Length); // get the args line
-
+        Console.WriteLine(movline + " " + match(movline, VAGUE_LEXICON.SYNTAX.MOV, true));
         if (!match(movline, LEXICON.SYNTAX.MOV, true))
+        {
             evaluation = evaluateArgs(movline_args);
+            if (evaluation == "" && !match(movline, VAGUE_LEXICON.SYNTAX.MOV)) evaluation = "invalid MOV operands";
 
+            //evaluation = evaluateArgs(movline_args);
+        }
         return evaluation;
     }
 
