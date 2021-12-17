@@ -4,6 +4,7 @@ namespace Assembler;
 public static class LEXICON
 {
     public const string SPACE = "( )*";
+    public const string RESERVED_WORDS = "(mov|jmp|(jca?z?)|(jc?az?)|(jc?a?z)|push|pop|call|ret|clf|not|inc|dec|add|sub|mul|div|shl|shr|or|xor|and|cmp)";
     public static class TOKENS
     {
         public const string REGISTER = "([a-g]|(sp))";

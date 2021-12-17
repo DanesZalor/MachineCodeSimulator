@@ -28,14 +28,18 @@ public static class SyntaxChecker
             {
                 get => String.Format("({0}|{1}|{2}|{3})", ADDRESS_REGISTER_OFFSET, ADDRESS_REGISTER, ADDRESS_CONST, ADDRESS_LABEL);
             }
-            public static string ANY { get => String.Format("({0}|{1}|{2})", REGISTER, CONST, ADDRESS); }
+            public static string ANY { get => String.Format("({0}|{1}|{2}|{3})", REGISTER, CONST, ADDRESS, EXISTING_LABELS); }
 
             public static string labels() { return EXISTING_LABELS; }
             public static void labelsClear() { EXISTING_LABELS = "()"; }
             public static void labelsAdd(string label)
             {
-                if (match(label, "([a-z](\\w)+)", true))
+                if (match(label, VAGUE_LEXICON.TOKENS.LABEL, true))
+                {
+                    label = "(" + label + ")";
                     EXISTING_LABELS = EXISTING_LABELS.Replace(")", (EXISTING_LABELS == "()" ? "" : "|") + (label + ")"));
+                }
+
             }
 
         }
@@ -68,9 +72,10 @@ public static class SyntaxChecker
         for (int i = 0; i < labels.Length; i++)
             VAGUE_LEXICON.TOKENS.labelsAdd(labels[i]);
     }
-    private static Match getMatch(string line, string pattern, bool exact = false)
+    private static Match getMatch(string line, string pattern, bool exact = false, bool inverse = false)
     {
         if (exact) pattern = "^" + pattern + "$";
+        if (inverse) pattern = "\\[^" + pattern + "\\]";
         return Regex.Match(line, pattern, RegexOptions.IgnoreCase);
     }
     private static bool match(string line, string pattern, bool exact = false) { return getMatch(line, pattern, exact).Success; }
@@ -89,7 +94,8 @@ public static class SyntaxChecker
                 string[] RandOffset = single_arg.Split(splitter, StringSplitOptions.TrimEntries);
                 return evaluateArgs(RandOffset[0] + "," + splitter + RandOffset[1]);
             }
-            string[,] ArgsLexiconTable = new string[4, 3] { //each array contains {VagueGrammar, CorrectGrammar, errorMsg}
+            string[,] ArgsLexiconTable = new string[5, 3] { //each array contains {VagueGrammar, CorrectGrammar, errorMsg}
+                {LEXICON.RESERVED_WORDS, "(\\s){10}", "a reserved word"},
                 {VAGUE_LEXICON.TOKENS.OFFSET, LEXICON.TOKENS.OFFSET, "an offset out of bounds (-16+15)"},
                 {   VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L,
                     "("+LEXICON.SYNTAX.ARGUEMENTS.R +"|"+ VAGUE_LEXICON.TOKENS.labels()+")",
@@ -98,7 +104,7 @@ public static class SyntaxChecker
                 {VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C, LEXICON.SYNTAX.ARGUEMENTS.C, "not an 8-bit constant"},
                 {".*", LEXICON.TOKENS.ANY,"an unrecognized token"}
             };
-            for (int j = 0; j < 3; j++)
+            for (int j = 0; j < 5; j++)
             {
                 if (match(single_arg, ArgsLexiconTable[j, 0], true))
                 {
@@ -123,13 +129,10 @@ public static class SyntaxChecker
     {
         string evaluation = "";
         string movline_args = movline.Substring(getMatch(movline, LEXICON.ETC.mov_starter).Value.Length); // get the args line
-        Console.WriteLine(movline + " " + match(movline, VAGUE_LEXICON.SYNTAX.MOV, true));
         if (!match(movline, LEXICON.SYNTAX.MOV, true))
         {
             evaluation = evaluateArgs(movline_args);
-            if (evaluation == "" && !match(movline, VAGUE_LEXICON.SYNTAX.MOV)) evaluation = "invalid MOV operands";
-
-            //evaluation = evaluateArgs(movline_args);
+            if (evaluation == "" && !match(movline, VAGUE_LEXICON.SYNTAX.MOV, true)) evaluation = "invalid MOV operands";
         }
         return evaluation;
     }

@@ -97,11 +97,25 @@ public class AssemblerTest
     [Theory]
     [InlineData("mov aa, a", "'aa' is neither an addressible label or register")]
     [InlineData("mov label2, sex", "'label2' is neither an addressible label or register\n'sex' is neither an addressible label or register")]
+    [InlineData("mov label2, sp", "'label2' is neither an addressible label or register")]
     [InlineData("mov [label1 ], c")]
+    [InlineData("mov sp, c, c", "invalid MOV operands")]
+    [InlineData("mov a, b")]
+    [InlineData("mov a, sp")]
+    [InlineData("mov sp, a")]
+    [InlineData("mov a, 3")]
+    [InlineData("mov sp, 3")]
+    [InlineData("mov 240, a", "invalid MOV operands")]
+    [InlineData("mov 240, 3", "invalid MOV operands")]
+    [InlineData("mov g, 256", "'256' is not an 8-bit constant")]
+    [InlineData("mov '257', 256", "''257'' is an unrecognized token\n'256' is not an 8-bit constant")]
+    [InlineData("mov d, !", "'!' is an unrecognized token")]
+    [InlineData("mov d, jcaz", "'jcaz' is a reserved word")]
+    [InlineData("mov add, a", "'add' is a reserved word")]
+    [InlineData("mov add, shl", "'add' is a reserved word\n'shl' is a reserved word")]
     public void testingLabelAddressing(string line, string expected_res = "")
     {
         SyntaxChecker.setLabels(new string[2] { "label1", "s3xyB3n1s" });
-
         string actual_res = SyntaxChecker.evaluateLine(line);
         Assert.Equal(expected_res, actual_res);
     }
