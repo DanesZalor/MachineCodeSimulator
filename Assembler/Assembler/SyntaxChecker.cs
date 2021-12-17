@@ -10,34 +10,43 @@ public static class SyntaxChecker
     {
         public static class TOKENS
         {
-            public const string REGISTER = "[a-z]+";
+            public const string REGISTER = "([a-z]+)";
+            public const string LABEL = "([a-z](\\w)+)";
+            //public const string LABEL_OR_REGISTER = "(" + REGISTER + "|" + LABEL + ")";
+            public static string EXISTING_LABELS = "()";
             private const string DECIMAL = "";
             public const string CONST = "[0-9]+";
+            public const string OFFSET = "([+-]" + LEXICON.SPACE + "(\\d)+)";
         }
         public static class SYNTAX
         {
             public static class ARGUEMENTS
             {
                 public const string R = LEXICON.SPACE + TOKENS.REGISTER + LEXICON.SPACE;
+                public const string L = LEXICON.SPACE + TOKENS.LABEL + LEXICON.SPACE;
+                public const string RorL = "(" + R + "|" + L + ")";
                 public const string C = LEXICON.SPACE + TOKENS.CONST + LEXICON.SPACE;
-
                 public const string R_R = R + "," + R;
                 public const string R_C = R + "," + C;
             }
             public const string MOV = LEXICON.SPACE + "mov " + ARGUEMENTS.R_R;
-            public const string DATA = LEXICON.SPACE + "mov " + ARGUEMENTS.R_C;
 
         }
+    }
+
+
+    public static void labelsClear() { VAGUE_LEXICON.TOKENS.EXISTING_LABELS = "()"; }
+    public static void labelsAdd(string label)
+    {
+        if (match(label, "([a-z](\\w)+)", true))
+            VAGUE_LEXICON.TOKENS.EXISTING_LABELS = VAGUE_LEXICON.TOKENS.EXISTING_LABELS.Replace(")", (VAGUE_LEXICON.TOKENS.EXISTING_LABELS == "()" ? "" : "|") + (label + ")"));
     }
     private static Match getMatch(string line, string pattern, bool exact = false)
     {
         if (exact) pattern = "^" + pattern + "$";
         return Regex.Match(line, pattern, RegexOptions.IgnoreCase);
     }
-    private static bool match(string line, string pattern, bool exact = false)
-    {
-        return getMatch(line, pattern, exact).Success;
-    }
+    private static bool match(string line, string pattern, bool exact = false) { return getMatch(line, pattern, exact).Success; }
 
     /// <summary> find out whats wrong with the arguements </summary> 
     private static string evaluateArgs(string argsline)
@@ -46,8 +55,13 @@ public static class SyntaxChecker
 
         string single_evaluation(string single_arg)
         {
+            /* each array contains {VagueGrammar, CorrectGrammar, errorMsg}
+            */
             string[,] ArgsLexiconTable = new string[3, 3] {
-                {VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R, LEXICON.SYNTAX.ARGUEMENTS.R, "not a valid register"},
+                {   VAGUE_LEXICON.SYNTAX.ARGUEMENTS.RorL,
+                    "("+LEXICON.SYNTAX.ARGUEMENTS.R +"|"+ VAGUE_LEXICON.TOKENS.EXISTING_LABELS+")",
+                    "neither an addressible label or register"
+                },
                 {VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C, LEXICON.SYNTAX.ARGUEMENTS.C, "not an 8-bit constant"},
                 {"(.)*", LEXICON.TOKENS.ANY," an unrecognized token"}
             };
