@@ -13,23 +13,31 @@ public static class SyntaxChecker
             public const string REGISTER = "([a-z]+)";
             public const string LABEL = "(([a-z])((\\w)+))";
             //public const string LABEL_OR_REGISTER = "(" + REGISTER + "|" + LABEL + ")";
-            public static string EXISTING_LABELS = "()";
+            private static string EXISTING_LABELS = "()";
             private const string DECIMAL = "";
             public const string CONST = "[0-9]+";
             public const string OFFSET = "([+-]" + LEXICON.SPACE + "(\\d)+)";
-            public const string ADDRESS_REGISTER = "(\\[" + LEXICON.SPACE + REGISTER + LEXICON.SPACE + "\\])";
-            public const string ADDRESS_CONST = "(\\[" + LEXICON.SPACE + CONST + LEXICON.SPACE + "\\])";
-            public const string ADDRESS_REGISTER_OFFSET = "(\\[" + LEXICON.SPACE + REGISTER + LEXICON.SPACE + OFFSET + LEXICON.SPACE + "\\])";
-            public const string ADDRESS = "(" +
-                ADDRESS_REGISTER_OFFSET + "|" +
-                ADDRESS_CONST + "|" +
-                ADDRESS_REGISTER +
-            ")";
-            public const string ANY = "(" +
-            REGISTER + "|" +
-            CONST + "|" +
-            ADDRESS + "|" +
-        ")";
+            private const string ADDRESS_REGISTER = "(\\[" + LEXICON.SPACE + REGISTER + LEXICON.SPACE + "\\])";
+            private const string ADDRESS_CONST = "(\\[" + LEXICON.SPACE + CONST + LEXICON.SPACE + "\\])";
+            private static string ADDRESS_LABEL
+            {
+                get => "(\\[" + LEXICON.SPACE + EXISTING_LABELS + LEXICON.SPACE + "\\])";
+            }
+            private const string ADDRESS_REGISTER_OFFSET = "(\\[" + LEXICON.SPACE + REGISTER + LEXICON.SPACE + OFFSET + LEXICON.SPACE + "\\])";
+            public static string ADDRESS
+            {
+                get => String.Format("({0}|{1}|{2}|{3})", ADDRESS_REGISTER_OFFSET, ADDRESS_REGISTER, ADDRESS_CONST, ADDRESS_LABEL);
+            }
+            public static string ANY { get => String.Format("({0}|{1}|{2})", REGISTER, CONST, ADDRESS); }
+
+            public static string labels() { return EXISTING_LABELS; }
+            public static void labelsClear() { EXISTING_LABELS = "()"; }
+            public static void labelsAdd(string label)
+            {
+                if (match(label, "([a-z](\\w)+)", true))
+                    EXISTING_LABELS = EXISTING_LABELS.Replace(")", (EXISTING_LABELS == "()" ? "" : "|") + (label + ")"));
+            }
+
         }
         public static class SYNTAX
         {
@@ -39,24 +47,26 @@ public static class SyntaxChecker
                 public const string L = "(" + LEXICON.SPACE + TOKENS.LABEL + LEXICON.SPACE + ")";
                 public const string C = "(" + LEXICON.SPACE + TOKENS.CONST + LEXICON.SPACE + ")";
                 public const string WithOFFSET = "(" + R + TOKENS.OFFSET + LEXICON.SPACE + ")";
-                public const string A = "(" + LEXICON.SPACE + TOKENS.ADDRESS + LEXICON.SPACE + ")";
-                public const string X = "(" + LEXICON.SPACE + TOKENS.ANY + LEXICON.SPACE + ")";
-                public const string R_X = "(" + R + "," + X + ")";
-                public const string A_R = "(" + A + "," + R + ")";
+                public static string A { get => "(" + LEXICON.SPACE + TOKENS.ADDRESS + LEXICON.SPACE + ")"; }
+                public static string X { get => "(" + LEXICON.SPACE + TOKENS.ANY + LEXICON.SPACE + ")"; }
+                public static string R_X { get => String.Format("({0},{1})", R, X); }
+                public static string A_R { get => String.Format("({0},{1})", A, R); }
             }
-            public const string MOV = LEXICON.ETC.mov_starter + "(" + SYNTAX.ARGUEMENTS.R_X + "|" + SYNTAX.ARGUEMENTS.A_R + ")";
+            public static string MOV
+            {
+                get => LEXICON.ETC.mov_starter + "(" + SYNTAX.ARGUEMENTS.R_X + "|" + SYNTAX.ARGUEMENTS.A_R + ")";
+            }
 
 
 
         }
     }
 
-
-    public static void labelsClear() { VAGUE_LEXICON.TOKENS.EXISTING_LABELS = "()"; }
-    public static void labelsAdd(string label)
+    public static void setLabels(string[] labels)
     {
-        if (match(label, "([a-z](\\w)+)", true))
-            VAGUE_LEXICON.TOKENS.EXISTING_LABELS = VAGUE_LEXICON.TOKENS.EXISTING_LABELS.Replace(")", (VAGUE_LEXICON.TOKENS.EXISTING_LABELS == "()" ? "" : "|") + (label + ")"));
+        VAGUE_LEXICON.TOKENS.labelsClear();
+        for (int i = 0; i < labels.Length; i++)
+            VAGUE_LEXICON.TOKENS.labelsAdd(labels[i]);
     }
     private static Match getMatch(string line, string pattern, bool exact = false)
     {
@@ -82,7 +92,7 @@ public static class SyntaxChecker
             string[,] ArgsLexiconTable = new string[4, 3] { //each array contains {VagueGrammar, CorrectGrammar, errorMsg}
                 {VAGUE_LEXICON.TOKENS.OFFSET, LEXICON.TOKENS.OFFSET, "an offset out of bounds (-16+15)"},
                 {   VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L,
-                    "("+LEXICON.SYNTAX.ARGUEMENTS.R +"|"+ VAGUE_LEXICON.TOKENS.EXISTING_LABELS+")",
+                    "("+LEXICON.SYNTAX.ARGUEMENTS.R +"|"+ VAGUE_LEXICON.TOKENS.labels()+")",
                     (match(single_arg, VAGUE_LEXICON.TOKENS.REGISTER)?"neither an addressible label or register":"an unrecognized label")
                 },
                 {VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C, LEXICON.SYNTAX.ARGUEMENTS.C, "not an 8-bit constant"},

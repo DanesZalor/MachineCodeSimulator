@@ -97,10 +97,10 @@ public class AssemblerTest
     [Theory]
     [InlineData("mov aa, a", "'aa' is neither an addressible label or register")]
     [InlineData("mov label2, sex", "'label2' is neither an addressible label or register\n'sex' is neither an addressible label or register")]
-    //[InlineData("mov [label1 ], c")]
+    [InlineData("mov [label1 ], c")]
     public void testingLabelAddressing(string line, string expected_res = "")
     {
-        SyntaxChecker.labelsClear(); SyntaxChecker.labelsAdd("label1"); SyntaxChecker.labelsAdd("s3xyB3n1s");
+        SyntaxChecker.setLabels(new string[2] { "label1", "s3xyB3n1s" });
 
         string actual_res = SyntaxChecker.evaluateLine(line);
         Assert.Equal(expected_res, actual_res);
