@@ -82,9 +82,6 @@ public class AssemblerTest
     // mov r, r
     [InlineData("mov c, b")]
     [InlineData("mov d,   sp")]
-    [InlineData("mov penis, a", "'penis' is neither an addressible label or register")]
-    [InlineData("mov aa, a", "'aa' is neither an addressible label or register")]
-    [InlineData("mov s3xyB3n1s, a", "'s3xyB3n1s' is neither an addressible label or register")]
     [InlineData("mov  MoV  ,   sp", "'MoV' is neither an addressible label or register")]
     [InlineData("mov sp, 3")]
     [InlineData("mov G , 257", "'257' is not an 8-bit constant")]
@@ -96,11 +93,15 @@ public class AssemblerTest
         Assert.Equal(expected_res, actual_res);
     }
 
+
     [Theory]
-    [InlineData()]
+    [InlineData("mov aa, a", "'aa' is neither an addressible label or register")]
+    [InlineData("mov label10, sp", "'label10' is neither an addressible label or register")]
+    [InlineData("mov label1, a")]
+    [InlineData("mov label2, sex", "'label2' is neither an addressible label or register\n'sex' is neither an addressible label or register")]
     public void testingLabelAddressing(string line, string expected_res = "")
     {
-        SyntaxChecker.labelsClear(); SyntaxChecker.labelsAdd("label1"); SyntaxChecker.labelsAdd("label2"); SyntaxChecker.labelsAdd("s3xyB3n1s");
+        SyntaxChecker.labelsClear(); SyntaxChecker.labelsAdd("label1"); SyntaxChecker.labelsAdd("s3xyB3n1s");
 
         string actual_res = SyntaxChecker.evaluateLine(line);
         Assert.Equal(expected_res, actual_res);

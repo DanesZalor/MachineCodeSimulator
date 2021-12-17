@@ -41,13 +41,13 @@ public static class LEXICON
     {
         public static class ARGUEMENTS
         {
-            public const string R = SPACE + TOKENS.REGISTER + SPACE;
-            public const string C = SPACE + TOKENS.CONST + SPACE;
-            public const string A = SPACE + TOKENS.ADDRESS + SPACE;
-            public const string R_R = R + "," + R;
-            public const string R_C = R + "," + C;
-            public const string R_A = R + "," + A;
-            public const string A_R = A + "," + R;
+            public const string R = "(" + SPACE + TOKENS.REGISTER + SPACE + ")";
+            public const string C = "(" + SPACE + TOKENS.CONST + SPACE + ")";
+            public const string A = "(" + SPACE + TOKENS.ADDRESS + SPACE + ")";
+            public const string R_R = "(" + R + "," + R + ")";
+            public const string R_C = "(" + R + "," + C + ")";
+            public const string R_A = "(" + R + "," + A + ")";
+            public const string A_R = "(" + A + "," + R + ")";
 
             public const string DYADIC = "(" +
                 R_R + "|" +
