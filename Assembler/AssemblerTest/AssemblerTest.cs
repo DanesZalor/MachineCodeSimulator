@@ -77,42 +77,18 @@ public class AssemblerTest
         Assert.Equal(expected_res, actual_res);
     }
 
-    /*
     [Theory]
-    // mov r, r
-    [InlineData("mov c, b")]
-    [InlineData("mov d,   sp")]
-    [InlineData("mov  MoV  ,   sp", "'MoV' is neither an addressible label or register")]
-    [InlineData("mov sp, 3")]
-    [InlineData("mov G , 257", "'257' is not an 8-bit constant")]
-    [InlineData("mov oten ,  2", "'oten' is neither an addressible label or register")]
-    //[InlineData("mov C ,  [ asex ]", "'[ asex ]' is not a valid address")]
-    public void evaluatesAssemblyInstructionsCorrectly(string line, string expected_res = "")
-    {
-        string actual_res = SyntaxChecker.evaluateLine(line);
-        Assert.Equal(expected_res, actual_res);
-    }*/
-
-
-    [Theory]
-    [InlineData("mov aa, a", "'aa' is neither an addressible label or register")]
-    [InlineData("mov label2, sex", "'label2' is neither an addressible label or register\n'sex' is neither an addressible label or register")]
-    [InlineData("mov label2, sp", "'label2' is neither an addressible label or register")]
-    [InlineData("mov [label1 ], c")]
-    [InlineData("mov sp, c, c", "invalid MOV operands")]
-    [InlineData("mov a, b")]
-    [InlineData("mov a, sp")]
-    [InlineData("mov sp, a")]
-    [InlineData("mov a, 3")]
-    [InlineData("mov sp, 3")]
-    [InlineData("mov 240, a", "invalid MOV operands")]
-    [InlineData("mov 240, 3", "invalid MOV operands")]
-    [InlineData("mov g, 256", "'256' is not an 8-bit constant")]
-    [InlineData("mov '257', 256", "''257'' is an unrecognized token\n'256' is not an 8-bit constant")]
-    [InlineData("mov d, !", "'!' is an unrecognized token")]
-    [InlineData("mov d, jcaz", "'jcaz' is a reserved word")]
-    [InlineData("mov add, a", "'add' is a reserved word")]
-    [InlineData("mov add, shl", "'add' is a reserved word\n'shl' is a reserved word")]
+    //
+    [InlineData("mov a,b")]
+    [InlineData("mov g,sp")]
+    [InlineData("mov f,10")]
+    [InlineData("mov c,255")]
+    [InlineData("mov c, [a]")]
+    [InlineData("mov c, [a + 15]")]
+    [InlineData("mov c, [250]")]
+    [InlineData("mov c, [label1]")]
+    [InlineData("mov c, [c + 16]", "'+ 16' offset out of bounds. Valid offset: (-16 to -1, +0 to +15)")]
+    [InlineData("mov c, [c2 + 14]", "'c2' label not declared")]
     public void testingLabelAddressing(string line, string expected_res = "")
     {
         SyntaxChecker.setLabels(new string[2] { "label1", "s3xyB3n1s" });

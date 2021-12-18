@@ -1,8 +1,6 @@
 using System.Text.RegularExpressions;
 namespace Assembler;
 
-
-
 public static class SyntaxChecker
 {
     /// <summary> Lexicon containing somewhat correct grammar that can be recognized for evaluation </summary>
@@ -12,17 +10,13 @@ public static class SyntaxChecker
         {
             public const string REGISTER = "([a-z]+)";
             public const string LABEL = "(([a-z])((\\w)+))";
-            //public const string LABEL_OR_REGISTER = "(" + REGISTER + "|" + LABEL + ")";
             private static string EXISTING_LABELS = "()";
             private const string DECIMAL = "";
             public const string CONST = "[0-9]+";
             public const string OFFSET = "([+-]" + LEXICON.SPACE + "(\\d)+)";
             private const string ADDRESS_REGISTER = "(\\[" + LEXICON.SPACE + REGISTER + LEXICON.SPACE + "\\])";
             private const string ADDRESS_CONST = "(\\[" + LEXICON.SPACE + CONST + LEXICON.SPACE + "\\])";
-            private static string ADDRESS_LABEL
-            {
-                get => "(\\[" + LEXICON.SPACE + EXISTING_LABELS + LEXICON.SPACE + "\\])";
-            }
+            private static string ADDRESS_LABEL { get => "(\\[" + LEXICON.SPACE + EXISTING_LABELS + LEXICON.SPACE + "\\])"; }
             private const string ADDRESS_REGISTER_OFFSET = "(\\[" + LEXICON.SPACE + REGISTER + LEXICON.SPACE + OFFSET + LEXICON.SPACE + "\\])";
             public static string ADDRESS
             {
@@ -50,7 +44,7 @@ public static class SyntaxChecker
                 public const string R = "(" + LEXICON.SPACE + TOKENS.REGISTER + LEXICON.SPACE + ")";
                 public const string L = "(" + LEXICON.SPACE + TOKENS.LABEL + LEXICON.SPACE + ")";
                 public const string C = "(" + LEXICON.SPACE + TOKENS.CONST + LEXICON.SPACE + ")";
-                public const string WithOFFSET = "(" + R + TOKENS.OFFSET + LEXICON.SPACE + ")";
+                public const string WithOFFSET = "((" + L + "|" + R + ")" + TOKENS.OFFSET + LEXICON.SPACE + ")";
                 public static string A { get => "(" + LEXICON.SPACE + TOKENS.ADDRESS + LEXICON.SPACE + ")"; }
                 public static string X { get => "(" + LEXICON.SPACE + TOKENS.ANY + LEXICON.SPACE + ")"; }
                 public static string R_X { get => String.Format("({0},{1})", R, X); }
@@ -80,7 +74,7 @@ public static class SyntaxChecker
     }
     private static bool match(string line, string pattern, bool exact = false) { return getMatch(line, pattern, exact).Success; }
 
-    /// <summary> find out whats wrong with the arguements </summary> 
+    /// <summary> find out whats wrong with the arguement(s) </summary> 
     private static string evaluateArgs(string argsline)
     {
         string evaluation_result = "";
@@ -88,28 +82,39 @@ public static class SyntaxChecker
         string single_evaluation(string single_arg)
         {
             single_arg = single_arg.Replace("[", "").Replace("]", "").Trim(); // if an address, break it down yo
-            if (match(single_arg, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.WithOFFSET, true)) // if an arguement with an offset, evaluate both R/L and Offset
-            {
-                char splitter = (single_arg.Contains('+') ? '+' : '-');
-                string[] RandOffset = single_arg.Split(splitter, StringSplitOptions.TrimEntries);
-                return evaluateArgs(RandOffset[0] + "," + splitter + RandOffset[1]);
-            }
             string[,] ArgsLexiconTable = new string[5, 3] { //each array contains {VagueGrammar, CorrectGrammar, errorMsg}
-                {LEXICON.RESERVED_WORDS, "(\\s){10}", "a reserved word"},
-                {VAGUE_LEXICON.TOKENS.OFFSET, LEXICON.TOKENS.OFFSET, "an offset out of bounds (-16+15)"},
-                {   VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L,
+                { LEXICON.RESERVED_WORDS, "(\\s){1000}", "a reserved word" },
+                {
+                    VAGUE_LEXICON.SYNTAX.ARGUEMENTS.WithOFFSET,
+                    LEXICON.TOKENS.ADDRESS_REGISTER_OFFSET,
+                    (!match(single_arg, LEXICON.TOKENS.OFFSET+"$")?
+                        (
+                            String.Format(
+                                "'{0}' offset out of bounds. Valid offset: (-16 to -1, +0 to +15)",
+                                getMatch(single_arg, VAGUE_LEXICON.TOKENS.OFFSET).Value
+                            )
+                        ):(
+                            match(single_arg, "^"+VAGUE_LEXICON.TOKENS.labels())?
+                                ("'"+single_arg+ "' illegal expression. Use <Register> + <Offset>"):
+                                String.Format(
+                                    "'{0}' label not declared",single_arg.Split('+','-',StringSplitOptions.TrimEntries)
+                                )
+                        )
+                    )
+                },{
+                    VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L,
                     "("+LEXICON.SYNTAX.ARGUEMENTS.R +"|"+ VAGUE_LEXICON.TOKENS.labels()+")",
-                    (match(single_arg, VAGUE_LEXICON.TOKENS.REGISTER)?"neither an addressible label or register":"an unrecognized label")
+                    "an undefined label"
                 },
                 {VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C, LEXICON.SYNTAX.ARGUEMENTS.C, "not an 8-bit constant"},
-                {".*", LEXICON.TOKENS.ANY,"an unrecognized token"}
+                { ".*", LEXICON.TOKENS.ANY,"an unrecognized token"}
             };
             for (int j = 0; j < 5; j++)
             {
                 if (match(single_arg, ArgsLexiconTable[j, 0], true))
                 {
                     if (!match(single_arg, ArgsLexiconTable[j, 1], true))
-                        return String.Format("'{0}' is {1}", single_arg, ArgsLexiconTable[j, 2]);
+                        return ArgsLexiconTable[j, 2];
                     return "";
                 }
             }
