@@ -38,7 +38,7 @@ public static class SyntaxChecker
             }
             public static string MOV
             {
-                get => LEXICON.ETC.mov_starter + "(" + SYNTAX.ARGUEMENTS.R_X + ")";
+                get => LEXICON.ETC.mov_starter + "(" + SYNTAX.ARGUEMENTS.R_X + "|" + SYNTAX.ARGUEMENTS.A_R + ")";
             }
         }
     }
@@ -76,6 +76,19 @@ public static class SyntaxChecker
             {
                 public static string C { get => "(" + LEXICON.SPACE + TOKENS.CONST + LEXICON.SPACE + ")"; }
                 public static string A { get => "(" + LEXICON.SPACE + TOKENS.ADDRESS + LEXICON.SPACE + ")"; }
+                public static string X
+                {
+                    get => "(" + LEXICON.SPACE +
+                            "(" + LEXICON.SYNTAX.ARGUEMENTS.R + "|" + C + "|" + A + ")" +
+                        LEXICON.SPACE + ")";
+                }
+                public static string R_X { get => "(" + LEXICON.SYNTAX.ARGUEMENTS.R + "," + X + ")"; }
+                public static string A_R { get => "(" + A + "," + LEXICON.SYNTAX.ARGUEMENTS.R + ")"; }
+            }
+
+            public static string MOV
+            {
+                get => LEXICON.ETC.mov_starter + "(" + SYNTAX.ARGUEMENTS.R_X + "|" + SYNTAX.ARGUEMENTS.A_R + ")";
             }
         }
 
@@ -154,8 +167,8 @@ public static class SyntaxChecker
         string movline_args = movline.Substring(getMatch(movline, LEXICON.ETC.mov_starter).Value.Length); // get the args line
         if (!match(movline, LEXICON.SYNTAX.MOV, true))
         {
-            evaluation = evaluateArgs(movline_args);
-            if (evaluation == "" && !match(movline, VAGUE_LEXICON.SYNTAX.MOV, true)) evaluation = "invalid MOV operands";
+            if (!match(movline, NEW_LEXICON.SYNTAX.MOV, true)) evaluation = "invalid MOV operands";
+            else evaluation = evaluateArgs(movline_args);
         }
         return evaluation;
     }
@@ -165,7 +178,7 @@ public static class SyntaxChecker
     {
         line = line.Split(";")[0]; // remove comments
         if (match(line, LEXICON.ETC.mov_starter)) return evaluateMOV(line);
-        return "";
+        else return "unrecognzied statement";
     }
 
 

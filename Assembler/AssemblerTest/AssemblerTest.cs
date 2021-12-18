@@ -82,7 +82,7 @@ public class AssemblerTest
         public const string OffsetOutOfBounds = "offset out of bounds";
         public const string UndefLabel = "label not declared";
         public const string WrongOffsetPair = "illegal expression. Use <Register> + <Offset>";
-        public const string Unrecognized = "unrecognized expression or token";
+        public const string Unrecognized = "invalid expression";
         public const string Not8bit = "not an 8-bit constant";
         public const string InvalidOperands = "invalid MOV operands";
     }
@@ -93,13 +93,11 @@ public class AssemblerTest
     [InlineData("mov c,255")]
     [InlineData("mov c, 255")]
     [InlineData("mov 24, 255", SyntaxErrorMsgRes.InvalidOperands)]
-    [InlineData("mov 24, 256", "'256' " + SyntaxErrorMsgRes.Not8bit)]
     [InlineData("mov c, [a]")]
     [InlineData("mov c, [ a ]")]
-    [InlineData("mov c, [ a + 15]")]
-    [InlineData("mov c, [ label1]")]
-    [InlineData("mov c, [ c+16 ]", "offset out of bounds")]
-    [InlineData("mov c, [ c3 / 16]", "offset out of bounds")]
+    [InlineData("mov [ d ], a")]
+    [InlineData("mov [ d + 12], a")]
+    [InlineData("mov [ c,] a")]
 
 
     public void testingSyntaxCheckerResult(string line, string expected_res = "")
