@@ -1,6 +1,6 @@
 namespace Assembler;
 
-
+/// <summary> Base lexicon, does not include the labels </summary>
 public static class LEXICON
 {
     public const string SPACE = "( )*";
