@@ -82,7 +82,11 @@ public static class SyntaxChecker
         string single_evaluation(string single_arg)
         {
             single_arg = single_arg.Replace("[", "").Replace("]", "").Trim(); // if an address, break it down yo
-            string[,] ArgsLexiconTable = new string[5, 3] { //each array contains {VagueGrammar, CorrectGrammar, errorMsg}
+            /*each array contains {VagueGrammar, CorrectGrammar, ErrorMsg}
+                We will loop thru the array, check if the \"single_arg\" grammatically matches VagueGrammar,
+                then check if grammatically matches CorrectGrammar: if it doesn't return the ErrorMsg
+            */
+            string[,] ArgsLexiconTable = new string[5, 3] {
                 { LEXICON.RESERVED_WORDS, "(\\s){1000}", "a reserved word" },
                 {
                     VAGUE_LEXICON.SYNTAX.ARGUEMENTS.WithOFFSET,
@@ -90,21 +94,19 @@ public static class SyntaxChecker
                     (!match(single_arg, LEXICON.TOKENS.OFFSET+"$")?
                         (
                             String.Format(
-                                "'{0}' offset out of bounds. Valid offset: (-16 to -1, +0 to +15)",
+                                "'{0}' offset out of bounds. Valid offset: (-16 to -1 or +0 to +15)",
                                 getMatch(single_arg, VAGUE_LEXICON.TOKENS.OFFSET).Value
                             )
                         ):(
                             match(single_arg, "^"+VAGUE_LEXICON.TOKENS.labels())?
                                 ("'"+single_arg+ "' illegal expression. Use <Register> + <Offset>"):
-                                String.Format(
-                                    "'{0}' label not declared",single_arg.Split('+','-',StringSplitOptions.TrimEntries)
-                                )
+                                single_evaluation(single_arg.Split('+','-',StringSplitOptions.TrimEntries)[0])
                         )
                     )
                 },{
                     VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L,
                     "("+LEXICON.SYNTAX.ARGUEMENTS.R +"|"+ VAGUE_LEXICON.TOKENS.labels()+")",
-                    "an undefined label"
+                    String.Format("'{0}' label not declared", single_arg)
                 },
                 {VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C, LEXICON.SYNTAX.ARGUEMENTS.C, "not an 8-bit constant"},
                 { ".*", LEXICON.TOKENS.ANY,"an unrecognized token"}
