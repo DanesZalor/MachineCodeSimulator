@@ -32,13 +32,10 @@ public static class SyntaxChecker
                     ")" +
                 LEXICON.SPACE + "\\]" + LEXICON.SPACE + ")";
                 public const string X = "(" + R + "|" + L + "|" + C + "|" + A + ")";
-
-                public const string R_X = "(" + R + "," + X + ")";
-                public const string A_R = "(" + A + "," + R + ")";
             }
             public static string MOV
             {
-                get => LEXICON.ETC.mov_starter + "(" + SYNTAX.ARGUEMENTS.R_X + "|" + SYNTAX.ARGUEMENTS.A_R + ")";
+                get => LEXICON.ETC.mov_starter + "(" + ARGUEMENTS.X + "," + ARGUEMENTS.X + ")";
             }
         }
     }
@@ -129,9 +126,11 @@ public static class SyntaxChecker
                         (
                             match(single_arg,VAGUE_LEXICON.TOKENS.OFFSET)?( // is there an offset
                                 !match(getMatch(single_arg, VAGUE_LEXICON.TOKENS.OFFSET).Value, LEXICON.TOKENS.OFFSET, true)?( // is it not a legit offset
-                                    "offset out of bounds"
+                                    (
+                                        String.Format("'{0}' offset out of bounds",getMatch(single_arg, VAGUE_LEXICON.TOKENS.OFFSET).Value)
+                                    )
                                 ):("")
-                            ):("invalid token")
+                            ):(String.Format("'{0}' non-existent token",single_arg.Replace("[","").Replace("]","").Trim() ))
                         )
                     )
                 },{
@@ -167,8 +166,9 @@ public static class SyntaxChecker
         string movline_args = movline.Substring(getMatch(movline, LEXICON.ETC.mov_starter).Value.Length); // get the args line
         if (!match(movline, LEXICON.SYNTAX.MOV, true))
         {
-            if (!match(movline, NEW_LEXICON.SYNTAX.MOV, true)) evaluation = "invalid MOV operands";
-            else evaluation = evaluateArgs(movline_args);
+            if (!match(movline, VAGUE_LEXICON.SYNTAX.MOV, true)) return "invalid MOV statement";
+            evaluation = evaluateArgs(movline_args);
+            if (evaluation == "" && !match(movline, NEW_LEXICON.SYNTAX.MOV, true)) evaluation = "invalid MOV operands";
         }
         return evaluation;
     }

@@ -80,11 +80,12 @@ public class AssemblerTest
     private static class SyntaxErrorMsgRes
     {
         public const string OffsetOutOfBounds = "offset out of bounds";
-        public const string UndefLabel = "label not declared";
+        public const string UndefLabel = "non-existent token";
         public const string WrongOffsetPair = "illegal expression. Use <Register> + <Offset>";
         public const string Unrecognized = "invalid expression";
         public const string Not8bit = "not an 8-bit constant";
-        public const string InvalidOperands = "invalid MOV operands";
+        public const string InvalidMOVOperands = "invalid MOV operands";
+        public const string InvalidMOVGrammar = "invalid MOV statement";
     }
     [Theory]
     [InlineData("mov a,b")]
@@ -92,12 +93,15 @@ public class AssemblerTest
     [InlineData("mov f,10")]
     [InlineData("mov c,255")]
     [InlineData("mov c, 255")]
-    [InlineData("mov 24, 255", SyntaxErrorMsgRes.InvalidOperands)]
+    [InlineData("mov 24, 255", SyntaxErrorMsgRes.InvalidMOVOperands)]
+    [InlineData("mov [a], [c]", SyntaxErrorMsgRes.InvalidMOVOperands)]
     [InlineData("mov c, [a]")]
     [InlineData("mov c, [ a ]")]
     [InlineData("mov [ d ], a")]
     [InlineData("mov [ d + 12], a")]
-    [InlineData("mov [ c,] a")]
+    [InlineData("mov [ c,] a", SyntaxErrorMsgRes.InvalidMOVGrammar)]
+    [InlineData("mov [label1], c")]
+    [InlineData("mov [label2], c", "'label2' " + SyntaxErrorMsgRes.UndefLabel)]
 
 
     public void testingSyntaxCheckerResult(string line, string expected_res = "")
