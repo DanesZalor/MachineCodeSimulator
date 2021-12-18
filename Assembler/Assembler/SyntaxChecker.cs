@@ -9,7 +9,7 @@ public static class SyntaxChecker
         public static class TOKENS
         {
             public const string REGISTER = "([a-z]+)";
-            public const string LABEL = "(([a-z])((\\w)+))";
+            public const string LABEL = "(([a-z])((\\w)*))";
             private static string EXISTING_LABELS = "()";
             private const string DECIMAL = "";
             public const string CONST = "[0-9]+";
@@ -44,7 +44,7 @@ public static class SyntaxChecker
                 public const string R = "(" + LEXICON.SPACE + TOKENS.REGISTER + LEXICON.SPACE + ")";
                 public const string L = "(" + LEXICON.SPACE + TOKENS.LABEL + LEXICON.SPACE + ")";
                 public const string C = "(" + LEXICON.SPACE + TOKENS.CONST + LEXICON.SPACE + ")";
-                public const string WithOFFSET = "((" + L + "|" + R + ")" + TOKENS.OFFSET + LEXICON.SPACE + ")";
+                public const string WithOFFSET = "((" + L + ")" + TOKENS.OFFSET + LEXICON.SPACE + ")";
                 public static string A { get => "(" + LEXICON.SPACE + TOKENS.ADDRESS + LEXICON.SPACE + ")"; }
                 public static string X { get => "(" + LEXICON.SPACE + TOKENS.ANY + LEXICON.SPACE + ")"; }
                 public static string R_X { get => String.Format("({0},{1})", R, X); }
@@ -98,9 +98,7 @@ public static class SyntaxChecker
                                 getMatch(single_arg, VAGUE_LEXICON.TOKENS.OFFSET).Value
                             )
                         ):(
-                            match(single_arg, "^"+VAGUE_LEXICON.TOKENS.labels())?
-                                ("'"+single_arg+ "' illegal expression. Use <Register> + <Offset>"):
-                                single_evaluation(single_arg.Split('+','-',StringSplitOptions.TrimEntries)[0])
+                            String.Format("'{0}' illegal expression. Use <Register> + <Offset>",single_arg)
                         )
                     )
                 },{
@@ -109,7 +107,7 @@ public static class SyntaxChecker
                     String.Format("'{0}' label not declared", single_arg)
                 },
                 {VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C, LEXICON.SYNTAX.ARGUEMENTS.C, "not an 8-bit constant"},
-                { ".*", LEXICON.TOKENS.ANY,"an unrecognized token"}
+                { ".*", LEXICON.TOKENS.ANY,String.Format("'{0}' unrecognized expression or token",single_arg)}
             };
             for (int j = 0; j < 5; j++)
             {

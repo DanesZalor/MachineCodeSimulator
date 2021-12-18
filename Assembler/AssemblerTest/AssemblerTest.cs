@@ -82,6 +82,7 @@ public class AssemblerTest
         public const string OffsetOutOfBounds = "offset out of bounds. Valid offset: (-16 to -1 or +0 to +15)";
         public const string UndefLabel = "label not declared";
         public const string WrongOffsetPair = "illegal expression. Use <Register> + <Offset>";
+        public const string Unrecognized = "unrecognized expression or token";
     }
     [Theory]
     [InlineData("mov a,b")]
@@ -89,11 +90,13 @@ public class AssemblerTest
     [InlineData("mov f,10")]
     [InlineData("mov c,255")]
     [InlineData("mov c, [a]")]
+    [InlineData("mov c, [a + 15]")]
     [InlineData("mov c, [250]")]
     [InlineData("mov c, [label1]")]
     [InlineData("mov c, [c + 16]", "'+ 16' " + SyntaxErrorMsgRes.OffsetOutOfBounds)]
-    [InlineData("mov c, [c2 + 14]", "'c2' " + SyntaxErrorMsgRes.UndefLabel)]
+    [InlineData("mov c, [c2 + 14]", "'c2 + 14' " + SyntaxErrorMsgRes.WrongOffsetPair)]
     [InlineData("mov c, [label1 - 9]", "'label1 - 9' " + SyntaxErrorMsgRes.WrongOffsetPair)]
+    [InlineData("mov a, [240 - 9]", "'240 - 9' " + SyntaxErrorMsgRes.Unrecognized)]
     public void testingSyntaxCheckerResult(string line, string expected_res = "")
     {
         SyntaxChecker.setLabels(new string[2] { "label1", "s3xyB3n1s" });
