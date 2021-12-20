@@ -91,15 +91,21 @@ public static class SyntaxChecker
 
             public static string MOV
             {
-                get => LEXICON.ETC.mov_starter + "(" + SYNTAX.ARGUEMENTS.R_X + "|" + SYNTAX.ARGUEMENTS.A_R + ")";
+                get => String.Format("({0}({1}|{2}))", LEXICON.ETC.mov_starter, SYNTAX.ARGUEMENTS.R_X, SYNTAX.ARGUEMENTS.A_R);
             }
             public static string JMP
             {
-                get => LEXICON.ETC.jmp_starter + "(" + LEXICON.SYNTAX.ARGUEMENTS.R + "|" + SYNTAX.ARGUEMENTS.C + ")";
+                get => String.Format("({0}({1}|{2}))", LEXICON.ETC.jmp_starter, LEXICON.SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.C);
+            }
+            public static string JCAZ
+            {
+                get => String.Format("({0}({1}|{2}))", LEXICON.ETC.jcaz_starter, LEXICON.SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.C);
             }
         }
-
-
+        public static class ETC
+        {
+            public const string jcaz_starter = "";
+        }
     }
 
     public static void setLabels(string[] labels)

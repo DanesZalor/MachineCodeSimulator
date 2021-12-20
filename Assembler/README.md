@@ -19,3 +19,38 @@ The file is once again scanned line-by-line but this time, for the grammar of ea
 > `mov [2], 22`  "invalid mov operands"
 
 the way a line is checked is, first it checks if it matches the grammar of the *NEW_LEXICON*, then if it does, it means its in correct grammar. But if it doesn't, it checks if the line matches the grammar of the *VAGUE_LEXICON*, if it does, scan each arguement for errors. but if it doesn't, its an invalid statement.
+
+#### JumpIf flags
+| flags | meaning |
+|-|-|
+| C | Carry |
+| A | A>B |
+| Z | ZERO | 
+
+|   Alias   |   Derivation   |  Meaning |
+|--|--|--|
+|   JE  | JZ  | (A xor B)==0 |
+|   JB  | JC    | `!((A>B) or (A==B))` → `(A<=B) and (A!=B)` → **(A<B)** |
+|   JAE | JAZ   | `JA or JE which is JZ` → **(A>=B)** |
+|   JBE | 
+
+
+
+```
+C - Carry flag
+A - A>B flag
+Z - Zero flag
+
+Basic Instruction
+JC, JA, JZ, 
+JCA, JAZ, JCZ,
+JCAZ
+
+Alias               Derivation      Meaning
+JE                  JZ              if A==B
+JB                  JC              ~((A>B) || (A==B)) 
+                                    --> ((A<=B) && (A!=B)) --> (A<B)
+JAE                 JAZ             if (A>B) ||
+JBE                 JCZ             if 
+
+```
