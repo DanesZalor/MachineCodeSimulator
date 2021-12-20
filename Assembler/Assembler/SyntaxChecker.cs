@@ -41,7 +41,7 @@ public static class SyntaxChecker
             }
             public static string JMP
             {
-                get => LEXICON.ETC.jmp_starter + "(" + SYNTAX.ARGUEMENTS.R + "|" + SYNTAX.ARGUEMENTS.C + ")";
+                get => LEXICON.ETC.jmp_starter + "(" + SYNTAX.ARGUEMENTS.R + "|" + SYNTAX.ARGUEMENTS.C + "|" + SYNTAX.ARGUEMENTS.L + ")";
             }
         }
     }
@@ -128,7 +128,7 @@ public static class SyntaxChecker
                 We will loop thru the array, check if the \"single_arg\" grammatically matches VagueGrammar,
                 then check if grammatically matches CorrectGrammar: if it doesn't return the ErrorMsg
             */
-            string[,] ArgsLexiconTable = new string[4, 3] {
+            string[,] ArgsLexiconTable = new string[5, 3] {
                 {
                     LEXICON.RESERVED_WORDS, "(\\s){1000}", "a reserved word"
                 },{
@@ -143,6 +143,10 @@ public static class SyntaxChecker
                             ):(String.Format("'{0}' non-existent token",single_arg.Replace("[","").Replace("]","").Trim() ))
                         )
                     )
+                },{
+                    VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L,
+                    "("+NEW_LEXICON.SYNTAX.ARGUEMENTS.C +"|"+LEXICON.SYNTAX.ARGUEMENTS.R+")" ,
+                    String.Format("'{0}' is a non-existent token", single_arg)
                 },{
                     VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C, LEXICON.SYNTAX.ARGUEMENTS.C,
                     String.Format("'{0}' not an 8-bit constant", single_arg)
@@ -187,7 +191,7 @@ public static class SyntaxChecker
         //string arg = ; // get the arg
         if (!match(jmpline, NEW_LEXICON.SYNTAX.JMP, true))
         {
-            if (!match(jmpline, VAGUE_LEXICON.SYNTAX.JMP)) return "invalid JMP statement";
+            if (!match(jmpline, VAGUE_LEXICON.SYNTAX.JMP, true)) return "invalid JMP statement";
             else return evaluateArgs(
                 jmpline.Substring(getMatch(jmpline, LEXICON.ETC.jmp_starter).Value.Length)
             );
@@ -200,6 +204,7 @@ public static class SyntaxChecker
     {
         line = line.Split(";")[0]; // remove comments
         if (match(line, LEXICON.ETC.mov_starter)) return evaluateMOV(line);
+        else if (match(line, LEXICON.ETC.jmp_starter)) return evaluateJMP(line);
         else return "unrecognzied statement";
     }
 }

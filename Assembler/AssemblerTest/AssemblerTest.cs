@@ -131,4 +131,19 @@ public class AssemblerTest
         }
     }
 
+    [Theory]
+    [InlineData("jmp b")]
+    [InlineData("jmp 250")]
+    [InlineData("jmp 256", "'256' not an 8-bit constant")]
+    [InlineData("jmp label1")]
+    [InlineData("jmp label2", "'label2' is a non-existent token")]
+    [InlineData("jmp label1 + 2", "invalid JMP statement")]
+    [InlineData("jmp B + 2", "invalid JMP statement")]
+    public void JMP_SyntaxCheck(string line, string expected_res = "")
+    {
+        SyntaxChecker.setLabels(new string[2] { "label1", "sex" });
+        string actual_res = SyntaxChecker.evaluateLine(line);
+        Assert.Equal(expected_res, actual_res);
+    }
+
 }
