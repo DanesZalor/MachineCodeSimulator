@@ -17,3 +17,5 @@ During this step, the file is scanned line-by-line for label declarations, to dy
 The file is once again scanned line-by-line but this time, for the grammar of each instruction. The grammar basis is from the derived **New Lexicon** from the previous phase. However, in a line of `label1: inc b ;comment`, the label declaration and the comments are completely ignored. Besides checking whether the line is grammatically correct or not, a detailed feedback is also provided. For example:
 > `mov b, [257]`  "'257' not an 8-bit constant" <br>
 > `mov [2], 22`  "invalid mov operands"
+
+the way a line is checked is, first it checks if it matches the grammar of the *NEW_LEXICON*, then if it does, it means its in correct grammar. But if it doesn't, it checks if the line matches the grammar of the *VAGUE_LEXICON*, if it does, scan each arguement for errors. but if it doesn't, its an invalid statement.
