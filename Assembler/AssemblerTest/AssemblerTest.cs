@@ -113,6 +113,12 @@ public class AssemblerTest
 
     // mov A,A
     [InlineData("mov [f], [g]", SyntaxErrorMsgRes.InvalidMOVGrammar)]
+    [InlineData("mov [f], [250]", SyntaxErrorMsgRes.InvalidMOVGrammar)]
+    [InlineData("mov [1], [g]", SyntaxErrorMsgRes.InvalidMOVGrammar)]
+    // mov C, X
+    [InlineData("mov 25, a", SyntaxErrorMsgRes.InvalidMOVGrammar)]
+    [InlineData("mov 255, [a]", SyntaxErrorMsgRes.InvalidMOVGrammar)]
+    [InlineData("mov 255, 25", SyntaxErrorMsgRes.InvalidMOVGrammar)]
     public void testingSyntaxCheckerResult(string line, string expected_res = "")
     {
         SyntaxChecker.setLabels(new string[2] { "label1", "s3xyB3n1s" });
