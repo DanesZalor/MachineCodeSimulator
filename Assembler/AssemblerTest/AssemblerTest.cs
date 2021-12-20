@@ -80,30 +80,39 @@ public class AssemblerTest
     private static class SyntaxErrorMsgRes
     {
         public const string OffsetOutOfBounds = "offset out of bounds";
-        public const string UndefLabel = "non-existent token";
+        public const string UndefToken = "non-existent token";
         public const string WrongOffsetPair = "illegal expression. Use <Register> + <Offset>";
         public const string Unrecognized = "invalid expression";
         public const string Not8bit = "not an 8-bit constant";
-        public const string InvalidMOVOperands = "invalid MOV operands";
         public const string InvalidMOVGrammar = "invalid MOV statement";
     }
     [Theory]
+    // mov R,R
     [InlineData("mov a,b")]
     [InlineData("mov g,sp")]
+    // mov R,C
     [InlineData("mov f,10")]
     [InlineData("mov c,255")]
     [InlineData("mov c, 255")]
-    [InlineData("mov 24, 255", SyntaxErrorMsgRes.InvalidMOVOperands)]
-    [InlineData("mov [a], [c]", SyntaxErrorMsgRes.InvalidMOVOperands)]
+    // mov R, A
     [InlineData("mov c, [a]")]
     [InlineData("mov c, [ a ]")]
-    [InlineData("mov [ d ], a")]
-    [InlineData("mov [ d + 12], a")]
-    [InlineData("mov [ c,] a", SyntaxErrorMsgRes.InvalidMOVGrammar)]
-    [InlineData("mov [label1], c")]
-    [InlineData("mov [label2], c", "'label2' " + SyntaxErrorMsgRes.UndefLabel)]
+    [InlineData("mov d, [ a+15 ]")]
+    [InlineData("mov d, [ 69 ]")]
+    [InlineData("mov d, [ label1 ]")]
+    [InlineData("mov d, [label2]", "'label2' " + SyntaxErrorMsgRes.UndefToken)]
+    [InlineData("mov e, [69 + 1]", SyntaxErrorMsgRes.InvalidMOVGrammar)]
+    // mov A, R
+    [InlineData("mov [c], a")]
+    [InlineData("mov [ c ], a")]
+    [InlineData("mov [d + 15], a")]
+    [InlineData("mov [69], d")]
+    [InlineData("mov [ label1 ], d")]
+    [InlineData("mov [label2], d", "'label2' " + SyntaxErrorMsgRes.UndefToken)]
+    [InlineData("mov [ 69 + 1], e", SyntaxErrorMsgRes.InvalidMOVGrammar)]
 
-
+    // mov A,A
+    [InlineData("mov [f], [g]", SyntaxErrorMsgRes.InvalidMOVGrammar)]
     public void testingSyntaxCheckerResult(string line, string expected_res = "")
     {
         SyntaxChecker.setLabels(new string[2] { "label1", "s3xyB3n1s" });

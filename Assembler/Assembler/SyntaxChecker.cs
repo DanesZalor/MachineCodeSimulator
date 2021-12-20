@@ -32,10 +32,12 @@ public static class SyntaxChecker
                     ")" +
                 LEXICON.SPACE + "\\]" + LEXICON.SPACE + ")";
                 public const string X = "(" + R + "|" + L + "|" + C + "|" + A + ")";
+                public const string R_X = "(" + R + "," + X + ")";
+                public const string A_R = "(" + A + "," + R + ")";
             }
             public static string MOV
             {
-                get => LEXICON.ETC.mov_starter + "(" + ARGUEMENTS.X + "," + ARGUEMENTS.X + ")";
+                get => LEXICON.ETC.mov_starter + "(" + SYNTAX.ARGUEMENTS.R_X + "|" + SYNTAX.ARGUEMENTS.A_R + ")";
             }
         }
     }
@@ -162,15 +164,13 @@ public static class SyntaxChecker
     }
     private static string evaluateMOV(string movline)
     {
-        string evaluation = "";
         string movline_args = movline.Substring(getMatch(movline, LEXICON.ETC.mov_starter).Value.Length); // get the args line
-        if (!match(movline, LEXICON.SYNTAX.MOV, true))
+        if (!match(movline, NEW_LEXICON.SYNTAX.MOV, true))
         {
             if (!match(movline, VAGUE_LEXICON.SYNTAX.MOV, true)) return "invalid MOV statement";
-            evaluation = evaluateArgs(movline_args);
-            if (evaluation == "" && !match(movline, NEW_LEXICON.SYNTAX.MOV, true)) evaluation = "invalid MOV operands";
+            else return evaluateArgs(movline_args);
         }
-        return evaluation;
+        else return "";
     }
 
     /// <summary> evaluates instructions' grammar. if grammatically correct, returns an empty string </summary>
@@ -180,6 +180,4 @@ public static class SyntaxChecker
         if (match(line, LEXICON.ETC.mov_starter)) return evaluateMOV(line);
         else return "unrecognzied statement";
     }
-
-
 }
