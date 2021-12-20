@@ -39,6 +39,10 @@ public static class SyntaxChecker
             {
                 get => LEXICON.ETC.mov_starter + "(" + SYNTAX.ARGUEMENTS.R_X + "|" + SYNTAX.ARGUEMENTS.A_R + ")";
             }
+            public static string JMP
+            {
+                get => LEXICON.ETC.jmp_starter + "(" + SYNTAX.ARGUEMENTS.R + "|" + SYNTAX.ARGUEMENTS.C + ")";
+            }
         }
     }
 
@@ -88,6 +92,10 @@ public static class SyntaxChecker
             public static string MOV
             {
                 get => LEXICON.ETC.mov_starter + "(" + SYNTAX.ARGUEMENTS.R_X + "|" + SYNTAX.ARGUEMENTS.A_R + ")";
+            }
+            public static string JMP
+            {
+                get => LEXICON.ETC.jmp_starter + "(" + LEXICON.SYNTAX.ARGUEMENTS.R + "|" + SYNTAX.ARGUEMENTS.C + ")";
             }
         }
 
@@ -164,13 +172,27 @@ public static class SyntaxChecker
     }
     private static string evaluateMOV(string movline)
     {
-        string movline_args = movline.Substring(getMatch(movline, LEXICON.ETC.mov_starter).Value.Length); // get the args line
         if (!match(movline, NEW_LEXICON.SYNTAX.MOV, true))
         {
             if (!match(movline, VAGUE_LEXICON.SYNTAX.MOV, true)) return "invalid MOV statement";
-            else return evaluateArgs(movline_args);
+            else return evaluateArgs(
+                movline.Substring(getMatch(movline, LEXICON.ETC.mov_starter).Value.Length)
+            );
         }
         else return "";
+    }
+
+    private static string evaluateJMP(string jmpline)
+    {
+        //string arg = ; // get the arg
+        if (!match(jmpline, NEW_LEXICON.SYNTAX.JMP, true))
+        {
+            if (!match(jmpline, VAGUE_LEXICON.SYNTAX.JMP)) return "invalid JMP statement";
+            else return evaluateArgs(
+                jmpline.Substring(getMatch(jmpline, LEXICON.ETC.jmp_starter).Value.Length)
+            );
+        }
+        return "";
     }
 
     /// <summary> evaluates instructions' grammar. if grammatically correct, returns an empty string </summary>
