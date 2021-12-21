@@ -8,6 +8,7 @@ namespace AssemblerTest;
 
 public class AssemblerTest
 {
+
     public class TranslationTest
     {
         [Theory]
@@ -131,48 +132,87 @@ public class AssemblerTest
         }
     }
 
-    [Theory]
-    [InlineData("jmp b")]
-    [InlineData("jmp 250")]
-    [InlineData("jmp 256", "'256' not an 8-bit constant")]
-    [InlineData("jmp label1")]
-    [InlineData("jmp label2", "'label2' is a non-existent token")]
-    [InlineData("jmp label1 + 2", "invalid JMP statement")]
-    [InlineData("jmp B + 2", "invalid JMP statement")]
-    public void JMP_SyntaxCheck(string line, string expected_res = "")
+    public class JumpStatement_SyntaxCheck
     {
-        SyntaxChecker.setLabels(new string[2] { "label1", "sex" });
-        string actual_res = SyntaxChecker.evaluateLine(line);
-        Assert.Equal(expected_res, actual_res);
+        [Theory]
+        [InlineData("jmp b")]
+        [InlineData("jmp 250")]
+        [InlineData("jmp 256", "'256' not an 8-bit constant")]
+        [InlineData("jmp label1")]
+        [InlineData("jmp label2", "'label2' is a non-existent token")]
+        [InlineData("jmp label1 + 2", "invalid JMP arguement")]
+        [InlineData("jmp B + 2", "invalid JMP arguement")]
+        public void JMP_SyntaxCheck(string line, string expected_res = "")
+        {
+            SyntaxChecker.setLabels(new string[2] { "label1", "sex" });
+            string actual_res = SyntaxChecker.evaluateLine(line);
+            Assert.Equal(expected_res, actual_res);
+        }
+
+        [Theory]
+        [InlineData("ja b")]
+        [InlineData("jnz label1")]
+        [InlineData("jnz 300", "'300' not an 8-bit constant")]
+        [InlineData("jae penis", "'penis' is a non-existent token")]
+        [InlineData("jew f", "'jew' invalid JumpIf flags")]
+        [InlineData("jnbe [a+2]", "invalid JumpIf arguement")]
+        [InlineData("jnbe [a]", "invalid JumpIf arguement")]
+        [InlineData("jc c")]
+        [InlineData("jnc 255")]
+        [InlineData("ja c")]
+        [InlineData("jna c")]
+        [InlineData("jz c")]
+        [InlineData("jnz c")]
+        [InlineData("je c")]
+        [InlineData("jne c")]
+        [InlineData("jb c")]
+        [InlineData("jnb c")]
+        [InlineData("jae c")]
+        [InlineData("jnae c")]
+        [InlineData("jbe c")]
+        [InlineData("jnbe c")]
+        public void JmpIf_SyntaxCheck(string line, string expected_res = "")
+        {
+            SyntaxChecker.setLabels(new string[2] { "label1", "sex" });
+            string actual_res = SyntaxChecker.evaluateLine(line);
+            Assert.Equal(expected_res, actual_res);
+        }
+
     }
 
-    [Theory]
-    [InlineData("ja b")]
-    [InlineData("jnz label1")]
-    [InlineData("jnz 300", "'300' not an 8-bit constant")]
-    [InlineData("jae penis", "'penis' is a non-existent token")]
-    [InlineData("jew f", "'jew' invalid JumpIf flags")]
-    [InlineData("jnbe [a+2]", "invalid JumpIf statement")]
-    [InlineData("jnbe [a]", "invalid JumpIf statement")]
-    [InlineData("jc c")]
-    [InlineData("jnc 255")]
-    [InlineData("ja c")]
-    [InlineData("jna c")]
-    [InlineData("jz c")]
-    [InlineData("jnz c")]
-    [InlineData("je c")]
-    [InlineData("jne c")]
-    [InlineData("jb c")]
-    [InlineData("jnb c")]
-    [InlineData("jae c")]
-    [InlineData("jnae c")]
-    [InlineData("jbe c")]
-    [InlineData("jnbe c")]
-    public void JmpIf_SyntaxCheck(string line, string expected_res = "")
+    public class PushAndPop_SyntaxCheck
     {
-        SyntaxChecker.setLabels(new string[2] { "label1", "sex" });
-        string actual_res = SyntaxChecker.evaluateLine(line);
-        Assert.Equal(expected_res, actual_res);
-    }
+        [Theory]
+        [InlineData("push a")]
+        [InlineData("push 255")]
+        [InlineData("push 256", "'256' not an 8-bit constant")]
+        [InlineData("push [c]")]
+        [InlineData("push [c+12]")]
+        [InlineData("push [c+16]", "'+16' offset out of bounds")]
+        [InlineData("push s3xyB3n1s")]
+        [InlineData("push confederateAgenda", "'confederateAgenda' is a non-existent token")]
+        [InlineData("push aa_", "'aa_' is a non-existent token")]
+        public void tesing_PUSH_statement(string line, string expected_res = "")
+        {
+            SyntaxChecker.setLabels(new string[2] { "label1", "s3xyB3n1s" });
+            string actual_res = SyntaxChecker.evaluateLine(line);
+            Assert.Equal(expected_res, actual_res);
+        }
 
+        [Theory]
+        [InlineData("pop a")]
+        [InlineData("pop [c-16]")]
+        [InlineData("pop [c-17]", "'-17' offset out of bounds")]
+        [InlineData("pop [d]")]
+        [InlineData("pop [25]")]
+        [InlineData("pop [256]", "'256' not an 8-bit constant")]
+        [InlineData("pop 255", "invalid POP arguement")]
+        [InlineData("pop 256", "invalid POP arguement")]
+        public void testing_POP_statement(string line, string expected_res = "")
+        {
+            SyntaxChecker.setLabels(new string[2] { "label1", "s3xyB3n1s" });
+            string actual_res = SyntaxChecker.evaluateLine(line);
+            Assert.Equal(expected_res, actual_res);
+        }
+    }
 }

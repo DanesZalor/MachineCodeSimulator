@@ -35,8 +35,6 @@ public static class SyntaxChecker
                 public const string R_X = "(" + R + "," + X + ")";
                 public const string A_R = "(" + A + "," + R + ")";
             }
-            public static string PUSH
-            { get => String.Format("push ({0}|{1}|{2})", SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.A, SYNTAX.ARGUEMENTS.C); }
             public static string POP
             { get => String.Format("pop ({0}|{1})", SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.A); }
         }
@@ -84,8 +82,6 @@ public static class SyntaxChecker
                 public static string R_X { get => "(" + LEXICON.SYNTAX.ARGUEMENTS.R + "," + X + ")"; }
                 public static string A_R { get => "(" + A + "," + LEXICON.SYNTAX.ARGUEMENTS.R + ")"; }
             }
-            public static string PUSH
-            { get => String.Format("(push ({0}|{1}|{2}))", LEXICON.SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.A, SYNTAX.ARGUEMENTS.C); }
             public static string POP
             { get => String.Format("(pop ({0}|{1}))", LEXICON.SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.A); }
         }
@@ -129,7 +125,10 @@ public static class SyntaxChecker
                                         String.Format("'{0}' offset out of bounds",getMatch(single_arg, VAGUE_LEXICON.TOKENS.OFFSET).Value)
                                     )
                                 ):("")
-                            ):(String.Format("'{0}' non-existent token",single_arg.Replace("[","").Replace("]","").Trim() ))
+                            ):( match(single_arg.Split('+', StringSplitOptions.RemoveEmptyEntries)[0], VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L)?
+                                String.Format("'{0}' non-existent token",single_arg.Replace("[","").Replace("]","").Trim()):
+                                String.Format("'{0}' not an 8-bit constant", single_arg.Replace("[","").Replace("]","").Trim())
+                            )
                         )
                     )
                 },{
@@ -171,7 +170,7 @@ public static class SyntaxChecker
         {
             if (!match(movline, movSyntaxVague, true)) return "invalid MOV statement";
             else return evaluateArgs(
-                movline.Substring(getMatch(movline, LEXICON.ETC.mov_starter).Value.Length)
+                movline.Substring(movline.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0].Length)
             );
         }
         else return "";
@@ -182,9 +181,9 @@ public static class SyntaxChecker
         string jmpSyntaxVague = "jmp (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L + ")";
         if (!match(jmpline, jmpSyntax, true))
         {
-            if (!match(jmpline, jmpSyntaxVague, true)) return "invalid JMP statement";
+            if (!match(jmpline, jmpSyntaxVague, true)) return "invalid JMP arguement";
             else return evaluateArgs(
-                jmpline.Substring(getMatch(jmpline, LEXICON.ETC.jmp_starter).Value.Length)
+                jmpline.Substring(jmpline.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0].Length)
             );
         }
         return "";
@@ -199,7 +198,7 @@ public static class SyntaxChecker
         string jmpSyntaxVague = "jn?[a-z]+ (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L + ")";
         if (!match(jmpline, jmpSyntax, true))
         {
-            if (!match(jmpline, jmpSyntaxVague, true)) return "invalid JumpIf statement";
+            if (!match(jmpline, jmpSyntaxVague, true)) return "invalid JumpIf arguement";
             else if (!match(jcaz, jcazflagSyntax, true)) return "'" + jcaz + "' invalid JumpIf flags";
             else return evaluateArgs(arg);
         }
@@ -207,7 +206,32 @@ public static class SyntaxChecker
     }
     private static string evaluatePUSH(string pushline)
     {
+        string pushSyntax = String.Format("(push ({0}|{1}|{2}))", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.A, NEW_LEXICON.SYNTAX.ARGUEMENTS.C);
+        string pushSyntaxVague = String.Format("push ({0}|{1}|{2}|{3})", VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R,
+                                    VAGUE_LEXICON.SYNTAX.ARGUEMENTS.A, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C,
+                                    VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L);
+        if (!match(pushline, pushSyntax, true))
+        {
+            if (!match(pushline, pushSyntaxVague, true)) return "invalid PUSH arguement";
+            else return evaluateArgs(
+                pushline.Substring(pushline.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0].Length)
+            );
+        }
+        return "";
+    }
 
+    private static string evaluatePOP(string popline)
+    {
+        string popSyntax = String.Format("(pop ({0}|{1}))", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.A);
+        string popSyntaxVague = String.Format("pop ({0}|{1})", VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R,
+                                VAGUE_LEXICON.SYNTAX.ARGUEMENTS.A);
+        if (!match(popline, popSyntax, true))
+        {
+            if (!match(popline, popSyntaxVague, true)) return "invalid POP arguement";
+            else return evaluateArgs(
+                popline.Substring(popline.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0].Length)
+            );
+        }
         return "";
     }
 
@@ -219,6 +243,8 @@ public static class SyntaxChecker
         if (match(line, "^(mov )")) return evaluateMOV(line);
         else if (match(line, "^(jmp )")) return evaluateJMP(line);
         else if (match(line, "^(jn?[a-z]+ )")) return evaluateJmpIf(line);
+        else if (match(line, "^(push )")) return evaluatePUSH(line);
+        else if (match(line, "^(pop )")) return evaluatePOP(line);
         else return "unrecognzied statement";
     }
 }
