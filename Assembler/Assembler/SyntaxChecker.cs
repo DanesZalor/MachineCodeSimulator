@@ -35,22 +35,10 @@ public static class SyntaxChecker
                 public const string R_X = "(" + R + "," + X + ")";
                 public const string A_R = "(" + A + "," + R + ")";
             }
-            public static string MOV
-            {
-                get => LEXICON.ETC.mov_starter + "(" + SYNTAX.ARGUEMENTS.R_X + "|" + SYNTAX.ARGUEMENTS.A_R + ")";
-            }
-            public static string JMP
-            {
-                get => LEXICON.ETC.jmp_starter + "(" + SYNTAX.ARGUEMENTS.R + "|" + SYNTAX.ARGUEMENTS.C + "|" + SYNTAX.ARGUEMENTS.L + ")";
-            }
-            public static string JCAZ
-            {
-                get => "jn?[a-z]+ (" + SYNTAX.ARGUEMENTS.R + "|" + SYNTAX.ARGUEMENTS.C + "|" + SYNTAX.ARGUEMENTS.L + ")";
-            }
-        }
-        public static class ETC
-        {
-            public static string jcaz_starter = "jn?[a-z]+ ";
+            public static string PUSH
+            { get => String.Format("push ({0}|{1}|{2})", SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.A, SYNTAX.ARGUEMENTS.C); }
+            public static string POP
+            { get => String.Format("pop ({0}|{1})", SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.A); }
         }
     }
 
@@ -96,22 +84,11 @@ public static class SyntaxChecker
                 public static string R_X { get => "(" + LEXICON.SYNTAX.ARGUEMENTS.R + "," + X + ")"; }
                 public static string A_R { get => "(" + A + "," + LEXICON.SYNTAX.ARGUEMENTS.R + ")"; }
             }
-
-            public static string MOV
-            {
-                get => String.Format("({0}({1}|{2}))", LEXICON.ETC.mov_starter, SYNTAX.ARGUEMENTS.R_X, SYNTAX.ARGUEMENTS.A_R);
-            }
-            public static string JMP
-            {
-                get => String.Format("({0}({1}|{2}))", LEXICON.ETC.jmp_starter, LEXICON.SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.C);
-            }
-            public const string jcaz = "(JN?(C|A|Z|E|B|AE|BE))";
-            public static string JCAZ
-            {
-                get => String.Format("({0}({1}|{2}))", jcaz, LEXICON.SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.C);
-            }
+            public static string PUSH
+            { get => String.Format("(push ({0}|{1}|{2}))", LEXICON.SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.A, SYNTAX.ARGUEMENTS.C); }
+            public static string POP
+            { get => String.Format("(pop ({0}|{1}))", LEXICON.SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.A); }
         }
-
     }
 
     public static void setLabels(string[] labels)
@@ -188,50 +165,60 @@ public static class SyntaxChecker
     }
     private static string evaluateMOV(string movline)
     {
-        if (!match(movline, NEW_LEXICON.SYNTAX.MOV, true))
+        string movSyntaxVague = "mov (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R_X + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.A_R + ")";
+        string movSyntax = "mov (" + NEW_LEXICON.SYNTAX.ARGUEMENTS.R_X + "|" + NEW_LEXICON.SYNTAX.ARGUEMENTS.A_R + ")";
+        if (!match(movline, movSyntax, true))
         {
-            if (!match(movline, VAGUE_LEXICON.SYNTAX.MOV, true)) return "invalid MOV statement";
+            if (!match(movline, movSyntaxVague, true)) return "invalid MOV statement";
             else return evaluateArgs(
                 movline.Substring(getMatch(movline, LEXICON.ETC.mov_starter).Value.Length)
             );
         }
         else return "";
     }
-
     private static string evaluateJMP(string jmpline)
     {
-        if (!match(jmpline, NEW_LEXICON.SYNTAX.JMP, true))
+        string jmpSyntax = String.Format("(jmp ({0}|{1}))", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.C);
+        string jmpSyntaxVague = "jmp (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L + ")";
+        if (!match(jmpline, jmpSyntax, true))
         {
-            if (!match(jmpline, VAGUE_LEXICON.SYNTAX.JMP, true)) return "invalid JMP statement";
+            if (!match(jmpline, jmpSyntaxVague, true)) return "invalid JMP statement";
             else return evaluateArgs(
                 jmpline.Substring(getMatch(jmpline, LEXICON.ETC.jmp_starter).Value.Length)
             );
         }
         return "";
     }
-
     private static string evaluateJmpIf(string jmpline)
     {
-        //"jmp se no".Split
         string[] jmpline_splitted = jmpline.Split(" ", StringSplitOptions.RemoveEmptyEntries);
         string jcaz = jmpline_splitted[0];
         string arg = jmpline_splitted[1];
-        if (!match(jmpline, NEW_LEXICON.SYNTAX.JCAZ, true))
+        string jcazflagSyntax = "(JN?(C|A|Z|E|B|AE|BE))";
+        string jmpSyntax = String.Format("({0} ({1}|{2}))", jcazflagSyntax, LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.C);
+        string jmpSyntaxVague = "jn?[a-z]+ (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L + ")";
+        if (!match(jmpline, jmpSyntax, true))
         {
-            if (!match(jmpline, VAGUE_LEXICON.SYNTAX.JCAZ, true)) return "invalid JumpIf statement";
-            else if (!match(jcaz, NEW_LEXICON.SYNTAX.jcaz, true)) return "'" + jcaz + "' invalid JumpIf flags";
+            if (!match(jmpline, jmpSyntaxVague, true)) return "invalid JumpIf statement";
+            else if (!match(jcaz, jcazflagSyntax, true)) return "'" + jcaz + "' invalid JumpIf flags";
             else return evaluateArgs(arg);
         }
         return "";
     }
+    private static string evaluatePUSH(string pushline)
+    {
+
+        return "";
+    }
+
 
     /// <summary> evaluates instructions' grammar. if grammatically correct, returns an empty string </summary>
     public static string evaluateLine(string line)
     {
         line = line.Split(";")[0]; // remove comments
-        if (match(line, LEXICON.ETC.mov_starter)) return evaluateMOV(line);
-        else if (match(line, LEXICON.ETC.jmp_starter)) return evaluateJMP(line);
-        else if (match(line, VAGUE_LEXICON.ETC.jcaz_starter)) return evaluateJmpIf(line);
+        if (match(line, "^(mov )")) return evaluateMOV(line);
+        else if (match(line, "^(jmp )")) return evaluateJMP(line);
+        else if (match(line, "^(jn?[a-z]+ )")) return evaluateJmpIf(line);
         else return "unrecognzied statement";
     }
 }
