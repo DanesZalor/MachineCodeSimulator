@@ -8,7 +8,7 @@ the class-lib for the Assembler component of **MachineCodeSimulator** project. T
                 cmp b,d
                 jc label1   ;jump if b<d
     
-    
+### 2. Evaluation     
 The initial file undergoes syntax checking. For that, a special Lexicon is derived out of the file. The **Base Lexicon** contains the grammar for Registers, numeric constants, address, etc. To take the custom made labels in mind, a **New Lexicon** is derived. This lexicon considers existing labels to be a constant. 
 #### Evaluation Sub-phases
 ##### 1. Scanning Labels Phase
@@ -20,6 +20,8 @@ The file is once again scanned line-by-line but this time, for the grammar of ea
 
 the way a line is checked is, first it checks if it matches the grammar of the *NEW_LEXICON*, then if it does, it means its in correct grammar. But if it doesn't, it checks if the line matches the grammar of the *VAGUE_LEXICON*, if it does, scan each arguement for errors. but if it doesn't, its an invalid statement.
 
+### Translation 
+
 #### JumpIf flags
 | flags | meaning |
 |-|-|
@@ -29,28 +31,16 @@ the way a line is checked is, first it checks if it matches the grammar of the *
 
 |   Alias   |   Derivation   |  Meaning |
 |--|--|--|
-|   JE  | JZ  | (A xor B)==0 |
+|   JNC | JAE | `011` 
+|   JNA | JCZ | `!(A>B)`→`(A<=B)`
+|   JNZ | JCA |  `output!=0`
+|   JE  | JZ  | `(A xor B)==0` → **(A==B)**|
+|   JNE | JCA |  JE → JZ so...
 |   JB  | JC    | `!((A>B) or (A==B))` → `(A<=B) and (A!=B)` → **(A<B)** |
+|   JNB | JAZ | `!(A<B)`→`(A>=B)` |
 |   JAE | JAZ   | `JA or JE which is JZ` → **(A>=B)** |
-|   JBE | 
+|   JNAE| JC  | JNAE → JB → **JC**
+|   JBE | JCZ | `!JA or JE`→ `JCZ or JZ` → **JCZ**
+|   JNBE| JA  | `!(A<=B)` → **A>B**
+---
 
-
-
-```
-C - Carry flag
-A - A>B flag
-Z - Zero flag
-
-Basic Instruction
-JC, JA, JZ, 
-JCA, JAZ, JCZ,
-JCAZ
-
-Alias               Derivation      Meaning
-JE                  JZ              if A==B
-JB                  JC              ~((A>B) || (A==B)) 
-                                    --> ((A<=B) && (A!=B)) --> (A<B)
-JAE                 JAZ             if (A>B) ||
-JBE                 JCZ             if 
-
-```

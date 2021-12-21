@@ -146,4 +146,16 @@ public class AssemblerTest
         Assert.Equal(expected_res, actual_res);
     }
 
+    [Theory]
+    [InlineData("ja b")]
+    [InlineData("jnz label1")]
+    [InlineData("jae penis", "'penis' is a non-existent token")]
+    [InlineData("jew f", "'jew' invalid JumpIf flags")]
+    public void JmpIf_SyntaxCheck(string line, string expected_res = "")
+    {
+        SyntaxChecker.setLabels(new string[2] { "label1", "sex" });
+        string actual_res = SyntaxChecker.evaluateLine(line);
+        Assert.Equal(expected_res, actual_res);
+    }
+
 }

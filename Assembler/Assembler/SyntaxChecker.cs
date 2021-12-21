@@ -43,6 +43,14 @@ public static class SyntaxChecker
             {
                 get => LEXICON.ETC.jmp_starter + "(" + SYNTAX.ARGUEMENTS.R + "|" + SYNTAX.ARGUEMENTS.C + "|" + SYNTAX.ARGUEMENTS.L + ")";
             }
+            public static string JCAZ
+            {
+                get => "jn?[a-z]+ (" + SYNTAX.ARGUEMENTS.R + "|" + SYNTAX.ARGUEMENTS.C + "|" + SYNTAX.ARGUEMENTS.L + ")";
+            }
+        }
+        public static class ETC
+        {
+            public static string jcaz_starter = "jn?[a-z]+ ";
         }
     }
 
@@ -97,15 +105,13 @@ public static class SyntaxChecker
             {
                 get => String.Format("({0}({1}|{2}))", LEXICON.ETC.jmp_starter, LEXICON.SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.C);
             }
+            public const string jcaz = "(JN?(C|NC|A|NA|Z|NZ|E|NE|B|NB|AE|JNAE|JBE|JNBE))";
             public static string JCAZ
             {
-                get => String.Format("({0}({1}|{2}))", LEXICON.ETC.jcaz_starter, LEXICON.SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.C);
+                get => String.Format("({0}({1}|{2}))", jcaz, LEXICON.SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.C);
             }
         }
-        public static class ETC
-        {
-            public const string jcaz_starter = "";
-        }
+
     }
 
     public static void setLabels(string[] labels)
@@ -194,7 +200,6 @@ public static class SyntaxChecker
 
     private static string evaluateJMP(string jmpline)
     {
-        //string arg = ; // get the arg
         if (!match(jmpline, NEW_LEXICON.SYNTAX.JMP, true))
         {
             if (!match(jmpline, VAGUE_LEXICON.SYNTAX.JMP, true)) return "invalid JMP statement";
@@ -205,12 +210,28 @@ public static class SyntaxChecker
         return "";
     }
 
+    private static string evaluateJmpIf(string jmpline)
+    {
+        //"jmp se no".Split
+        string[] jmpline_splitted = jmpline.Split(" ", StringSplitOptions.RemoveEmptyEntries);
+        string jcaz = jmpline_splitted[0];
+        string arg = jmpline_splitted[1];
+        if (!match(jmpline, NEW_LEXICON.SYNTAX.JCAZ, true))
+        {
+            if (!match(jmpline, VAGUE_LEXICON.SYNTAX.JCAZ, true)) return "invalid JumpIf statement";
+            else if (!match(jcaz, NEW_LEXICON.SYNTAX.jcaz, true)) return "'" + jcaz + "' invalid JumpIf flags";
+            else return evaluateArgs(arg);
+        }
+        return "";
+    }
+
     /// <summary> evaluates instructions' grammar. if grammatically correct, returns an empty string </summary>
     public static string evaluateLine(string line)
     {
         line = line.Split(";")[0]; // remove comments
         if (match(line, LEXICON.ETC.mov_starter)) return evaluateMOV(line);
         else if (match(line, LEXICON.ETC.jmp_starter)) return evaluateJMP(line);
+        else if (match(line, VAGUE_LEXICON.ETC.jcaz_starter)) return evaluateJmpIf(line);
         else return "unrecognzied statement";
     }
 }
