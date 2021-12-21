@@ -105,7 +105,7 @@ public static class SyntaxChecker
             {
                 get => String.Format("({0}({1}|{2}))", LEXICON.ETC.jmp_starter, LEXICON.SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.C);
             }
-            public const string jcaz = "(JN?(C|NC|A|NA|Z|NZ|E|NE|B|NB|AE|JNAE|JBE|JNBE))";
+            public const string jcaz = "(JN?(C|A|Z|E|B|AE|BE))";
             public static string JCAZ
             {
                 get => String.Format("({0}({1}|{2}))", jcaz, LEXICON.SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.C);
