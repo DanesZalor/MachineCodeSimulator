@@ -249,6 +249,39 @@ public static class SyntaxChecker
         return "";
     }
 
+    private static string evaluateALU(string aluline)
+    {
+        string evaluateALU_Nomadic(string aluline)
+        {
+            string operation = aluline.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0];
+            string syntax = String.Format("((not|inc|dec|shl|shr) {0})", LEXICON.SYNTAX.ARGUEMENTS.R);
+            if (!match(aluline, syntax, true)) return "invalid " + operation.ToUpper() + " arguement";
+            return "";
+        }
+        string evaluateALU_Dyadic(string aluline)
+        {
+            string operation = aluline.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0];
+            string syntax = String.Format("(cmp|xor|and|or|not|shr|shl|div|mul|sub|add) {0},({0}|{1}|{2})", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.A, NEW_LEXICON.SYNTAX.ARGUEMENTS.C);
+            string syntaxVague = String.Format("(cmp|xor|and|or|not|shr|shl|div|mul|sub|add) {0},{1}", VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.X);
+            if (!match(aluline, syntax, true))
+            {
+                if (!match(aluline, syntaxVague, true)) return "invalid " + operation.ToUpper() + " arguements";
+                else return evaluateArgs(aluline.Substring(operation.Length));
+            }
+            return "";
+        }
+
+        string evaluation = "";
+        if (match(aluline, "^(not|inc|dec) "))
+            evaluation = evaluateALU_Nomadic(aluline);
+        else if (match(aluline, "^(cmp|xor|and|or|div|mul|sub|add) "))
+            evaluation = evaluateALU_Dyadic(aluline);
+        else if (match(aluline, "^(shl|shr)"))
+            evaluation = (aluline.Contains(',') ? evaluateALU_Dyadic(aluline) : evaluateALU_Nomadic(aluline));
+
+        return evaluation;
+    }
+
     /// <summary> evaluates instructions' grammar. if grammatically correct, returns an empty string </summary>
     public static string evaluateLine(string line)
     {
@@ -259,6 +292,7 @@ public static class SyntaxChecker
         else if (match(line, "^(push )")) return evaluatePUSH(line);
         else if (match(line, "^(pop )")) return evaluatePOP(line);
         else if (match(line, "((^(call ))|(^ret$))")) return evaluateCALL(line);
+        else if (match(line, "^(cmp|xor|and|or|shr|shl|div|mul|sub|add|not|inc|dec) ")) return evaluateALU(line);
         else return "unrecognzied statement";
     }
 }

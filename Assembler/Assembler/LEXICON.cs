@@ -17,8 +17,7 @@ public static class LEXICON
         "))";
         public const string OFFSET = "(" +
             "(\\+" + SPACE + "((1[0-5])|[1-9]))|" +  // +1 to +15
-            "(-" + SPACE + "((1[0-6])|[1-9]))|" +     // -1 to -16
-            "(\\+" + SPACE + "0)" +
+            "(-" + SPACE + "((1[0-6])|[1-9]))" +     // -1 to -16
         ")";
 
         public const string ADDRESS_REGISTER = "(\\[" + SPACE + REGISTER + SPACE + "\\])";

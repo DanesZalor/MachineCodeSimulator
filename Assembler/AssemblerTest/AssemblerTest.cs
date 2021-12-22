@@ -235,4 +235,41 @@ public class AssemblerTest
             Assert.Equal(expected_res, actual_res);
         }
     }
+
+    public class ALUOperations_SyntaxCheck
+    {
+        [Theory]
+        // nomadic operations
+        [InlineData("not b")]
+        [InlineData("inc b")]
+        [InlineData("dec b")]
+        [InlineData("not c")]
+        [InlineData("not sp")]
+        [InlineData("not penisasf", "invalid NOT arguement")]
+        [InlineData("inc penisasf", "invalid INC arguement")]
+        [InlineData("dec penisasf", "invalid DEC arguement")]
+        [InlineData("shl b")]
+        [InlineData("shr c")]
+        [InlineData("shr penis1", "invalid SHR arguement")]
+        // dyadic operations
+        [InlineData("add a, b")]
+        [InlineData("sub     c, d")]
+        [InlineData("mul     e,     f")]
+        [InlineData("div     g  ,   sp")]
+        [InlineData("shl b, c")]
+        [InlineData("shl b, sp")]
+        [InlineData("shl b, [a]")]
+        [InlineData("shl g, [c+15]")]
+        [InlineData("shl g, [c-16]")]
+        [InlineData("shl g, [c-17]", "'-17' offset out of bounds")]
+        [InlineData("xor [c-12], g", "invalid XOR arguements")]
+        [InlineData("xor sp, label1")]
+        [InlineData("xor g, [s3xyB3n1s]")]
+        public void ALUOperation_SyntaxCheck(string line, string expected_res = "")
+        {
+            SyntaxChecker.setLabels(new string[2] { "label1", "s3xyB3n1s" });
+            string actual_res = SyntaxChecker.evaluateLine(line);
+            Assert.Equal(expected_res, actual_res);
+        }
+    }
 }
