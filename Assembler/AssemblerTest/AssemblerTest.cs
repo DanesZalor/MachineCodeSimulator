@@ -215,4 +215,24 @@ public class AssemblerTest
             Assert.Equal(expected_res, actual_res);
         }
     }
+
+    public class CallAndRet_SyntaxCheck
+    {
+        [Theory]
+        [InlineData("call a")]
+        [InlineData("call c")]
+        [InlineData("call sp")]
+        [InlineData("call [a]", "invalid CALL arguement")]
+        [InlineData("call 25")]
+        [InlineData("call 256", "'256' not an 8-bit constant")]
+        [InlineData("call s3xyB3n1s")]
+        [InlineData("call jews", "'jews' is a non-existent token")]
+        [InlineData("ret")]
+        public void CallRet_SyntaxCheck(string line, string expected_res = "")
+        {
+            SyntaxChecker.setLabels(new string[2] { "label1", "s3xyB3n1s" });
+            string actual_res = SyntaxChecker.evaluateLine(line);
+            Assert.Equal(expected_res, actual_res);
+        }
+    }
 }

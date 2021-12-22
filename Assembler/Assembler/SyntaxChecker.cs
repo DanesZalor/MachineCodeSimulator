@@ -235,6 +235,19 @@ public static class SyntaxChecker
         return "";
     }
 
+    private static string evaluateCALL(string callline)
+    {
+        string callSyntax = String.Format("(call ({0}|{1}))", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.C);
+        string callSyntaxVague = String.Format("(call ({0}|{1}))", VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C);
+        if (!match(callline, "ret", true) && !match(callline, callSyntax, true))
+        {
+            if (!match(callline, callSyntaxVague, true)) return "invalid CALL arguement";
+            else return evaluateArgs(
+                callline.Substring(callline.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0].Length)
+            );
+        }
+        return "";
+    }
 
     /// <summary> evaluates instructions' grammar. if grammatically correct, returns an empty string </summary>
     public static string evaluateLine(string line)
@@ -245,6 +258,7 @@ public static class SyntaxChecker
         else if (match(line, "^(jn?[a-z]+ )")) return evaluateJmpIf(line);
         else if (match(line, "^(push )")) return evaluatePUSH(line);
         else if (match(line, "^(pop )")) return evaluatePOP(line);
+        else if (match(line, "((^(call ))|(^ret$))")) return evaluateCALL(line);
         else return "unrecognzied statement";
     }
 }
