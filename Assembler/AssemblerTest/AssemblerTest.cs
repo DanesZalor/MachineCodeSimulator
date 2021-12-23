@@ -213,11 +213,30 @@ public class SyntaxCheck
             linesOfCode += "    inc a\n";
             linesOfCode += "    cmp [a],b\n";
             linesOfCode += "    jb iterates\n";
+            linesOfCode += "en:\n";
 
             string actual_res = SyntaxChecker.evaluateProgram(linesOfCode);
             //Console.WriteLine(actual_res);
             Assert.Equal(1, 1);
         }
+    }
+}
+
+public class PreprocessorDirectivesTest
+{
+    [Fact]
+    public void FullLineCheck()
+    {
+        string linesOfCode = "jnbe 10  ; counter\n";
+        linesOfCode += "add a, 1; limit\n\n";
+        linesOfCode += "useless: mul b, 1; useless\n";
+
+        string actual_res = PreprocessorDirectives.translateAlias(linesOfCode);
+
+        string expected_res = "ja 10\n";
+        expected_res += "inc a\n";
+        expected_res += "useless:";
+        Assert.Equal(expected_res, actual_res);
     }
 }
 

@@ -306,7 +306,12 @@ public static class SyntaxChecker
         // Scanning Labels Phase
         string labelsDeclared = "";
         for (int i = 0; i < lines.Length; i++)
-            labelsDeclared += getMatch(lines[i], "^([a-z]((\\w)*)):").Value;
+        {
+            string temp = getMatch(lines[i], "^([a-z]((\\w){3,})):").Value;
+            if (temp.Length < 3) return "'" + "' label declaration must have atleast 3 characters";
+            labelsDeclared += temp;
+        }
+
         setLabels(labelsDeclared.Split(':'));
 
         // Grammar Evaluation Phase
