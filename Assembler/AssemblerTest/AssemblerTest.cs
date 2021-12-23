@@ -5,7 +5,7 @@ using System;
 
 namespace AssemblerTest;
 
-/*
+
 public class AssemblerTest
 {
 
@@ -275,7 +275,7 @@ public class AssemblerTest
 
 }
 
-*/
+
 public class MultiLineTest
 {
     [Fact]
