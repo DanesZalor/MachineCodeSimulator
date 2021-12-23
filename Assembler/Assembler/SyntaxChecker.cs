@@ -285,7 +285,9 @@ public static class SyntaxChecker
     /// <summary> evaluates instructions' grammar. if grammatically correct, returns an empty string </summary>
     public static string evaluateLine(string line)
     {
-        line = line.Split(";")[0]; // remove comments
+        // extract the instruction line
+        line = line.Split(';', ':', StringSplitOptions.TrimEntries)[line.Contains(':') ? 1 : 0];
+
         if (match(line, "^(mov )")) return evaluateMOV(line);
         else if (match(line, "^(jmp )")) return evaluateJMP(line);
         else if (match(line, "^(jn?[a-z]+ )")) return evaluateJmpIf(line);
@@ -294,5 +296,31 @@ public static class SyntaxChecker
         else if (match(line, "((^(call ))|(^ret$))")) return evaluateCALL(line);
         else if (match(line, "^(cmp|xor|and|or|shr|shl|div|mul|sub|add|not|inc|dec) ")) return evaluateALU(line);
         else return "unrecognzied statement";
+    }
+
+    /// <summary> recieve a string treated as linesOfCode and is evaluated line by line. </summary>
+    public static string evaluateProgram(string linesOfCode)
+    {
+        string[] lines = linesOfCode.Split('\n');
+
+        // Scanning Labels Phase
+        string labelsDeclared = "";
+        for (int i = 0; i < lines.Length; i++)
+            labelsDeclared += getMatch(lines[i], "^([a-z]((\\w)*)):").Value;
+        setLabels(labelsDeclared.Split(':'));
+
+        // Grammar Evaluation Phase
+        string codeEval = "";
+        for (int i = 0; i < lines.Length; i++)
+        {
+            string singleLine = lines[i].Trim();
+            if (singleLine.EndsWith(":") || singleLine.StartsWith(";") || singleLine.Length < 1) continue;
+            string lineEval = evaluateLine(singleLine);
+            if (lineEval != "")
+                codeEval += String.Format("Line {0} '{1}'\n{2}\n\n", i, lines[i], lineEval);
+        }
+
+        if (codeEval != "") codeEval = "SYNTAX ERROR(s)\n" + codeEval;
+        return codeEval;
     }
 }

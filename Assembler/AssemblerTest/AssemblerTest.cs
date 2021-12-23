@@ -5,7 +5,7 @@ using System;
 
 namespace AssemblerTest;
 
-
+/*
 public class AssemblerTest
 {
 
@@ -271,5 +271,25 @@ public class AssemblerTest
             string actual_res = SyntaxChecker.evaluateLine(line);
             Assert.Equal(expected_res, actual_res);
         }
+    }
+
+}
+
+*/
+public class MultiLineTest
+{
+    [Fact]
+    public void FullSyntaxCheck()
+    {
+        string linesOfCode = "mov a, 0        ; counter\n";
+        linesOfCode += "mov b, 10; limit\n";
+        linesOfCode += "iterate:    \n";
+        linesOfCode += "    inc a\n";
+        linesOfCode += "    cmp [a],b\n";
+        linesOfCode += "    jb iterates\n";
+
+        string actual_res = SyntaxChecker.evaluateProgram(linesOfCode);
+        //Console.WriteLine(actual_res);
+        Assert.Equal(1, 1);
     }
 }
