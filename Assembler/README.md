@@ -54,17 +54,45 @@ some Arithmetic & Logic operations can operate with 1 arguement, 2 arguements, o
 
 for `SHL` and `SHR`, when used in a nomadic ALU instruction, is basically shifted by 1 position.
 
-## 3. Pre-Translation
-Some instructions can be optimized and replaced with an instruction that takes up less memory upon compilation.
-| Before | After |
-|--|--|
-| `ADD b, 1` | `INC b` |
-| `SUB b, 1` | `DEC b` |
-| `SHL b, 1` | `SHL b` |
-| `SHR b, 1` | `SHR b` |
-| `MUL b, 1` | ` ` |
-| `DIV b, 1` | ` ` |
-| `ADD b, 0` | ` ` |
-| `SUB b, 0` | ` ` | 
+## 3. Preprocessor Directives
+The assembly code will be reduced to smaller bits for optimization
+1. The comments will be removed
+2. the JXXX instructions are translated to their corresponding alias derivations 
 
-  
+3. Some instructions can be optimized and replaced with an instruction that takes up less memory upon compilation.
+
+    | Before | After |
+    |--|--|
+    | `ADD b, 1` | `INC b` |
+    | `SUB b, 1` | `DEC b` |
+    | `SHL b, 1` | `SHL b` |
+    | `SHR b, 1` | `SHR b` |
+    | `MUL b, 1` | ` ` |
+    | `DIV b, 1` | ` ` |
+    | `ADD b, 0` | ` ` |
+    | `SUB b, 0` | ` ` | 
+4. Lastly the labels will be replaced with their corresponding constants
+
+ 
+
+Example: From 
+```
+mov a, 0 ; counter
+mov b, 10; limit
+
+iterate:
+    add a, 1
+    div b, 1
+    cmp a,b
+    jb iterate
+```
+To
+```
+mov a, 0
+mov b, 10 
+inc a
+cmp a,b 
+jc 4
+```
+
+## 4. Compilation
