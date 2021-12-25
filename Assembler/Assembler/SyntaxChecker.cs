@@ -8,35 +8,31 @@ public static class SyntaxChecker
     {
         public static class TOKENS
         {
-            public const string REGISTER = "([a-z]+)";
             public const string LABEL = "(([a-z])((\\w)*))";
             private const string DECIMAL = "";
             public const string CONST = "([0-9]+)";
             public const string OFFSET = "([+-]" + LEXICON.SPACE + "(\\d)+)";
-            public const string ANY = "(" + REGISTER + "|" + LABEL + "|" + CONST + ")";
+            public const string ANY = "(" + LABEL + "|" + CONST + ")";
 
         }
         public static class SYNTAX
         {
             public static class ARGUEMENTS
             {
-                public const string R = "(" + LEXICON.SPACE + TOKENS.REGISTER + LEXICON.SPACE + ")";
                 public const string L = "(" + LEXICON.SPACE + TOKENS.LABEL + LEXICON.SPACE + ")";
                 public const string C = "(" + LEXICON.SPACE + TOKENS.CONST + LEXICON.SPACE + ")";
                 public const string A = "(" + LEXICON.SPACE + "\\[" + LEXICON.SPACE +
                     "(" +
-                        R + "|" + L + "|" + C + "|" +
+                        L + "|" + C + "|" +
                         "(" +
-                            R + VAGUE_LEXICON.TOKENS.OFFSET +
+                            L + VAGUE_LEXICON.TOKENS.OFFSET +
                         ")" +
                     ")" +
                 LEXICON.SPACE + "\\]" + LEXICON.SPACE + ")";
-                public const string X = "(" + R + "|" + L + "|" + C + "|" + A + ")";
-                public const string R_X = "(" + R + "," + X + ")";
-                public const string A_R = "(" + A + "," + R + ")";
+                public const string X = "(" + L + "|" + C + "|" + A + ")";
+                public const string R_X = "(" + L + "," + X + ")";
+                public const string A_R = "(" + A + "," + L + ")";
             }
-            public static string POP
-            { get => String.Format("pop ({0}|{1})", SYNTAX.ARGUEMENTS.R, SYNTAX.ARGUEMENTS.A); }
         }
     }
 
@@ -183,7 +179,7 @@ public static class SyntaxChecker
     private static string evaluateJMP(string jmpline)
     {
         string jmpSyntax = String.Format("(jmp ({0}|{1}))", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.C);
-        string jmpSyntaxVague = "jmp (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L + ")";
+        string jmpSyntaxVague = "jmp (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C + ")";
         if (!match(jmpline, jmpSyntax, true))
         {
             if (!match(jmpline, jmpSyntaxVague, true)) return "invalid JMP arguement";
@@ -200,7 +196,7 @@ public static class SyntaxChecker
         string arg = jmpline_splitted[1];
         string jcazflagSyntax = "(JN?(C|A|Z|E|B|AE|BE))";
         string jmpSyntax = String.Format("({0} ({1}|{2}))", jcazflagSyntax, LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.C);
-        string jmpSyntaxVague = "jn?[a-z]+ (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L + ")";
+        string jmpSyntaxVague = "jn?[a-z]+ (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L + ")";
         if (!match(jmpline, jmpSyntax, true))
         {
             if (!match(jmpline, jmpSyntaxVague, true)) return "invalid JumpIf arguement";
@@ -212,8 +208,7 @@ public static class SyntaxChecker
     private static string evaluatePUSH(string pushline)
     {
         string pushSyntax = String.Format("(push ({0}|{1}|{2}))", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.A, NEW_LEXICON.SYNTAX.ARGUEMENTS.C);
-        string pushSyntaxVague = String.Format("push ({0}|{1}|{2}|{3})", VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R,
-                                    VAGUE_LEXICON.SYNTAX.ARGUEMENTS.A, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C,
+        string pushSyntaxVague = String.Format("push ({0}|{1}|{2})", VAGUE_LEXICON.SYNTAX.ARGUEMENTS.A, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C,
                                     VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L);
         if (!match(pushline, pushSyntax, true))
         {
@@ -228,7 +223,7 @@ public static class SyntaxChecker
     private static string evaluatePOP(string popline)
     {
         string popSyntax = String.Format("(pop ({0}|{1}))", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.A);
-        string popSyntaxVague = String.Format("pop ({0}|{1})", VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R,
+        string popSyntaxVague = String.Format("pop ({0}|{1})", VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L,
                                 VAGUE_LEXICON.SYNTAX.ARGUEMENTS.A);
         if (!match(popline, popSyntax, true))
         {
@@ -267,7 +262,7 @@ public static class SyntaxChecker
         {
             string operation = aluline.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0];
             string syntax = String.Format("(cmp|xor|and|or|not|shr|shl|div|mul|sub|add) {0},({0}|{1}|{2})", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.A, NEW_LEXICON.SYNTAX.ARGUEMENTS.C);
-            string syntaxVague = String.Format("(cmp|xor|and|or|not|shr|shl|div|mul|sub|add) {0},{1}", VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.X);
+            string syntaxVague = String.Format("(cmp|xor|and|or|not|shr|shl|div|mul|sub|add) {0},{1}", VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.X);
             if (!match(aluline, syntax, true))
             {
                 if (!match(aluline, syntaxVague, true)) return "invalid " + operation.ToUpper() + " arguements";
