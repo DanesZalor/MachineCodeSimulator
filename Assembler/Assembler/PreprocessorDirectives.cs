@@ -29,27 +29,30 @@ public static class PreprocessorDirectives
             // add r, 1 -> inc r
             {String.Format("add {0},{1}1", LEXICON.SYNTAX.ARGUEMENTS.R, LEXICON.SPACE),"inc <REG>"},
             // sub r, 1 -> dec r
-            {String.Format("dec {0},{1}1", LEXICON.SYNTAX.ARGUEMENTS.R, LEXICON.SPACE),"dec <REG>"},
+            {String.Format("sub {0},{1}1", LEXICON.SYNTAX.ARGUEMENTS.R, LEXICON.SPACE),"dec <REG>"},
             // sh[lr] r, 1
             {String.Format("shl {0},{1}1", LEXICON.SYNTAX.ARGUEMENTS.R, LEXICON.SPACE),"shl <REG>"},
             {String.Format("shr {0},{1}1", LEXICON.SYNTAX.ARGUEMENTS.R, LEXICON.SPACE),"shr <REG>"},
         };
-        string[] lines = linesOfCode.Split('\n',StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.RemoveEmptyEntries);
         string newLines = "";
-        foreach (string line in lines)
+
+        using (var reader = new StringReader(linesOfCode))
         {
-            string newLine = line.Split(';')[0].Trim();
-            for (int i = 0; i < 17; i++)
+            for (string? line = reader.ReadLine(); line != null; line = reader.ReadLine())
             {
-                if (match(newLine, Aliases[i, 0]))
+                string newLine = new string(line.Split(';')[0].Trim());
+                for (int i = 0; i < 17; i++)
                 {
-                    newLine = Regex.Replace(newLine, Aliases[i, 0], Aliases[i, 1]);
-                    if (i >= 13)
-                        newLine = Regex.Replace(newLine, "<REG>", getMatch(line, LEXICON.TOKENS.REGISTER).Value);
-                    break;
+                    if (match(newLine, Aliases[i, 0]))
+                    {
+                        newLine = Regex.Replace(newLine, Aliases[i, 0], Aliases[i, 1]);
+                        if (i >= 13)
+                            newLine = Regex.Replace(newLine, "<REG>", getMatch(line, " "+LEXICON.TOKENS.REGISTER).Value.Trim());
+                        break;
+                    }
                 }
+                if(newLine.Length>0) newLines = new string(string.Concat(newLines,newLine.Trim()+"\n"));
             }
-            newLines += newLine + (newLine.Length==0?"":"\n");
         }
         return newLines.Trim();
     }
@@ -59,54 +62,57 @@ public static class PreprocessorDirectives
     * - all label declarations are already correct
     * - all label references have been declared
     */
-    private static string replaceLabels(string[] lines)
+    private static string replaceLabels(string linesOfCode)
     {
         // Scan-Labels
         string labels = "";
         string labelCoords = "";
 
-        int coordCounter = 0;
-
-        // instruction that cost 1 byte
-        string cost1 = "^((clf|ret)|"+
-            String.Format(
-                "((not|shl|shr|inc|dec|call|pop|push|jmp|jca?z?|jc?az?|jc?a?z) {0})",
-                LEXICON.SYNTAX.ARGUEMENTS.R
-            ) +
-        ")$";
-        string cost3 = "^(cmp|xor|not|and|or|shl|shr|div|mul|sub|add)";
-        
         // gather labels and coordinates
-        foreach (string line in lines)
+        using (var reader = new StringReader(linesOfCode))
         {
-            if (line.Contains(':')) { 
-                labels = new string(string.Concat(labels, (labels.Length>0?"|":"") + line.Split(':')[0] ));
-                labelCoords = new string(string.Concat(labelCoords, Convert.ToString(coordCounter) + (labelCoords.Length>0?",":"") ));
-            }else{
-                if(match(line, cost1)) coordCounter += 1;
-                else if(match(line, cost3)) coordCounter += 3;
-                else coordCounter += 2;
+            string cost1 = "^((clf|ret)|"+
+            String.Format(
+                    "((not|shl|shr|inc|dec|call|pop|push|jmp|jca?z?|jc?az?|jc?a?z) {0})",
+                    LEXICON.SYNTAX.ARGUEMENTS.R
+                ) +
+            ")$";
+            string cost3 = "^(cmp|xor|not|and|or|shl|shr|div|mul|sub|add)";
+            int coordCounter = 0;
+
+            for (string? line = reader.ReadLine(); line != null; line = reader.ReadLine())
+            {
+                if (line.Contains(':')) { 
+                    labels = new string(string.Concat(labels, (labels.Length>0?"|":"") + line.Split(':')[0] ));
+                    labelCoords = new string(string.Concat(labelCoords, (labelCoords.Length>0?",":"") + Convert.ToString(coordCounter) ));
+                }else{
+                    if(match(line, cost1)) coordCounter += 1;
+                    else if(match(line, cost3)) coordCounter += 3;
+                    else coordCounter += 2;
+                }
             }
         }
-        //Console.WriteLine("labels: "+labels);Console.WriteLine("coords: "+labelCoords);
-        
+        //Console.WriteLine("labels "+labels);Console.WriteLine("coords "+labelCoords);
         string[] labelsArray = labels.Split('|', StringSplitOptions.RemoveEmptyEntries);
         string[] coordsArray = labelCoords.Split(',',StringSplitOptions.RemoveEmptyEntries);
-        string newLines = string.Join("\n",lines);
-            
-        newLines = new string(Regex.Replace(newLines,String.Format("({0}:)",labels),""));
+        string newLines = linesOfCode;
+    
+        newLines = new string(Regex.Replace(newLines,".*:",""));
         newLines = new string(Regex.Replace(newLines,"(\n){2,}","\n"));
         for(int i = 0; i<labelsArray.Length; i++)
             newLines = Regex.Replace(newLines,"\\b"+labelsArray[i]+"\\b", coordsArray[i]);
-        return newLines;
+        return newLines.Trim();
     }
 
     public static string translateAlias(string linesOfCode)
     {
         linesOfCode = new string(linesOfCode.ToLower()); // lowercase the entire code
         linesOfCode = new string(linesOfCode.Replace(":",":\n")); // separate label declarations into different lines
+        Console.WriteLine("OG:\n----------\n"+linesOfCode);
         string replacedAliases = replaceAliases(linesOfCode);
-        string replacedLabels = replaceLabels(replacedAliases.Split('\n'));
+        Console.WriteLine("replaceAliases:\n----------\n"+replacedAliases);
+        string replacedLabels = replaceLabels(replacedAliases);
+        Console.WriteLine("replaceLabels:\n----------\n"+replacedLabels);
         return replacedLabels;
     }
 }
