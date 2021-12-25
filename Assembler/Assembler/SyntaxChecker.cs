@@ -9,8 +9,12 @@ public static class SyntaxChecker
         public static class TOKENS
         {
             public const string LABEL = "(([a-z])((\\w)*))";
-            private const string DECIMAL = "";
-            public const string CONST = "([0-9]+)";
+            private const string DECIMAL = "([0-9]+)";
+            private const string HEXADECIMAL = "(0x[A-F]*)";
+            private const string BINARY = "(0b[0-1]*)";
+            private const string STRING = "(\".*\")";
+
+            public const string CONST = "("+BINARY+"|"+HEXADECIMAL+"|"+ DECIMAL + ")";
             public const string OFFSET = "([+-]" + LEXICON.SPACE + "(\\d)+)";
             public const string ANY = "(" + LABEL + "|" + CONST + ")";
 
@@ -125,10 +129,14 @@ public static class SyntaxChecker
                                     (
                                         String.Format("'{0}' offset out of bounds",getMatch(single_arg, VAGUE_LEXICON.TOKENS.OFFSET).Value)
                                     )
-                                ):("")
-                            ):( match(single_arg.Split('+', StringSplitOptions.RemoveEmptyEntries)[0], VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L)? // no offset?
-                                String.Format("'{0}' non-existent token",single_arg.Replace("[","").Replace("]","").Trim()):
-                                String.Format("'{0}' not an 8-bit constant", single_arg.Replace("[","").Replace("]","").Trim())
+                                ):(  // is it a legit offset, then check the register
+                                    !match(single_arg.Split('+', StringSplitOptions.RemoveEmptyEntries)[0].Trim(), LEXICON.SYNTAX.ARGUEMENTS.R, true)?
+                                        String.Format("'{0}' not a register",single_arg.Replace("[","").Replace("]","").Trim()):("")
+                                )
+                            ):( String.Format("'{0}' {1}", Regex.Replace(single_arg, "(\\[|\\])", "").Trim(), 
+                                match( Regex.Replace(single_arg, "(\\[|\\])", "").Trim(), VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C, true)?
+                                        "not an 8-bit constant":"non-existent token" 
+                                )
                             )
                         )
                     )
@@ -281,6 +289,12 @@ public static class SyntaxChecker
         return evaluation;
     }
 
+    private static string evaluateDB(string dbline){
+        const string const_string = "(" + LEXICON.SPACE + "\".*\"" + LEXICON.SPACE + ")";
+        const string const_stringVague = VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L;
+        return "";
+    }
+
     /// <summary> evaluates instructions' grammar. </summary>
     /// <returns> a detailed feedback of syntax error. Returns an empty string if there is none </returns>
     public static string evaluateLine(string line)
@@ -303,6 +317,7 @@ public static class SyntaxChecker
         else if (match(line, "^(pop )")) return evaluatePOP(line);
         else if (match(line, "((^(call ))|(^ret$))")) return evaluateCALL(line);
         else if (match(line, "^(cmp|xor|and|or|shr|shl|div|mul|sub|add|not|inc|dec) ")) return evaluateALU(line);
+        else if (match(line, "^db ")) return evaluateDB(line);
         else return "unrecognzied statement";
     }
 

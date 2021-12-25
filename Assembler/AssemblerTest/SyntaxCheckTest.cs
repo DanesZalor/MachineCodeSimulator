@@ -4,6 +4,7 @@ using Assembler;
 namespace AssemblerTest;
 public class SyntaxCheck
 {
+    
     public class MOV_SyntaxCheck
     {
         private static class SyntaxErrorMsgRes
@@ -198,6 +199,22 @@ public class SyntaxCheck
             Assert.Equal(expected_res, actual_res);
         }
     }
+    
+
+    public class ConstantTest{
+        [Theory]
+        [InlineData("jnbe 0xae")]
+        [InlineData("jmp 0x01")]
+        
+        [InlineData("push 0xffa", "'0xffa' not an 8-bit constant")]
+        [InlineData("pop [0b000110]")]
+        [InlineData("pop [ 0b000110101]", "'0b000110101' not an 8-bit constant")]
+        public void TestingConstants(string line, string expected_res = "")
+        {
+            string actual_res = SyntaxChecker.evaluateLine(line);
+            Assert.Equal(expected_res, actual_res);
+        }
+    }
 
     public class MultiLineTest
     {
@@ -221,7 +238,12 @@ public class SyntaxCheck
             string actual_res = SyntaxChecker.evaluateProgram(linesOfCode);
             Assert.Equal(expected_res, actual_res );
         }
-       
+
+        [Fact]
+        public void Test2(){
+            string linesOfCode = "";
+        }
+
         [Fact]
         public void InstructionSyntaxError()
         {

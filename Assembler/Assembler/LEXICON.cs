@@ -8,6 +8,7 @@ public static class LEXICON
     public static class TOKENS
     {
         public const string REGISTER = "([a-g]|(sp))";
+        private const string STRING = "(\".*\")";
         private const string DECIMAL = "(0*(" +
             "(25[0-5])|" +       // 250-255
             "(2[0-4][0-9])|" +  // 200 - 249
@@ -15,6 +16,9 @@ public static class LEXICON
             "([1-9][0-9]?)|" +  // 1-99
             "(0)" +
         "))";
+        private const string HEXADECIMAL = "(0x([0-9]|[a-f]){1,2})";
+        private const string BINARY = "(0b[01]{1,8})";
+
         public const string OFFSET = "(" +
             "(\\+" + SPACE + "((1[0-5])|[1-9]))|" +  // +1 to +15
             "(-" + SPACE + "((1[0-6])|[1-9]))" +     // -1 to -16
@@ -28,7 +32,9 @@ public static class LEXICON
             ADDRESS_CONST + "|" +
             ADDRESS_REGISTER +
         ")";
-        public const string CONST = DECIMAL;
+        public const string CONST = "(" + 
+            BINARY + "|" + HEXADECIMAL + "|" + DECIMAL + 
+        ")";
         public const string ANY = "(" +
             REGISTER + "|" +
             CONST + "|" +
