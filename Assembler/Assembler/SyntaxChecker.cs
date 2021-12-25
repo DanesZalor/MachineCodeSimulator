@@ -290,8 +290,11 @@ public static class SyntaxChecker
     }
 
     private static string evaluateDB(string dbline){
-        const string const_string = "(" + LEXICON.SPACE + "\".*\"" + LEXICON.SPACE + ")";
-        const string const_stringVague = VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L;
+        const string db_string = "(db " + LEXICON.SPACE + "\".*\"" + LEXICON.SPACE + ")";
+        const string db_stringVague = "(db " + LEXICON.SPACE + "(\").*(\")?" + LEXICON.SPACE + ")";
+        string dbarg = dbline.Substring(2).Trim();
+        if(match(dbline, db_stringVague, true) && !match(dbline, db_string, true)) return "unparsed string";
+        else if(match(dbarg, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C, true) && !match(dbarg, LEXICON.SYNTAX.ARGUEMENTS.C)) return "'"+dbarg+"' not an 8-bit constant";
         return "";
     }
 
