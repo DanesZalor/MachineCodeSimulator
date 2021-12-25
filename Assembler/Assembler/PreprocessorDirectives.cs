@@ -108,11 +108,11 @@ public static class PreprocessorDirectives
     {
         linesOfCode = new string(linesOfCode.ToLower()); // lowercase the entire code
         linesOfCode = new string(linesOfCode.Replace(":",":\n")); // separate label declarations into different lines
-        Console.WriteLine("OG:\n----------\n"+linesOfCode);
+        //Console.WriteLine("OG:\n----------\n"+linesOfCode);
         string replacedAliases = replaceAliases(linesOfCode);
-        Console.WriteLine("replaceAliases:\n----------\n"+replacedAliases);
+        //Console.WriteLine("replaceAliases:\n----------\n"+replacedAliases);
         string replacedLabels = replaceLabels(replacedAliases);
-        Console.WriteLine("replaceLabels:\n----------\n"+replacedLabels);
+        //Console.WriteLine("replaceLabels:\n----------\n"+replacedLabels);
         return replacedLabels;
     }
 }
