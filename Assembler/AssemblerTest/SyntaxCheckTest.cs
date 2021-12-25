@@ -207,10 +207,12 @@ public class SyntaxCheck
         [InlineData("jmp 0x01")]
         
         [InlineData("push 0xffa", "'0xffa' not an 8-bit constant")]
-        [InlineData("pop [0b000110]")]
+        [InlineData("pop [0b00011]")]
         [InlineData("pop [ 0b000110101]", "'0b000110101' not an 8-bit constant")]
         [InlineData("db \"aksanfkf123 asd /as*[]\"")]
+        [InlineData("db \"asdasd", "'\"asdasd' invalid db arguement")]
         [InlineData("db 0xff")]
+        [InlineData("db 0b1000201", "'0b1000201' invalid db arguement")]
         [InlineData("db 0b100001")]
         public void TestingConstants(string line, string expected_res = "")
         {

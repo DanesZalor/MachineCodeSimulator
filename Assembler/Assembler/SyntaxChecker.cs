@@ -10,7 +10,7 @@ public static class SyntaxChecker
         {
             public const string LABEL = "(([a-z])((\\w)*))";
             private const string DECIMAL = "([0-9]+)";
-            private const string HEXADECIMAL = "(0x[A-F]*)";
+            private const string HEXADECIMAL = "(0x[a-f]*)";
             private const string BINARY = "(0b[0-1]*)";
             private const string STRING = "(\".*\")";
 
@@ -141,14 +141,14 @@ public static class SyntaxChecker
                         )
                     )
                 },{
+                    VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C, LEXICON.SYNTAX.ARGUEMENTS.C,
+                    String.Format("'{0}' not an 8-bit constant", single_arg)
+                },{
                     VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L,
                     "("+NEW_LEXICON.SYNTAX.ARGUEMENTS.C +"|"+LEXICON.SYNTAX.ARGUEMENTS.R+")" ,
                     String.Format("'{0}' is a non-existent token", single_arg)
-                },{
-                    VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C, LEXICON.SYNTAX.ARGUEMENTS.C,
-                    String.Format("'{0}' not an 8-bit constant", single_arg)
                 },
-                { ".*", LEXICON.TOKENS.ANY,String.Format("'{0}' invalid expression",single_arg)}
+                { ".*", "(\\s){10}",String.Format("'{0}' invalid expression",single_arg)}
             };
             for (int j = 0; j < 4; j++)
             {
@@ -290,11 +290,14 @@ public static class SyntaxChecker
     }
 
     private static string evaluateDB(string dbline){
-        const string db_string = "(db " + LEXICON.SPACE + "\".*\"" + LEXICON.SPACE + ")";
-        const string db_stringVague = "(db " + LEXICON.SPACE + "(\").*(\")?" + LEXICON.SPACE + ")";
+        const string dbSyntax = "(db (" + LEXICON.SYNTAX.ARGUEMENTS.C+"|(\".*\")))";
+        const string dbVague = "(db (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C +"|(\".*\")))";
         string dbarg = dbline.Substring(2).Trim();
-        if(match(dbline, db_stringVague, true) && !match(dbline, db_string, true)) return "unparsed string";
-        else if(match(dbarg, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C, true) && !match(dbarg, LEXICON.SYNTAX.ARGUEMENTS.C)) return "'"+dbarg+"' not an 8-bit constant";
+        if(!match(dbline, dbSyntax, true)){
+            Console.Write(dbline + " ");
+            if(!match(dbline, dbVague, true)) return "'"+dbarg+"' invalid db arguement";
+            else return evaluateArgs(dbarg);
+        }
         return "";
     }
 
