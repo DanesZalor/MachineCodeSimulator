@@ -253,15 +253,20 @@ public class PreprocessorDirectivesTest
     [Fact]
     public void FullLineCheck()
     {
-        string linesOfCode = "jnbe 10  ; counter\n";
-        linesOfCode += "add a, 1; limit\n\n";
-        linesOfCode += "useless: mul b, 1; useless\n";
+        string linesOfCode = "mov a, 0\n";
+        linesOfCode += "mov b, 10\n\n";
+        linesOfCode += "iterate: add a, 1 ; a++\n";
+        linesOfCode += "mul b, 1; useless\n";
+        linesOfCode += "cmp a, b\n";
+        linesOfCode += "jb iterate\n";
 
         string actual_res = PreprocessorDirectives.translateAlias(linesOfCode);
 
-        string expected_res = "ja 10\n";
-        expected_res += "inc a\n";
-        expected_res += "useless:";
+        string expected_res = "mov a, 0\n";
+        expected_res += "mov b, 10\n";
+        expected_res += "iterate:\ninc a\n";
+        expected_res += "cmp a, b\n";
+        expected_res += "jc iterate";
         Assert.Equal(expected_res, actual_res);
     }
 }

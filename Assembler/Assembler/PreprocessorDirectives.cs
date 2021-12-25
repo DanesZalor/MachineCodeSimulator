@@ -17,7 +17,9 @@ public static class PreprocessorDirectives
     private static string removeComments(string[] lines)
     {
         string removedComments = "";
-        foreach (string line in lines) removedComments += line.Split(';')[0].Trim() + "\n";
+        foreach (string line in lines)
+             removedComments += line.Split(';')[0].Trim() + (line.Length==0?"":"\n");
+        
         return removedComments;
     }
 
@@ -55,28 +57,58 @@ public static class PreprocessorDirectives
                     break;
                 }
             }
-            newLines += newLine + "\n";
+            newLines += newLine + (newLine.Length==0?"":"\n");
         }
         return newLines.Trim();
     }
 
-    public static string replaceLabels(string[] lines)
+    /** at this point:
+    * - each label should have it's separate line already
+    * - all label declarations are already correct
+    * - all label references have been declared
+    */
+    private static string replaceLabels(string[] lines)
     {
         // Scan-Labels
         string labels = "";
         string labelCoords = "";
+
+        int coordCounter = 0;
+
+        // instruction that cost 1 byte
+        string cost1 = "^((clf|ret)|"+
+            String.Format(
+                "((not|shl|shr|inc|dec|call|pop|push|jmp|jca?z?|jc?az?|jc?a?z) {0})",
+                LEXICON.SYNTAX.ARGUEMENTS.R
+            ) +
+        ")$";
+        string cost3 = "^(cmp|xor|not|and|or|shl|shr|div|mul|sub|add)";
+
+        // gather labels and coordinates
         foreach (string line in lines)
         {
-            if (match(line, "([a-z](\\w)*)")) { }
+            Match m = getMatch(line, "([a-z](\\w)*):");
+            if (m.Success) { 
+                //labels = labels.Replace(")", (labels=="()"? "":"|") + "("+m.Value+"))");
+                labels += m.Value + ",";
+                labelCoords = Convert.ToString(coordCounter) +",";
+            }else{
+                if(match(line, cost1)) coordCounter += 1;
+                else if(match(line, cost3)) coordCounter += 3;
+                else coordCounter += 2;
+            }
         }
+        
+        string[] labelsArray = labels.Split(',');
+        // replace
         return "";
     }
 
     public static string translateAlias(string linesOfCode)
     {
-        string[] lines = linesOfCode.ToLower().Replace(":", ":\n").Split('\n', StringSplitOptions.RemoveEmptyEntries);
+        string[] lines = linesOfCode.ToLower().Replace(":", ":\n").Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         string removedComments = removeComments(lines);
-        string replacedAliases = replaceAliases(removedComments.Split('\n'));
+        string replacedAliases = replaceAliases(removedComments.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries));
         return replacedAliases;
     }
 }
