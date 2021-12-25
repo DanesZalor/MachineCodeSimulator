@@ -116,7 +116,7 @@ public static class SyntaxChecker
             */
             string[,] ArgsLexiconTable = new string[5, 3] {
                 {
-                    LEXICON.RESERVED_WORDS, "(\\s){1000}", "a reserved word"
+                    LEXICON.RESERVED_WORDS, "(\\s){100}", "a reserved word"
                 },{
                     VAGUE_LEXICON.SYNTAX.ARGUEMENTS.A,NEW_LEXICON.SYNTAX.ARGUEMENTS.A,(
                         (
@@ -126,7 +126,7 @@ public static class SyntaxChecker
                                         String.Format("'{0}' offset out of bounds",getMatch(single_arg, VAGUE_LEXICON.TOKENS.OFFSET).Value)
                                     )
                                 ):("")
-                            ):( match(single_arg.Split('+', StringSplitOptions.RemoveEmptyEntries)[0], VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L)?
+                            ):( match(single_arg.Split('+', StringSplitOptions.RemoveEmptyEntries)[0], VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L)? // no offset?
                                 String.Format("'{0}' non-existent token",single_arg.Replace("[","").Replace("]","").Trim()):
                                 String.Format("'{0}' not an 8-bit constant", single_arg.Replace("[","").Replace("]","").Trim())
                             )
