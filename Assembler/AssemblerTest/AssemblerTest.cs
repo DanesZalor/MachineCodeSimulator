@@ -205,7 +205,29 @@ public class SyntaxCheck
     public class MultiLineTest
     {
         [Fact]
-        public void FullSyntaxCheck()
+        public void LabelDeclarationError()
+        {
+            string linesOfCode = "mov a, 0        ; counter\n";
+            linesOfCode += "mov b, 10; limit\n";
+            linesOfCode += "en:\n";
+            linesOfCode += "inc:  inc a\n";
+            linesOfCode += "    cmp [a],b\n";
+            linesOfCode += "    jb iterates\n";
+            linesOfCode += "\n";
+
+            string expected_res = "SYNTAX ERROR(s)\n";
+            expected_res += "[Line 3] en:\n"; 
+            expected_res += "label 'en:' must have atleast 3 characters\n";
+            expected_res += "[Line 4] inc:  inc a\n";
+            expected_res += "label 'inc:' is a reserved keyword\n";
+
+            string actual_res = SyntaxChecker.evaluateProgram(linesOfCode);
+            //Console.WriteLine(expected_res);
+            Assert.Equal(expected_res, actual_res );
+        }
+
+        [Fact]
+        public void InstructionSyntaxError()
         {
             string linesOfCode = "mov a, 0        ; counter\n";
             linesOfCode += "mov b, 10; limit\n";
@@ -213,11 +235,15 @@ public class SyntaxCheck
             linesOfCode += "    inc a\n";
             linesOfCode += "    cmp [a],b\n";
             linesOfCode += "    jb iterates\n";
-            linesOfCode += "en:\n";
+            linesOfCode += "\n";
 
             string actual_res = SyntaxChecker.evaluateProgram(linesOfCode);
-            //Console.WriteLine(actual_res);
-            Assert.Equal(1, 1);
+            string expected_res = "SYNTAX ERROR(s)\n";
+            expected_res += "[Line 5] cmp [a],b\n";
+            expected_res += "invalid CMP arguements\n";
+            expected_res += "[Line 6] jb iterates\n";
+            expected_res += "'iterates' is a non-existent token\n";
+            Assert.Equal(expected_res, actual_res);
         }
     }
 }

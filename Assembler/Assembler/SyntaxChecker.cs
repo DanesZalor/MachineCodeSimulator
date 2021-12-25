@@ -278,11 +278,11 @@ public static class SyntaxChecker
             evaluation = evaluateALU_Dyadic(aluline);
         else if (match(aluline, "^(shl|shr)"))
             evaluation = (aluline.Contains(',') ? evaluateALU_Dyadic(aluline) : evaluateALU_Nomadic(aluline));
-
         return evaluation;
     }
 
-    /// <summary> evaluates instructions' grammar. if grammatically correct, returns an empty string </summary>
+    /// <summary> evaluates instructions' grammar. </summary>
+    /// <returns> a detailed feedback of syntax error. Returns an empty string if there is none </returns>
     public static string evaluateLine(string line)
     {
         // extract the instruction line
@@ -298,31 +298,32 @@ public static class SyntaxChecker
         else return "unrecognzied statement";
     }
 
-    /// <summary> recieve a string treated as linesOfCode and is evaluated line by line. </summary>
+    ///<summary> evaluates a multiline program including label declarations </summary> 
     public static string evaluateProgram(string linesOfCode)
     {
         string[] lines = linesOfCode.Split('\n');
+        string codeEval = "";
 
         // Scanning Labels Phase
         string labelsDeclared = "";
-        for (int i = 0; i < lines.Length; i++)
-        {
-            string temp = getMatch(lines[i], "^([a-z]((\\w){3,})):").Value;
-            if (temp.Length < 3) return "'" + "' label declaration must have atleast 3 characters";
+        for (int i = 0; i < lines.Length; i++){
+            string temp = getMatch(lines[i], "^([a-z]((\\w)*)):").Value;
+            if(match(temp, LEXICON.RESERVED_WORDS + ":")) 
+                codeEval += String.Format("[Line {0}] {1}\nlabel '{2}' is a reserved keyword\n",i+1,lines[i].Trim(), temp);
+            else if (temp.Length < 4 && temp.Length > 0) 
+                codeEval += String.Format("[Line {0}] {1}\nlabel '{2}' must have atleast 3 characters\n",i+1,lines[i].Trim(), temp);
             labelsDeclared += temp;
         }
-
         setLabels(labelsDeclared.Split(':'));
 
         // Grammar Evaluation Phase
-        string codeEval = "";
-        for (int i = 0; i < lines.Length; i++)
-        {
+        for (int i = (codeEval==""?0:lines.Length); i < lines.Length; i++){
             string singleLine = lines[i].Trim();
-            if (singleLine.EndsWith(":") || singleLine.StartsWith(";") || singleLine.Length < 1) continue;
+            if (singleLine.EndsWith(":") || singleLine.StartsWith(";") || singleLine.Length < 1) 
+                continue;
             string lineEval = evaluateLine(singleLine);
             if (lineEval != "")
-                codeEval += String.Format("Line {0} '{1}'\n{2}\n\n", i, lines[i], lineEval);
+                codeEval += String.Format("[Line {0}] {1}\n{2}\n", i+1, lines[i].Trim(), lineEval);
         }
 
         if (codeEval != "") codeEval = "SYNTAX ERROR(s)\n" + codeEval;
