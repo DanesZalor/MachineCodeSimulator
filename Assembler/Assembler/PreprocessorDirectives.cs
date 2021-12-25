@@ -72,12 +72,14 @@ public static class PreprocessorDirectives
         using (var reader = new StringReader(linesOfCode))
         {
             string cost1 = "^((clf|ret)|"+
-            String.Format(
-                    "((not|shl|shr|inc|dec|call|pop|push|jmp|jca?z?|jc?az?|jc?a?z) {0})",
-                    LEXICON.SYNTAX.ARGUEMENTS.R
-                ) +
+                String.Format(
+                    "((not|shl|shr|inc|dec|call|pop|push|jmp|jca?z?|jc?az?|jc?a?z) {0})|",LEXICON.SYNTAX.ARGUEMENTS.R
+                ) + String.Format(
+                    "(db {0})|", LEXICON.SYNTAX.ARGUEMENTS.C
+                )+
             ")$";
             string cost3 = "^(cmp|xor|not|and|or|shl|shr|div|mul|sub|add)";
+            string constX = "^(db \".*\")&";
             int coordCounter = 0;
 
             for (string? line = reader.ReadLine(); line != null; line = reader.ReadLine())
@@ -88,6 +90,8 @@ public static class PreprocessorDirectives
                 }else{
                     if(match(line, cost1)) coordCounter += 1;
                     else if(match(line, cost3)) coordCounter += 3;
+                    else if(match(line, constX))
+                        coordCounter += line.Substring(line.IndexOf('\"')).Length - 2;
                     else coordCounter += 2;
                 }
             }

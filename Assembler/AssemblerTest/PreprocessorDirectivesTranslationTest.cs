@@ -45,9 +45,39 @@ public class PreprocessorDirectivesTest
         expected_res += "dec a\n";
         expected_res += "jmp 4\n";
         expected_res += "hlt";
+        
+        Assert.Equal(expected_res, actual_res);
+    }
 
-        //Console.WriteLine(actual_res);
-        //Console.WriteLine(expected_res);
+    [Fact]
+    public void CountsDB()
+    {
+        string linesOfCode = 
+                       "start:  mov a, 10\n";
+        linesOfCode += "        mov b, 1\n";
+        linesOfCode += "        db 0x22\n";
+        linesOfCode += "        db 0b1001\n";
+        linesOfCode += "        db 25\n";
+        linesOfCode += "\n";
+        linesOfCode += "loopstart:  cmp a, b\n";
+        linesOfCode += "            jnbe loopend    ;end loop if a<=b\n";
+        linesOfCode += "            sub a, 1\n";
+        linesOfCode += "            jmp loopstart\n";
+        linesOfCode += "loopend:    hlt\n";
+
+        string actual_res = PreprocessorDirectives.translateAlias(linesOfCode);
+        string expected_res = 
+                        "mov a, 10\n";
+        expected_res += "mov b, 1\n";
+        expected_res += "db 0x22\n";
+        expected_res += "db 0b1001\n";
+        expected_res += "db 25\n";
+        expected_res += "cmp a, b\n";
+        expected_res += "ja 15\n";
+        expected_res += "dec a\n";
+        expected_res += "jmp 7\n";
+        expected_res += "hlt";
+        
         Assert.Equal(expected_res, actual_res);
     }
 
