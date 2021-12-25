@@ -5,7 +5,7 @@ using System;
 
 namespace AssemblerTest;
 
-
+/*
 public class SyntaxCheck
 {
     public class MOV_SyntaxCheck
@@ -171,6 +171,7 @@ public class SyntaxCheck
         // nomadic operations
         [InlineData("not b")]
         [InlineData("inc b")]
+        [InlineData("aaa: inc b")]
         [InlineData("dec b")]
         [InlineData("not c")]
         [InlineData("not sp")]
@@ -217,15 +218,14 @@ public class SyntaxCheck
 
             string expected_res = "SYNTAX ERROR(s)\n";
             expected_res += "[Line 3] en:\n"; 
-            expected_res += "label 'en:' must have atleast 3 characters\n";
+            expected_res += "label 'en' must have atleast 3 characters\n";
             expected_res += "[Line 4] inc:  inc a\n";
-            expected_res += "label 'inc:' is a reserved keyword\n";
+            expected_res += "label 'inc' is a reserved keyword\n";
 
             string actual_res = SyntaxChecker.evaluateProgram(linesOfCode);
-            //Console.WriteLine(expected_res);
             Assert.Equal(expected_res, actual_res );
         }
-
+       
         [Fact]
         public void InstructionSyntaxError()
         {
@@ -247,7 +247,7 @@ public class SyntaxCheck
         }
     }
 }
-
+*/
 public class PreprocessorDirectivesTest
 {
     [Fact]
@@ -261,16 +261,18 @@ public class PreprocessorDirectivesTest
         linesOfCode += "jb iterate\n";
 
         string actual_res = PreprocessorDirectives.translateAlias(linesOfCode);
-
         string expected_res = "mov a, 0\n";
         expected_res += "mov b, 10\n";
-        expected_res += "iterate:\ninc a\n";
+        expected_res += "inc a\n";
         expected_res += "cmp a, b\n";
-        expected_res += "jc iterate";
+        expected_res += "jc 4";
+
+        //Console.WriteLine("actual_res:\n"+actual_res);Console.WriteLine("expected_res:\n"+expected_res);
         Assert.Equal(expected_res, actual_res);
     }
-}
 
+}
+/*
 public class TranslationCheck
 {
     public class TranslationTest
@@ -343,3 +345,4 @@ public class TranslationCheck
         }
     }
 }
+*/

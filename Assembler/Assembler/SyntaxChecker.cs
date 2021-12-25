@@ -47,14 +47,19 @@ public static class SyntaxChecker
         {
             private static string EXISTING_LABELS = "()";
             public static string labels() { return EXISTING_LABELS; }
-            public static void labelsClear() { EXISTING_LABELS = "()"; }
-            public static void labelsAdd(string label)
+            public static void labelsClear() { EXISTING_LABELS = new String("()"); }
+            public static string labelsAdd(string label)
             {
-                if (match(label, VAGUE_LEXICON.TOKENS.LABEL, true))
+                if(label.Length<1) return "";
+                else if(match(label, LEXICON.RESERVED_WORDS,true)) return "label '"+label+"' is a reserved keyword";
+                else if(label.Length<3) return "label '"+label+"' must have atleast 3 characters";
+                else if(match(label, EXISTING_LABELS,true)) return "label '"+label+"' is a duplicate";
+                else if (match(label, VAGUE_LEXICON.TOKENS.LABEL, true))
                 {
-                    label = "(" + label + ")";
-                    EXISTING_LABELS = EXISTING_LABELS.Replace(")", (EXISTING_LABELS == "()" ? "" : "|") + (label + ")"));
+                    EXISTING_LABELS = new String(EXISTING_LABELS.Replace(")", (EXISTING_LABELS == "()" ? "" : "|") + (label + ")")));
+                    return "";
                 }
+                return "Some unforeseen error";
             }
             public static string CONST { get => "(" + LEXICON.TOKENS.CONST + "|" + EXISTING_LABELS + ")"; }
             public static string ADDRESS_CONST { get => "(\\[" + LEXICON.SPACE + CONST + LEXICON.SPACE + "\\])"; }
@@ -286,7 +291,15 @@ public static class SyntaxChecker
     public static string evaluateLine(string line)
     {
         // extract the instruction line
-        line = line.Split(';', ':', StringSplitOptions.TrimEntries)[line.Contains(':') ? 1 : 0];
+        Match m = getMatch(line, ":.*;");
+        if(m.Success) line = new String(m.Value.Trim().Substring(1,m.Value.Length-1));
+        
+        m = getMatch(line, ".*;");
+        if(m.Success) line = new String(m.Value.Trim().Substring(0,m.Value.Length-1));
+        
+        m = getMatch(line, ":.*");
+        if(m.Success) line = new String(m.Value.Trim().Substring(1));
+        line = new String(line).Trim();
 
         if (match(line, "^(mov )")) return evaluateMOV(line);
         else if (match(line, "^(jmp )")) return evaluateJMP(line);
@@ -303,27 +316,26 @@ public static class SyntaxChecker
     {
         string[] lines = linesOfCode.Split('\n');
         string codeEval = "";
-
         // Scanning Labels Phase
-        string labelsDeclared = "";
+        NEW_LEXICON.TOKENS.labelsClear();
         for (int i = 0; i < lines.Length; i++){
-            string temp = getMatch(lines[i], "^([a-z]((\\w)*)):").Value;
-            if(match(temp, LEXICON.RESERVED_WORDS + ":")) 
-                codeEval += String.Format("[Line {0}] {1}\nlabel '{2}' is a reserved keyword\n",i+1,lines[i].Trim(), temp);
-            else if (temp.Length < 4 && temp.Length > 0) 
-                codeEval += String.Format("[Line {0}] {1}\nlabel '{2}' must have atleast 3 characters\n",i+1,lines[i].Trim(), temp);
-            labelsDeclared += temp;
+            string temp = getMatch(lines[i], ".*:").Value.Trim().Replace(":","");
+            if(temp.Length<1) continue;
+            string label_res = NEW_LEXICON.TOKENS.labelsAdd(temp);
+            if(label_res.Length>0){
+                codeEval = new String(string.Concat(codeEval, String.Format("[Line {0}] {1}\n{2}\n", i+1, lines[i], label_res)));
+            }
         }
-        setLabels(labelsDeclared.Split(':'));
 
         // Grammar Evaluation Phase
-        for (int i = (codeEval==""?0:lines.Length); i < lines.Length; i++){
+        for (int i = (codeEval.Length>0?lines.Length:0); i < lines.Length; i++){
             string singleLine = lines[i].Trim();
             if (singleLine.EndsWith(":") || singleLine.StartsWith(";") || singleLine.Length < 1) 
                 continue;
             string lineEval = evaluateLine(singleLine);
+            Console.Write(lineEval);
             if (lineEval != "")
-                codeEval += String.Format("[Line {0}] {1}\n{2}\n", i+1, lines[i].Trim(), lineEval);
+                codeEval = new String(string.Concat(codeEval, String.Format("[Line {0}] {1}\n{2}\n", i+1, lines[i].Trim(), lineEval)));
         }
 
         if (codeEval != "") codeEval = "SYNTAX ERROR(s)\n" + codeEval;

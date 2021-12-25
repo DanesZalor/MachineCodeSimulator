@@ -33,7 +33,7 @@ standard `JCAZ <arguement>` is allowed where you can have `JC`, `JA`, `JZ`, `JCZ
 
 |   Alias   |   Derivation   |  Meaning |
 |--|--|--|
-|   JNC | JAE | `011` 
+|   JNC | JAZ | `011` 
 |   JNA | JCZ | `!(A>B)`→`(A<=B)`
 |   JNZ | JCA |  `output!=0`
 |   JE  | JZ  | `(A xor B)==0` → **(A==B)**|
