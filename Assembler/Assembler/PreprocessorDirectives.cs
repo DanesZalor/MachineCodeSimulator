@@ -16,7 +16,7 @@ public static class PreprocessorDirectives
 
     private static string replaceAliases(string linesOfCode)
     {
-        string[,] Aliases = new string[18, 2]{
+        string[,] Aliases = new string[19, 2]{
             {"jnc ","jaz "},{"jna ","jcz "},{"jnz ","jca "},
             {"je ","jz "},{"jne ","jca "},{"jb ","jc "},
             {"jnb ","jaz "},{"jae ","jaz "},{"jnae ","jc "},
@@ -34,7 +34,9 @@ public static class PreprocessorDirectives
             {String.Format("shl {0},{1}1", LEXICON.SYNTAX.ARGUEMENTS.R, LEXICON.SPACE),"shl <REG>"},
             {String.Format("shr {0},{1}1", LEXICON.SYNTAX.ARGUEMENTS.R, LEXICON.SPACE),"shr <REG>"},
             //special case : i17
-            {"(0x([0-9]|[a-f]){1,2})","<HEX>"}
+            {"(0x([0-9]|[a-f]){1,2})","<HEX>"},
+            //special case : i18
+            {"(0b([01]{1,8}))","<BIN>"}
         };
         string newLines = "";
 
@@ -43,17 +45,32 @@ public static class PreprocessorDirectives
             for (string? line = reader.ReadLine(); line != null; line = reader.ReadLine())
             {
                 string newLine = new string(line.Split(';')[0].Trim());
-                for (int i = 0; i < 18; i++)
+                for (int i = 0; i < 19; i++)
                 {
                     if (match(newLine, Aliases[i, 0]))
                     {
                         newLine = Regex.Replace(newLine, Aliases[i, 0], Aliases[i, 1]);
-                        if(i>16){ // hex alias to decimal
-
-                            string hex = getMatch(line, " (0x([0-9]|[a-f]){1,2})").Value.Trim().Substring(2);                            
-                            //int dec = Convert.ToInt32(hex, 16);
-                            Console.WriteLine("\n\nPENIS: "+ hex);
-                            //newLine = Regex.Replace(newLine, "<HEX>", newDec);
+                        if(i>17){
+                            string binary = getMatch(line, " (0b([01]{1,8}))").Value.Trim();
+                            int dec = 0;
+                            byte mul = 0b1;
+                            for(int b = binary.Length-1; b>1; b--){
+                                dec += mul*(Convert.ToByte(binary[b]) - 48);
+                                mul = Convert.ToByte(mul<<1);
+                            }
+                            newLine = Regex.Replace(newLine, "<BIN>", Convert.ToString(dec));
+                        }
+                        else if(i>16){ // hex alias to decimal
+                            int convertHexToDec(char s){
+                                int r = Convert.ToInt16(s);
+                                if (r>96 && r<103) return r - 87;
+                                else if (r>47 && r<58) return r - 48;
+                                else return -1;
+                            }
+                            string hex = getMatch(line, " (0x([0-9]|[a-f]){1,2})").Value.Trim();
+                            newLine = Regex.Replace(newLine, "<HEX>", Convert.ToString(
+                                convertHexToDec(hex[2])*16 + convertHexToDec(hex[3])
+                            ));
                         }
                         else if (i >= 13)
                             newLine = Regex.Replace(newLine, "<REG>", getMatch(line, " "+LEXICON.TOKENS.REGISTER).Value.Trim());

@@ -53,8 +53,8 @@ public class PreprocessorDirectivesTest
     public void CountsDB()
     {
         string linesOfCode = 
-                       "start:  mov a, 10\n";
-        linesOfCode += "        mov b, 1\n";
+                       "start:  mov a, 0x0a\n";
+        linesOfCode += "        mov b, 0b1\n";
         linesOfCode += "        db 0x22\n";
         linesOfCode += "        db 0b1001\n";
         linesOfCode += "        db 25\n";
@@ -69,8 +69,8 @@ public class PreprocessorDirectivesTest
         string expected_res = 
                         "mov a, 10\n";
         expected_res += "mov b, 1\n";
-        expected_res += "db 0x22\n";
-        expected_res += "db 0b1001\n";
+        expected_res += "db 34\n";
+        expected_res += "db 9\n";
         expected_res += "db 25\n";
         expected_res += "cmp a, b\n";
         expected_res += "ja 15\n";
