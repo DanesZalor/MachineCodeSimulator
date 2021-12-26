@@ -71,28 +71,37 @@ The assembly code will be reduced to smaller bits for optimization
     | `DIV b, 1` | ` ` |
     | `ADD b, 0` | ` ` |
     | `SUB b, 0` | ` ` | 
-4. Lastly the labels will be replaced with their corresponding constants
+4. There are also aliases for constants. Binary constants in the form of `0b[0-1]{1,8}` and Hexademicals in the form of `0x([0-9]|[a-f]){2}`. These can be translated into Decimals for easier compilation.
+5. Lastly the labels will be replaced with their corresponding constants
 
  
 
 Example: From 
 ```
-mov a, 0 ; counter
-mov b, 10; limit
+start:  mov a, 0x0a
+        mov b, 0b1
+        db 0x22
+        db 0b1001
+        db 25
 
-iterate:
-    add a, 1
-    div b, 1
-    cmp a,b
-    jb iterate
+loopstart:  cmp a, b
+            jnbe loopend    ;end loop if a<=b
+            sub a, 1
+            jmp loopstart
+loopend:    hlt
 ```
 To
 ```
-mov a, 0
-mov b, 10 
-inc a
-cmp a,b 
-jc 4
+mov a, 10
+mov b, 1
+db 34
+db 9
+db 25
+cmp a, b
+ja 15
+dec a
+jmp 7
+hlt
 ```
 
 ## 4. Compilation
