@@ -16,7 +16,7 @@ public static class PreprocessorDirectives
 
     private static string replaceAliases(string linesOfCode)
     {
-        string[,] Aliases = new string[17, 2]{
+        string[,] Aliases = new string[18, 2]{
             {"jnc ","jaz "},{"jna ","jcz "},{"jnz ","jca "},
             {"je ","jz "},{"jne ","jca "},{"jb ","jc "},
             {"jnb ","jaz "},{"jae ","jaz "},{"jnae ","jc "},
@@ -33,6 +33,8 @@ public static class PreprocessorDirectives
             // sh[lr] r, 1
             {String.Format("shl {0},{1}1", LEXICON.SYNTAX.ARGUEMENTS.R, LEXICON.SPACE),"shl <REG>"},
             {String.Format("shr {0},{1}1", LEXICON.SYNTAX.ARGUEMENTS.R, LEXICON.SPACE),"shr <REG>"},
+            //special case : i17
+            {"(0x([0-9]|[a-f]){1,2})","<HEX>"}
         };
         string newLines = "";
 
@@ -41,13 +43,22 @@ public static class PreprocessorDirectives
             for (string? line = reader.ReadLine(); line != null; line = reader.ReadLine())
             {
                 string newLine = new string(line.Split(';')[0].Trim());
-                for (int i = 0; i < 17; i++)
+                for (int i = 0; i < 18; i++)
                 {
                     if (match(newLine, Aliases[i, 0]))
                     {
                         newLine = Regex.Replace(newLine, Aliases[i, 0], Aliases[i, 1]);
-                        if (i >= 13)
+                        if(i>16){ // hex alias to decimal
+
+                            string hex = getMatch(line, " (0x([0-9]|[a-f]){1,2})").Value.Trim().Substring(2);                            
+                            //int dec = Convert.ToInt32(hex, 16);
+                            Console.WriteLine("\n\nPENIS: "+ hex);
+                            //newLine = Regex.Replace(newLine, "<HEX>", newDec);
+                        }
+                        else if (i >= 13)
                             newLine = Regex.Replace(newLine, "<REG>", getMatch(line, " "+LEXICON.TOKENS.REGISTER).Value.Trim());
+                        
+
                         break;
                     }
                 }
