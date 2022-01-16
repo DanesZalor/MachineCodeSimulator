@@ -243,10 +243,6 @@ public class MultiLineTest
             Assert.Equal(expected_res, actual_res );
         }
 
-        [Fact]
-        public void Test2(){
-            string linesOfCode = "";
-        }
 
         [Fact]
         public void InstructionSyntaxError()
