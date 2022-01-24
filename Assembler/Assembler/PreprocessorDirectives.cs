@@ -89,6 +89,7 @@ public static class PreprocessorDirectives
     * - each label should have it's separate line already
     * - all label declarations are already correct
     * - all label references have been declared
+    * - all aliases are replaced
     */
     private static string replaceLabels(string linesOfCode)
     {
@@ -99,23 +100,19 @@ public static class PreprocessorDirectives
         // gather labels and coordinates
         using (var reader = new StringReader(linesOfCode))
         {
-            string cost1 = "^((clf|ret)|"+
-                String.Format(
-                    "((not|shl|shr|inc|dec|call|pop|push|jmp|jca?z?|jc?az?|jc?a?z) {0})|",LEXICON.SYNTAX.ARGUEMENTS.R
-                ) + String.Format(
-                    "(db {0})|", LEXICON.SYNTAX.ARGUEMENTS.C
-                )+
-            ")$";
-            string cost3 = "^(cmp|xor|not|and|or|shl|shr|div|mul|sub|add)";
-            string constX = "^(db \".*\")&";
+            const string cost1 = "^((clf|ret)|"+ 
+                "((not|shl|shr|inc|dec|call|pop|push|jmp|jca?z?|jc?az?|jc?a?z) "+
+                LEXICON.SYNTAX.ARGUEMENTS.R + ")|(db "+LEXICON.SYNTAX.ARGUEMENTS.C+"))$";
+            const string cost3 = "^(cmp|xor|not|and|or|shl|shr|div|mul|sub|add)";
+            const string constX = "^(db \".*\")&";
             int coordCounter = 0;
 
             for (string? line = reader.ReadLine(); line != null; line = reader.ReadLine())
             {
-                if (line.Contains(':')) { 
+                if (line.Contains(':')) { // if label, record it's coordinate
                     labels = new string(string.Concat(labels, (labels.Length>0?"|":"") + line.Split(':')[0] ));
                     labelCoords = new string(string.Concat(labelCoords, (labelCoords.Length>0?",":"") + Convert.ToString(coordCounter) ));
-                }else{
+                }else{ // else, add to the counter depending on the scanned instruction
                     if(match(line, cost1)) coordCounter += 1;
                     else if(match(line, cost3)) coordCounter += 3;
                     else if(match(line, constX))
@@ -124,13 +121,16 @@ public static class PreprocessorDirectives
                 }
             }
         }
-        //Console.WriteLine("labels "+labels);Console.WriteLine("coords "+labelCoords);
         string[] labelsArray = labels.Split('|', StringSplitOptions.RemoveEmptyEntries);
         string[] coordsArray = labelCoords.Split(',',StringSplitOptions.RemoveEmptyEntries);
         string newLines = linesOfCode;
     
-        newLines = new string(Regex.Replace(newLines,".*:",""));
+        // remove all ":"
+        newLines = new string(Regex.Replace(newLines,".*:","")); 
+        // replace all consecutive (2 or more) new lines with a single new line 
         newLines = new string(Regex.Replace(newLines,"(\n){2,}","\n"));
+
+        // replace every label with their corresponding coordinate
         for(int i = 0; i<labelsArray.Length; i++)
             newLines = Regex.Replace(newLines,"\\b"+labelsArray[i]+"\\b", coordsArray[i]);
         return newLines.Trim();
