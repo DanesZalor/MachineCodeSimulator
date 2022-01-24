@@ -21,14 +21,11 @@ public static class PreprocessorDirectives
         // replace all consecutive (2 or more) new lines with a single new line 
         newLines = new string(Regex.Replace(newLines,"(\n){2,}","\n"));
         
-        // remove all consecutive (2 or more) spaces with a single space
-        newLines = new string(Regex.Replace(newLines, "( ){2,}"," "));
+        // replace all consecutive (2 or more) spaces with a single space
+        newLines = new string(Regex.Replace(newLines,"( ){2,}"," "));
 
-        newLines = new string(Regex.Replace(newLines, " ,", ", "));
-
-        // do it again cuz of the possibility of the previous replacement
-        newLines = new string(Regex.Replace(newLines, "( ){2,}"," "));
-        
+        // removes all white space around ","
+        newLines = String.Join(", ",newLines.Split(',', StringSplitOptions.TrimEntries));        
         return newLines;
     }
 

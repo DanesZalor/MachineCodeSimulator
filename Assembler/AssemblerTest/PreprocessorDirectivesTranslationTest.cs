@@ -10,7 +10,7 @@ public class PreprocessorDirectivesTest
         linesOfCode += "mov b   ,10\n\n";
         linesOfCode += "iterate:    add a, 1 ; a++\n";
         linesOfCode += "mul b, 1; useless\n";
-        linesOfCode += "cmp a, b\n";
+        linesOfCode += "cmp   a, b\n";
         linesOfCode += "jb iterate\n";
 
         string actual_res = PreprocessorDirectives.translateAlias(linesOfCode);
