@@ -4,6 +4,10 @@ using System;
 
 namespace AssemblerTest;
 
+/** Contains no failing test cases as by the time the assembly process 
+* reaches translation phase, it is assumed that the program is already
+* syntactically correct.
+*/
 public class TranslationCheck
 {
     public class TranslationTest
