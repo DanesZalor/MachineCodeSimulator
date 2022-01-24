@@ -41,7 +41,7 @@ public static class SyntaxChecker
     }
 
     /// <summary> Newly made lexicon with the base lexicon and the added labels
-    private static class NEW_LEXICON
+    private static class NEW_LEXICON 
     {
         public static class TOKENS
         {
