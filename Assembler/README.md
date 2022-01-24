@@ -105,3 +105,5 @@ hlt
 ```
 
 ## 4. Compilation
+Lastly, the actual translation to machine code.
+![Instruction Set](Assembler/InstructionSet.png?raw=true "Title")
