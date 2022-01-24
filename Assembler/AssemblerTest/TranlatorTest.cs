@@ -1,5 +1,6 @@
 using Xunit;
 using Assembler;
+using System;
 
 namespace AssemblerTest;
 
@@ -12,18 +13,15 @@ public class TranslationCheck
         [InlineData("mov a, b", new byte[2] { 0b0000_0000, 0b0000_0001 })]
         [InlineData("mov g,c", new byte[2] { 0b0000_0110, 0b0000_0010 })]
         [InlineData("mov d, SP", new byte[2] { 0b0000_0011, 0b0000_0111 })]
-        [InlineData("mov a, bcd", new byte[0] { })]
         // DATA Instruction
         [InlineData("mov D,254", new byte[2] { 0b000_1011, 254 })]
         [InlineData("mov D   ,  31", new byte[2] { 0b000_1011, 31 })]
         [InlineData("mov D   , 031", new byte[2] { 0b000_1011, 31 })]
         [InlineData("mov D   ,  0000000001", new byte[2] { 0b000_1011, 1 })]
         [InlineData("mov D   ,  00", new byte[2] { 0b000_1011, 0 })]
-        [InlineData("mov D   ,  1000", new byte[0] { })]
         // LOAD Reg, [Reg+Offset] Instruction
         [InlineData("mov a, [a+12]", new byte[2] { 0b001_0000, 0b0110_0000 })]
         [InlineData("mov a, [ a - 12 ]", new byte[2] { 0b001_0000, 0b1101_1000 })]
-        [InlineData("mov a, [ a - 1 2 ]", new byte[0] { })]
         [InlineData("mov e, [g+1 ]", new byte[2] { 0b001_0100, 0b0000_1110 })]
         [InlineData("mov e, [ g-1]", new byte[2] { 0b001_0100, 0b1000_0110 })]
         // LOAD Reg, [Reg] Instruction
@@ -45,8 +43,6 @@ public class TranslationCheck
         // STORE [Const], Reg
         [InlineData("mov [255], c", new byte[2] { 0b0010_1010, 255 })]
         [InlineData("mov [128], sp", new byte[2] { 0b0010_1111, 128 })]
-        [InlineData("mov [128], z", new byte[0] { })]
-        [InlineData("mov [257], a", new byte[0] { })]
         // JMP Reg
         [InlineData("jmp b", new byte[1] { 0b0011_0001 })]
         [InlineData("jmp g", new byte[1] { 0b0011_0110 })]
@@ -54,20 +50,15 @@ public class TranslationCheck
         // JMP Const
         [InlineData("   jmp 127", new byte[2] { 0b0011_1000, 127 })]
         [InlineData("   jmp   127  ", new byte[2] { 0b0011_1000, 127 })]
-        [InlineData("jmp   269  ", new byte[0] { })]
-        [InlineData("jmp   -269  ", new byte[0] { })]
         // JCAZ Reg
         [InlineData("jc a", new byte[2] { 0b0100_0100, 0b0000_0000 })]
         [InlineData("ja b", new byte[2] { 0b0100_0010, 0b0000_0001 })]
         [InlineData("jz c", new byte[2] { 0b0100_0001, 0b0000_0010 })]
         [InlineData("jca sp", new byte[2] { 0b0100_0110, 0b0000_0111 })]
-        [InlineData("jcz y", new byte[0] { })]
         [InlineData("jc   c", new byte[2] { 0b0100_0100, 0b0000_0010 })]
         // JCAZ Const
         [InlineData("jaz 254", new byte[2] { 0b0100_1011, 254 })]
         [InlineData("jcz   254", new byte[2] { 0b0100_1101, 254 })]
-        [InlineData("jczl   254", new byte[0] { })]
-        [InlineData("jca   -1", new byte[0] { })]
         public void translatesAssemblyInstructionsToMachineCodeCorrectly(string line, byte[] expected_res)
         {
             byte[] actual_res = Assembler.Translator.translateLine(line);

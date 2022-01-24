@@ -59,7 +59,7 @@ public class PreprocessorDirectivesTest
         linesOfCode += "        db 0b1001\n";
         linesOfCode += "        db 25\n";
         linesOfCode += "\n";
-        linesOfCode += "loopstart:  cmp     a,         b\n";
+        linesOfCode += "loopstart:  cmp a, b\n";
         linesOfCode += "            jnbe loopend    ;end loop if a<=b\n";
         linesOfCode += "            sub a, 1\n";
         linesOfCode += "            jmp loopstart\n";
