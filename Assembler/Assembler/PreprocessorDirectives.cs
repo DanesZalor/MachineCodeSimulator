@@ -14,6 +14,24 @@ public static class PreprocessorDirectives
     }
     private static bool match(string line, string pattern, bool exact = false) { return getMatch(line, pattern, exact).Success; }
 
+    private static string removeExcessWhitespace(string linesOfCode){
+        // replace all consecutive spaces with a single space
+        string newLines = linesOfCode;
+        
+        // replace all consecutive (2 or more) new lines with a single new line 
+        newLines = new string(Regex.Replace(newLines,"(\n){2,}","\n"));
+        
+        // remove all consecutive (2 or more) spaces with a single space
+        newLines = new string(Regex.Replace(newLines, "( ){2,}"," "));
+
+        newLines = new string(Regex.Replace(newLines, " ,", ", "));
+
+        // do it again cuz of the possibility of the previous replacement
+        newLines = new string(Regex.Replace(newLines, "( ){2,}"," "));
+        
+        return newLines;
+    }
+
     private static string replaceAliases(string linesOfCode)
     {
         string[,] Aliases = new string[19, 2]{
@@ -127,8 +145,6 @@ public static class PreprocessorDirectives
     
         // remove all ":"
         newLines = new string(Regex.Replace(newLines,".*:","")); 
-        // replace all consecutive (2 or more) new lines with a single new line 
-        newLines = new string(Regex.Replace(newLines,"(\n){2,}","\n"));
 
         // replace every label with their corresponding coordinate
         for(int i = 0; i<labelsArray.Length; i++)
@@ -142,8 +158,10 @@ public static class PreprocessorDirectives
         linesOfCode = new string(linesOfCode.ToLower()); 
         // separate label declarations into different lines
         linesOfCode = new string(linesOfCode.Replace(":",":\n")); 
-        string replacedAliases = replaceAliases(linesOfCode);
-        string replacedLabels = replaceLabels(replacedAliases);
-        return replacedLabels;
+
+        linesOfCode = replaceAliases(linesOfCode);
+        linesOfCode = replaceLabels(linesOfCode);
+        linesOfCode = removeExcessWhitespace(linesOfCode);
+        return linesOfCode;
     }
 }

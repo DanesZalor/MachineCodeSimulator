@@ -6,9 +6,9 @@ public class PreprocessorDirectivesTest
     [Fact]
     public void FullLineCheck()
     {
-        string linesOfCode = "mov a, 0\n";
-        linesOfCode += "mov b, 10\n\n";
-        linesOfCode += "iterate: add a, 1 ; a++\n";
+        string linesOfCode = "mov a  ,    0\n";
+        linesOfCode += "mov b   ,10\n\n";
+        linesOfCode += "iterate:    add a, 1 ; a++\n";
         linesOfCode += "mul b, 1; useless\n";
         linesOfCode += "cmp a, b\n";
         linesOfCode += "jb iterate\n";
