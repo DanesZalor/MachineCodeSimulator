@@ -2,10 +2,11 @@ using System.Text.RegularExpressions;
 
 namespace Assembler;
 
-/// <summary> Contains the necessary function for the translation 
+/// <summary> Contains the necessary function for the translation </summary>
 public static class Translator
 {
-    public static class STARTERS
+    /// <summary> starters of statement like MOV: "((space)*mov )"
+    private static class STARTERS
     {
         public const string MOV = "^(" + LEXICON.SPACE + "mov )";
         public const string JMP = "^(" + LEXICON.SPACE + "jmp )";
@@ -41,19 +42,18 @@ public static class Translator
 
     private static byte[] translateMOV(string line)
     {
-        byte[] r = new byte[0];
+        byte[] r = new byte[2];
         if (match(line, LEXICON.SYNTAX.MOV_R_R, true))
         {
             Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
-            r = new byte[2] { RegToByte(m.Value), RegToByte(m.NextMatch().Value) };
+            r[0] = RegToByte(m.Value);
+            r[1] = RegToByte(m.NextMatch().Value);
         }
         else if (match(line, LEXICON.SYNTAX.MOV_R_C, true))
         {
             Match m = getMatch(line, LEXICON.TOKENS.REGISTER);
-            r = new byte[2] {
-                Convert.ToByte( RegToByte(getMatch(line, LEXICON.TOKENS.REGISTER).Value) | 0b0000_1000),
-                Convert.ToByte(getMatch(line,LEXICON.TOKENS.CONST).Value)
-            };
+            r[0] = Convert.ToByte( RegToByte(getMatch(line, LEXICON.TOKENS.REGISTER).Value) | 0b0000_1000);
+            r[1] = Convert.ToByte(getMatch(line,LEXICON.TOKENS.CONST).Value);
         }
         else if (match(line, LEXICON.SYNTAX.MOV_R_A, true))
         {
