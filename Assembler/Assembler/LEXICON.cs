@@ -91,11 +91,4 @@ public static class LEXICON
         public const string PUSH_0 = SPACE + "push " + ARGUEMENTS.R;
         public const string PUSH_1 = SPACE + "push " + ARGUEMENTS.A;
     }
-
-    public static class ETC
-    {
-        public const string mov_starter = "^(" + LEXICON.SPACE + "mov )";
-        public const string jmp_starter = "^(" + LEXICON.SPACE + "jmp )";
-        public const string jcaz_starter = "^(" + LEXICON.SPACE + LEXICON.SYNTAX.JCAZ + " )";
-    }
 }

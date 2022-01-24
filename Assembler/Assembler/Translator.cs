@@ -5,6 +5,12 @@ namespace Assembler;
 /// <summary> Contains the necessary function for the translation 
 public static class Translator
 {
+    public static class STARTERS
+    {
+        public const string MOV = "^(" + LEXICON.SPACE + "mov )";
+        public const string JMP = "^(" + LEXICON.SPACE + "jmp )";
+        public const string JCAZ = "^(" + LEXICON.SPACE + LEXICON.SYNTAX.JCAZ + " )";
+    }
     private static byte RegToByte(string reg)
     {
         reg = reg.Trim().ToLower();
@@ -157,11 +163,11 @@ public static class Translator
     public static byte[] translateLine(string line)
     {
         line = line.Trim();
-        if (match(line, LEXICON.ETC.mov_starter))
+        if (match(line, STARTERS.MOV))
             return Translator.translateMOV(line);
-        else if (match(line, LEXICON.ETC.jmp_starter))
+        else if (match(line, STARTERS.JMP))
             return Translator.translateJMP(line);
-        else if (match(line, LEXICON.ETC.jcaz_starter))
+        else if (match(line, STARTERS.JCAZ))
             return Translator.translateJCAZ(line);
         else
             return new byte[0];
