@@ -12,12 +12,16 @@ public static class Translator
         public const string JMP = "^(" + LEXICON.SPACE + "jmp )";
         public const string JCAZ = "^(" + LEXICON.SPACE + LEXICON.SYNTAX.JCAZ + " )";
     }
-    private static byte RegToByte(string reg)
+
+    /// <summary> Convert a string read as a Register to byte code </summary>
+    private static byte RegToByte(string reg) 
     {
         reg = reg.Trim().ToLower();
         if (reg == "sp") return 0b0000_0111;
         return Convert.ToByte(reg[0] - 97); // returns a : 0, b : 1, ... g: 6
     }
+
+    /// <summary> Convert a string read as an offset to byte code </summary>
     private static byte OffsetToByte(string offSetLine)
     {
         byte b2 = 0;

@@ -306,15 +306,17 @@ public static class SyntaxChecker
     public static string evaluateLine(string line)
     {
         // extract the instruction line
-        Match m = getMatch(line, ":.*;");
-        if(m.Success) line = new String(m.Value.Trim().Substring(1,m.Value.Length-1));
-        
-        m = getMatch(line, ".*;");
-        if(m.Success) line = new String(m.Value.Trim().Substring(0,m.Value.Length-1));
-        
-        m = getMatch(line, ":.*");
-        if(m.Success) line = new String(m.Value.Trim().Substring(1));
-        line = new String(line).Trim();
+        {
+            Match m = getMatch(line, ":.*;");
+            if(m.Success) line = new String(m.Value.Trim().Substring(1,m.Value.Length-1));
+            
+            m = getMatch(line, ".*;");
+            if(m.Success) line = new String(m.Value.Trim().Substring(0,m.Value.Length-1));
+            
+            m = getMatch(line, ":.*");
+            if(m.Success) line = new String(m.Value.Trim().Substring(1));
+            line = new String(line).Trim();
+        }
 
         if (match(line, "^(mov )")) return evaluateMOV(line);
         else if (match(line, "^(jmp )")) return evaluateJMP(line);
@@ -346,12 +348,14 @@ public static class SyntaxChecker
         // Grammar Evaluation Phase
         for (int i = (codeEval.Length>0?lines.Length:0); i < lines.Length; i++){
             string singleLine = lines[i].Trim();
+            
             if (singleLine.EndsWith(":") || singleLine.StartsWith(";") || singleLine.Length < 1) 
                 continue;
+            
             string lineEval = evaluateLine(singleLine);
-            Console.Write(lineEval);
             if (lineEval != "")
                 codeEval = new String(string.Concat(codeEval, String.Format("[Line {0}] {1}\n{2}\n", i+1, lines[i].Trim(), lineEval)));
+       
         }
 
         if (codeEval != "") codeEval = "SYNTAX ERROR(s)\n" + codeEval;

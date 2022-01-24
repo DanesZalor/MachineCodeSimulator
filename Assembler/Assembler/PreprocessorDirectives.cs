@@ -138,13 +138,12 @@ public static class PreprocessorDirectives
 
     public static string translateAlias(string linesOfCode)
     {
-        linesOfCode = new string(linesOfCode.ToLower()); // lowercase the entire code
-        linesOfCode = new string(linesOfCode.Replace(":",":\n")); // separate label declarations into different lines
-        //Console.WriteLine("OG:\n----------\n"+linesOfCode);
+        // lowercase the entire code
+        linesOfCode = new string(linesOfCode.ToLower()); 
+        // separate label declarations into different lines
+        linesOfCode = new string(linesOfCode.Replace(":",":\n")); 
         string replacedAliases = replaceAliases(linesOfCode);
-        //Console.WriteLine("replaceAliases:\n----------\n"+replacedAliases);
         string replacedLabels = replaceLabels(replacedAliases);
-        //Console.WriteLine("replaceLabels:\n----------\n"+replacedLabels);
         return replacedLabels;
     }
 }

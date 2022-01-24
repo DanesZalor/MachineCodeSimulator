@@ -55,6 +55,8 @@ some Arithmetic & Logic operations can operate with 1 arguement, 2 arguements, o
 for `SHL` and `SHR`, when used in a nomadic ALU instruction, is basically shifted by 1 position.
 
 ## 3. Preprocessor Directives
+*During this phase, it is assumed that the code is already syntactically correct*
+
 The assembly code will be reduced to smaller bits for optimization
 1. The comments will be removed
 2. the JXXX instructions are translated to their corresponding alias derivations 
@@ -105,5 +107,7 @@ hlt
 ```
 
 ## 4. Compilation
+*During this phase, it is assumed that the code has all aliases and preprocessor directives replaced and all spacing is uniform.*
+
 Lastly, the actual translation to machine code.
 ![Instruction Set](Assembler/InstructionSet.png?raw=true "Title")
