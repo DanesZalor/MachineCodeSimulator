@@ -98,40 +98,34 @@ public static class Translator
     }
     private static byte[] translateJMP(string line)
     {
+        string arg = line.Replace("jmp ", "");
         byte[] r = new byte[0];
         if (Common.match(line, LEXICON.SYNTAX.JMP_R, true))
-        {
-            r = new byte[1] { RegToByte(Common.getMatch(line, LEXICON.TOKENS.REGISTER).Value) };
-            r[0] |= 0b0011_0000;
-        }
+            r = new byte[1] { RegToByte(arg, 0b0011_0000) };
+        
         else if (Common.match(line, LEXICON.SYNTAX.JMP_C, true))
-            r = new byte[2] { 0b0011_1000, Convert.ToByte(Common.getMatch(line, LEXICON.TOKENS.CONST).Value) };
+            r = new byte[2] { 0b0011_1000, Convert.ToByte(arg) };
         return r;
     }
     private static byte[] translateJCAZ(string line)
     {
-        byte getJCAZFlags(string flagstring)
+        byte getJCAZFlags(string flagstring, byte conjugate = 0b0)
         {
-            byte return_byte = 0b0000_0000;
-            if (Common.match(flagstring, "c")) return_byte |= 0b0000_0100;
-            if (Common.match(flagstring, "a")) return_byte |= 0b0000_0010;
-            if (Common.match(flagstring, "z")) return_byte |= 0b0000_0001;
-            return return_byte;
+            if (Common.match(flagstring, "c")) conjugate |= 0b0000_0100;
+            if (Common.match(flagstring, "a")) conjugate |= 0b0000_0010;
+            if (Common.match(flagstring, "z")) conjugate |= 0b0000_0001;
+            return conjugate;
         }
-        byte[] r = new byte[0] { };
+        byte[] r = new byte[2];
+        string arg = line.Split(' ')[1];
+        r[0] = getJCAZFlags(Common.getMatch(line, LEXICON.SYNTAX.JCAZ).Value, 0b0100_0000);
         if (Common.match(line, LEXICON.SYNTAX.JCAZ_R, true))
-        {
-            r = new byte[2] {
-                (byte)(getJCAZFlags(Common.getMatch(line, LEXICON.SYNTAX.JCAZ).Value) | 0b0100_0000),
-                RegToByte(Common.getMatch(line, " " + LEXICON.TOKENS.REGISTER).Value)
-            };
-        }
+            r[1] = RegToByte(arg);
+            
         else if (Common.match(line, LEXICON.SYNTAX.JCAZ_C, true))
         {
-            r = new byte[2] {
-                (byte)(getJCAZFlags(Common.getMatch(line, LEXICON.SYNTAX.JCAZ).Value) | 0b0100_1000),
-                Convert.ToByte(Common.getMatch(line, " " + LEXICON.TOKENS.CONST).Value)
-            };
+            r[0] |= 0b1000;
+            r[1] = Convert.ToByte(arg);
         }
         return r;
     }
