@@ -220,7 +220,6 @@ public static class SyntaxChecker
         }
         return "";
     }
-
     private static string evaluatePOP(string popline)
     {
         string popSyntax = String.Format("(pop ({0}|{1}))", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.A);
@@ -235,7 +234,6 @@ public static class SyntaxChecker
         }
         return "";
     }
-
     private static string evaluateCALL(string callline)
     {
         string callSyntax = String.Format("(call ({0}|{1}))", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.C);
@@ -249,7 +247,6 @@ public static class SyntaxChecker
         }
         return "";
     }
-
     private static string evaluateALU(string aluline)
     {
         string evaluateALU_Nomadic(string aluline)
@@ -281,7 +278,6 @@ public static class SyntaxChecker
             evaluation = (aluline.Contains(',') ? evaluateALU_Dyadic(aluline) : evaluateALU_Nomadic(aluline));
         return evaluation;
     }
-
     private static string evaluateDB(string dbline){
         const string dbSyntax = "(db (" + LEXICON.SYNTAX.ARGUEMENTS.C+"|(\".*\")))";
         const string dbVague = "(db (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C +"|(\".*\")))";
@@ -293,7 +289,6 @@ public static class SyntaxChecker
         }
         return "";
     }
-
     private static string evaluateETC(string etcline){
         if(!Common.match(etcline,"(call|ret|hlt)",true)) return "unrecognzied statement";
         else return "";
