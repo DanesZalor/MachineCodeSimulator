@@ -77,18 +77,19 @@ public static class LEXICON
         public const string MOV_A_R = SPACE + "mov " + ARGUEMENTS.A_R;
 
         ///<summary> jmp reg </summary>
-        public const string JMP_0 = SPACE + "jmp " + ARGUEMENTS.R;
+        public const string JMP_R = SPACE + "jmp " + ARGUEMENTS.R;
         ///<summary> jmp const </summary>
-        public const string JMP_1 = SPACE + "jmp " + ARGUEMENTS.C;
+        public const string JMP_C = SPACE + "jmp " + ARGUEMENTS.C;
 
 
         public const string JCAZ = "(j((ca?z?)|(c?az?)|(c?a?z)))";
         ///<summary> jcaz reg </summary>
-        public const string JCAZ_0 = SPACE + JCAZ + " " + ARGUEMENTS.R;
+        public const string JCAZ_R= SPACE + JCAZ + " " + ARGUEMENTS.R;
         ///<summary> jcaz const </summary>
-        public const string JCAZ_1 = SPACE + JCAZ + " " + ARGUEMENTS.C;
+        public const string JCAZ_C = SPACE + JCAZ + " " + ARGUEMENTS.C;
 
-        public const string PUSH_0 = SPACE + "push " + ARGUEMENTS.R;
-        public const string PUSH_1 = SPACE + "push " + ARGUEMENTS.A;
+        public const string PUSH_R = SPACE + "push " + ARGUEMENTS.R;
+        public const string PUSH_A = SPACE + "push " + ARGUEMENTS.A;
+        public const string PUSH_C = SPACE + "push " + ARGUEMENTS.C;
     }
 }

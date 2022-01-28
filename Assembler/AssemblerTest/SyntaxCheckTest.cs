@@ -259,4 +259,14 @@ public class MultiLineTest
         return new string(System.IO.File.ReadAllText(path));
     }
 
+    [Theory]
+    [InlineData("push [c+12]")]
+    [InlineData("push [c + 12]")]
+    public void tesing_PUSH_statement(string line, string expected_res = "")
+    {
+        SyntaxChecker.setLabels(new string[2] { "label1", "s3xyB3n1s" });
+        string actual_res = SyntaxChecker.evaluateLine(line);
+        Assert.Equal(expected_res, actual_res);
+    }
+
 }
