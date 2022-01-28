@@ -1,0 +1,21 @@
+;shift left and shift right
+MOV A, 0b001000
+MOV D, A    ;holds the original value of A
+
+MOV B, 0b100000
+CALL lshift
+MOV A, D    ;resets A to og
+MOV C, 0b000001
+CALL rshift
+HLT
+
+lshift:    ;logically shifts A to the left until it matches B
+    SHL A, 1
+    CMP A, B
+    JNZ lshift
+
+
+rshift:    ;logically shifts A to the left until it matches B
+    SHR A, 1
+    CMP A, C
+    JNZ rshift

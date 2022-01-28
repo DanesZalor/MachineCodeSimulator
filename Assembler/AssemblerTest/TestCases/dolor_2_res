@@ -1,0 +1,5 @@
+SYNTAX ERROR(s)
+[Line 5] cmp [a],b
+invalid CMP arguements
+[Line 6] jb iterates
+'iterates' is a non-existent token

@@ -1,0 +1,20 @@
+;ADD and SUB file
+MOV A, 0b1010    ; 10
+MOV B, 2
+CALL compare
+HLT
+
+compare:
+    CALL addNum
+    CALL subNum
+    CMP A, B
+    JNZ compare
+    RET
+
+addNum:
+    ADD B, 2
+    RET
+
+subNum:
+    SUB A, 2
+    RET 

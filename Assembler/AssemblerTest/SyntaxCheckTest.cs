@@ -1,5 +1,6 @@
 using Xunit;
 using System;
+using System.IO;
 using Assembler;
 namespace AssemblerTest;
 /* Commenting this out cuz Xunit kinda buggy
@@ -222,123 +223,32 @@ public class SingleLineSyntaxCheck
     }
 }*/
 public class MultiLineTest
-    {
-        [Fact]
-        public void LabelDeclarationError()
-        {
-            string linesOfCode = "mov a, 0        ; counter\n";
-            linesOfCode += "mov b, 10; limit\n";
-            linesOfCode += "en:\n";
-            linesOfCode += "inc:  inc a\n";
-            linesOfCode += "    cmp [a],b\n";
-            linesOfCode += "    jb iterates\n";
-            linesOfCode += "\n";
+{
 
-            string expected_res = "SYNTAX ERROR(s)\n";
-            expected_res += "[Line 3] en:\n"; 
-            expected_res += "label 'en' must have atleast 3 characters\n";
-            expected_res += "[Line 4] inc:  inc a\n";
-            expected_res += "label 'inc' is a reserved keyword\n";
-
-            string actual_res = SyntaxChecker.evaluateProgram(linesOfCode);
-            Assert.Equal(expected_res, actual_res );
-        }
-
-        [Fact]
-        public void InstructionSyntaxError()
-        {
-            string linesOfCode = "mov a, 0        ; counter\n";
-            linesOfCode += "mov b, 10; limit\n";
-            linesOfCode += "iterate:    \n";
-            linesOfCode += "    inc a\n";
-            linesOfCode += "    cmp [a],b\n";
-            linesOfCode += "    jb iterates\n";
-            linesOfCode += "\n";
-
-            string actual_res = SyntaxChecker.evaluateProgram(linesOfCode);
-            string expected_res = "SYNTAX ERROR(s)\n";
-            expected_res += "[Line 5] cmp [a],b\n";
-            expected_res += "invalid CMP arguements\n";
-            expected_res += "[Line 6] jb iterates\n";
-            expected_res += "'iterates' is a non-existent token\n";
-            Assert.Equal(expected_res, actual_res);
-        }
-
-        [Fact]
-        public void TestCase_Freg1(){
-            string linesOfCode = @"
-;ADD and SUB file
-MOV A, 0b1010    ; 10
-MOV B, 2
-CALL compare
-HLT
-
-compare:
-    CALL addNum
-    CALL subNum
-    CMP A, B
-    JNZ compare
-    RET
-
-addNum:
-    ADD B, 2
-    RET
-
-subNum:
-    SUB A, 2
-    RET ";
-
-        string actual_res = SyntaxChecker.evaluateProgram(linesOfCode);
-        Assert.Equal("",actual_res);
+    [Theory]
+    [InlineData("freg_1")]
+    [InlineData("freg_2")]
+    [InlineData("freg_3")]
+    [InlineData("dolor_1", false)]
+    [InlineData("dolor_2", false)]
+    /* reads ../../../TestCaes/filename (assuming it exists), 
+        if noError==false, look for ../../../TestCases/filename_res
+    */ 
+    public void ReadTestCaseFileAndEvaluate(string filename, bool noError = true){
+        string actual_res = SyntaxChecker.evaluateProgram(readFile(filename));
+        Assert.Equal( noError ? "" : readFile(filename+"_res") , actual_res);
     }
 
-        [Fact]
-        public void TestCase_Freg2(){
-            string linesOfCode = @"
-;increment
-MOV A, 3
-MOV B, 10
-CALL loop
-HLT
-
-loop:
-    INC A
-    CMP A, B
-    JNZ loop    ; loops if not A /= B
-            ";
-            string actual_res = SyntaxChecker.evaluateProgram(linesOfCode);
-            Assert.Equal("",actual_res);
-        }
-
-        [Fact]
-        public void TestCase_Freg3(){
-            string linesOfCode = @"
-;shift left and shift right
-MOV A, 0b001000
-MOV D, A    ;holds the original value of A
-
-MOV B, 0b100000
-CALL lshift
-MOV A, D    ;resets A to og
-MOV C, 0b000001
-CALL rshift
-HLT
-
-lshift:    ;logically shifts A to the left until it matches B
-    SHL A, 1
-    CMP A, B
-    JNZ lshift
-
-
-rshift:    ;logically shifts A to the left until it matches B
-    SHR A, 1
-    CMP A, C
-    JNZ rshift
-            ";
-            string actual_res = SyntaxChecker.evaluateProgram(linesOfCode);
-            Console.WriteLine(actual_res);
-            Assert.Equal("",actual_res);
-        }
-
+    /// <summary> reads a file assuming ../../../TestCases/filename exists </summary>
+    private string readFile(string filename){
+        string path = Path.Combine(
+            System.IO.Directory.GetCurrentDirectory(), 
+            ".." + Path.DirectorySeparatorChar + 
+            ".." + Path.DirectorySeparatorChar + 
+            ".." + Path.DirectorySeparatorChar + 
+            "TestCases/" + filename
+        );
+        return new string(System.IO.File.ReadAllText(path));
+    }
 
 }

@@ -1,0 +1,10 @@
+;increment
+MOV A, 3
+MOV B, 10
+CALL loop
+HLT
+
+loop:
+    INC A
+    CMP A, B
+    JNZ loop    ; loops if not A /= B

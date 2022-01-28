@@ -1,0 +1,5 @@
+SYNTAX ERROR(s)
+[Line 3] en:
+label 'en' must have atleast 3 characters
+[Line 4] inc:  inc a
+label 'inc' is a reserved keyword
