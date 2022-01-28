@@ -238,13 +238,13 @@ public class MultiLineTest
     [InlineData("kokong_3")]
     [InlineData("kokong_4", false)]
     /* reads ../../../TestCaes/filename (assuming it exists), 
-        if noError==false, look for ../../../TestCases/filename_res
+        if noError==false, look for ../../../TestCases/filename_SyntaxErrors
     */ 
     public void ReadTestCaseFileAndEvaluate(string filename, bool noError = true){
         string actual_res = SyntaxChecker.evaluateProgram(readFile(filename));
-        string expected_res = (noError ? "" : readFile(filename+"_res"));
+        string expected_res = (noError ? "" : readFile(filename+"_SyntaxErrors"));
         //Assert.True(expected_res== actual_res, actual_res);
-        Assert.Equal( noError ? "" : readFile(filename+"_res") , actual_res);
+        Assert.Equal( expected_res , actual_res);
     }
 
     /// <summary> reads a file assuming ../../../TestCases/filename exists </summary>
