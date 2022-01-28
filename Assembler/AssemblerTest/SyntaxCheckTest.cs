@@ -1,4 +1,5 @@
 using Xunit;
+using System;
 using Assembler;
 namespace AssemblerTest;
 /* Commenting this out cuz Xunit kinda buggy
@@ -243,7 +244,6 @@ public class MultiLineTest
             Assert.Equal(expected_res, actual_res );
         }
 
-
         [Fact]
         public void InstructionSyntaxError()
         {
@@ -263,4 +263,82 @@ public class MultiLineTest
             expected_res += "'iterates' is a non-existent token\n";
             Assert.Equal(expected_res, actual_res);
         }
+
+        [Fact]
+        public void TestCase_Freg1(){
+            string linesOfCode = @"
+;ADD and SUB file
+MOV A, 0b1010    ; 10
+MOV B, 2
+CALL compare
+HLT
+
+compare:
+    CALL addNum
+    CALL subNum
+    CMP A, B
+    JNZ compare
+    RET
+
+addNum:
+    ADD B, 2
+    RET
+
+subNum:
+    SUB A, 2
+    RET ";
+
+        string actual_res = SyntaxChecker.evaluateProgram(linesOfCode);
+        Assert.Equal("",actual_res);
     }
+
+        [Fact]
+        public void TestCase_Freg2(){
+            string linesOfCode = @"
+;increment
+MOV A, 3
+MOV B, 10
+CALL loop
+HLT
+
+loop:
+    INC A
+    CMP A, B
+    JNZ loop    ; loops if not A /= B
+            ";
+            string actual_res = SyntaxChecker.evaluateProgram(linesOfCode);
+            Assert.Equal("",actual_res);
+        }
+
+        [Fact]
+        public void TestCase_Freg3(){
+            string linesOfCode = @"
+;shift left and shift right
+MOV A, 0b001000
+MOV D, A    ;holds the original value of A
+
+MOV B, 0b100000
+CALL lshift
+MOV A, D    ;resets A to og
+MOV C, 0b000001
+CALL rshift
+HLT
+
+lshift:    ;logically shifts A to the left until it matches B
+    SHL A, 1
+    CMP A, B
+    JNZ lshift
+
+
+rshift:    ;logically shifts A to the left until it matches B
+    SHR A, 1
+    CMP A, C
+    JNZ rshift
+            ";
+            string actual_res = SyntaxChecker.evaluateProgram(linesOfCode);
+            Console.WriteLine(actual_res);
+            Assert.Equal("",actual_res);
+        }
+
+
+}

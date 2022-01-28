@@ -301,6 +301,11 @@ public static class SyntaxChecker
         return "";
     }
 
+    private static string evaluateETC(string etcline){
+        if(!match(etcline,"(call|ret|hlt)",true)) return "unrecognzied statement";
+        else return "";
+    }
+
     /// <summary> evaluates instructions' grammar. </summary>
     /// <returns> a detailed feedback of syntax error. Returns an empty string if there is none </returns>
     public static string evaluateLine(string line)
@@ -308,17 +313,17 @@ public static class SyntaxChecker
         // extract the instruction line
         {
             Match m = getMatch(line, ":.*;");
-            if(m.Success) line = new String(m.Value.Trim().Substring(1,m.Value.Length-1));
+            if(m.Success) line = new String(m.Value.Substring(1,m.Value.Length-2));
             
             m = getMatch(line, ".*;");
-            if(m.Success) line = new String(m.Value.Trim().Substring(0,m.Value.Length-1));
+            if(m.Success) line = new String(m.Value.Trim().Substring(0,m.Value.Length-2));
             
             m = getMatch(line, ":.*");
             if(m.Success) line = new String(m.Value.Trim().Substring(1));
             line = new String(line).Trim();
         }
-
-        if (match(line, "^(mov )")) return evaluateMOV(line);
+        if(line.Trim().Length < 1) return "";
+        else if (match(line, "^(mov )")) return evaluateMOV(line);
         else if (match(line, "^(jmp )")) return evaluateJMP(line);
         else if (match(line, "^(jn?[a-z]+ )")) return evaluateJmpIf(line);
         else if (match(line, "^(push )")) return evaluatePUSH(line);
@@ -326,7 +331,7 @@ public static class SyntaxChecker
         else if (match(line, "((^(call ))|(^ret$))")) return evaluateCALL(line);
         else if (match(line, "^(cmp|xor|and|or|shr|shl|div|mul|sub|add|not|inc|dec) ")) return evaluateALU(line);
         else if (match(line, "^db ")) return evaluateDB(line);
-        else return "unrecognzied statement";
+        else return evaluateETC(line);
     }
 
     ///<summary> evaluates a multiline program including label declarations </summary> 
