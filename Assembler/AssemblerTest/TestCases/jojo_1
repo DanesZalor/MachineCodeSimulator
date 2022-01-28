@@ -1,0 +1,10 @@
+starts:
+    MOV a, 1
+    MOV b, 2
+compare:
+    CMP a, b
+    JBE addz
+    hlt
+addz:
+    ADD a, 1
+    JMP compare

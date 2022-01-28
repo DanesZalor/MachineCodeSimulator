@@ -1,0 +1,28 @@
+starting:
+    MOV a, 0
+    MOV b, 0
+
+ANDmethod:
+    AND a, b
+    JNZ XORmethod
+
+ChangeAND:
+    ADD a, 1
+    ADD b, 3
+    JMP 6
+
+XORmethod:
+    MOV a, 1
+    MOV b, 1
+    XOR a, b
+    JNZ ORmethod
+
+FailXOR:
+    MUL A, 2
+    JMP 22
+
+ORmethod:
+    MOV a, 14
+    MOV b, 20
+    OR a, b
+    HLT

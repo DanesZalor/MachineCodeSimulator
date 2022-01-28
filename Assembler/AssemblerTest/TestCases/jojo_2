@@ -1,0 +1,18 @@
+starts:
+    MOV a, 1
+    MOV b, 2
+    JMP compare
+addz:
+    ADD a, 1
+    JMP compare
+
+compare:
+    CMP a, b
+    JBE addz
+
+starting:
+    MOV a, 253
+    MOV b, 1
+    ADD a, b
+    JNC 24
+    hlt

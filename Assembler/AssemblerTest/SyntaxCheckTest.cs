@@ -224,18 +224,26 @@ public class SingleLineSyntaxCheck
 }*/
 public class MultiLineTest
 {
-
     [Theory]
     [InlineData("freg_1")]
     [InlineData("freg_2")]
     [InlineData("freg_3")]
     [InlineData("dolor_1", false)]
     [InlineData("dolor_2", false)]
+    [InlineData("jojo_1")]
+    [InlineData("jojo_2")]
+    [InlineData("jojo_3")]
+    [InlineData("kokong_1")]
+    [InlineData("kokong_2")]
+    [InlineData("kokong_3")]
+    [InlineData("kokong_4", false)]
     /* reads ../../../TestCaes/filename (assuming it exists), 
         if noError==false, look for ../../../TestCases/filename_res
     */ 
     public void ReadTestCaseFileAndEvaluate(string filename, bool noError = true){
         string actual_res = SyntaxChecker.evaluateProgram(readFile(filename));
+        string expected_res = (noError ? "" : readFile(filename+"_res"));
+        //Assert.True(expected_res== actual_res, actual_res);
         Assert.Equal( noError ? "" : readFile(filename+"_res") , actual_res);
     }
 

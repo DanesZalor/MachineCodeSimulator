@@ -1,0 +1,12 @@
+; x^y program
+
+MOV A,2  ;x
+MOV B,7  ;y
+MOV C,A
+DEC B
+
+loop:
+    MUL A, C
+    DEC B
+    CMP B,D
+    JNZ loop

@@ -1,0 +1,14 @@
+; first x even numbers
+
+MOV B,5 ;x
+
+MOV D,232
+SUB B,1
+
+count:
+    ADD C,1    ;loop counter
+    ADD A,2
+    MOV [D],A
+    INC D
+    CMP B,C
+    JNZ count

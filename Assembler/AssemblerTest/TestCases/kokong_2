@@ -1,0 +1,32 @@
+; reverse string
+
+JMP start
+
+string:
+    DB "annaH"
+    DB 0
+
+start:
+    MOV C,string
+    MOV D,232
+    MOV A,0
+
+    PUSH A
+
+    JMP pusher
+    JMP reverse
+
+pusher:
+    MOV A,[C]
+    PUSH A
+    INC C
+    CMP B,[C]
+    JNZ pusher
+    JMP reverse
+
+reverse:
+    POP A
+    MOV [D],A
+    INC D
+    CMP A,B
+    JNZ reverse

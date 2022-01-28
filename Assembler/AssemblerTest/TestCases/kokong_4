@@ -1,0 +1,40 @@
+; jump jump
+
+JMP start
+
+dummy:
+    MOV A,0
+
+lessthan:
+    CMP A,B
+    JB greaterthan
+
+greaterthan:
+    CMP C,B
+    JA scam
+
+start:
+    MOV A, 1
+    MOV B, 2
+    MOV C, 3
+    CALL equal
+    HLT
+
+equal:
+    CMP A,A
+    JNZ lessthan
+
+scam:
+    CMP A,C
+    JZ dummy
+; Print 'a' x times
+
+MOV B,3    ;x
+MOV D,232
+
+loop:
+    MOV [D],97
+    DEC B
+    INC D
+    CMP B,C
+    JNZ loop
