@@ -24,7 +24,7 @@ public class TranslationCheck
         [InlineData("mov D, 0", new byte[2] { 0b000_1011, 0 })]
         // LOAD Reg, [Reg+Offset] Instruction
         [InlineData("mov a, [a+12]", new byte[2] { 0b001_0000, 0b0110_0000 })]
-        [InlineData("mov a, [a-12]", new byte[2] { 0b001_0000, 0b1101_1000 })]
+        [InlineData("mov a, [sp-12]", new byte[2] { 0b001_0000, 0b1101_1111 })]
         [InlineData("mov e, [g+1]", new byte[2] { 0b001_0100, 0b0000_1110 })]
         [InlineData("mov e, [g-1]", new byte[2] { 0b001_0100, 0b1000_0110 })]
         // LOAD Reg, [Reg] Instruction

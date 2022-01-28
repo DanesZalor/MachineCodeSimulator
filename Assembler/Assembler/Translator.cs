@@ -54,7 +54,6 @@ public static class Translator
         string[] args = line.Replace("mov ","").Split(',',StringSplitOptions.TrimEntries);
         if (Common.match(line, LEXICON.SYNTAX.MOV_R_R, true))
         {
-            Match m = Common.getMatch(line, LEXICON.TOKENS.REGISTER);
             r[0] = RegToByte(args[0]);
             r[1] = RegToByte(args[1]);
         }
@@ -66,41 +65,32 @@ public static class Translator
         else if (Common.match(line, LEXICON.SYNTAX.MOV_R_A, true)) // load
         {
             args[1] = args[1].Replace("[","").Replace("]","");
-
+            r[0] = RegToByte(args[0], 0b0001_0000);
             if (Common.match(args[1], LEXICON.TOKENS.OFFSET))
-            {
-                r[0] = RegToByte(args[0], 0b0001_0000);
                 r[1] = RegOffsetToByte(args[1]);
-            }
-            else if (Common.match(line, LEXICON.TOKENS.ADDRESS_REGISTER))
-            {
-                r[0] = RegToByte(args[0], 0b0001_0000);
+
+            else if (Common.match(args[1], LEXICON.TOKENS.REGISTER))
                 r[1] = RegToByte(args[1]);
-            }
-            else if (Common.match(line, LEXICON.TOKENS.ADDRESS_CONST))
+                
+            else if (Common.match(args[1], LEXICON.TOKENS.CONST))
             {
-                r[0] = RegToByte(args[0],0b0001_1000);
+                r[0] |= 0b1000;
                 r[1] = Convert.ToByte(args[1]);
             }
         }
         else if (Common.match(line, LEXICON.SYNTAX.MOV_A_R, true)) // store
         {
             args[0] = args[0].Replace("[","").Replace("]",""); 
-
-            if (Common.match(args[0], LEXICON.TOKENS.OFFSET))
-            {
-                r[0] = RegToByte(args[1], 0b0010_0000);
+            r[0] = RegToByte(args[1], 0b0010_0000);
+            if (Common.match(args[0], LEXICON.TOKENS.OFFSET))   
                 r[1] = RegOffsetToByte(args[0]);
                 
-            }
             else if (Common.match(args[0], LEXICON.TOKENS.REGISTER))
-            {
-                r[0] = RegToByte(args[1], 0b0010_0000);
                 r[1] = RegToByte(args[0]);
-            }
+            
             else if (Common.match(args[0], LEXICON.TOKENS.CONST))
             {
-                r[0] = RegToByte(args[1], 0b0010_1000);
+                r[0] |= 0b1000;
                 r[1] = Convert.ToByte(args[0]);
             }
         }
