@@ -6,14 +6,6 @@ namespace Assembler;
 /// and labels are converted to constants. Before this phase, the custom written program should already be syntactically correct </summary>
 public static class PreprocessorDirectives
 {
-    private static Match getMatch(string line, string pattern, bool exact = false, bool inverse = false)
-    {
-        if (exact) pattern = "^" + pattern + "$";
-        if (inverse) pattern = "\\[^" + pattern + "\\]";
-        return Regex.Match(line, pattern, RegexOptions.IgnoreCase);
-    }
-    private static bool match(string line, string pattern, bool exact = false) { return getMatch(line, pattern, exact).Success; }
-
     private static string removeExcessWhitespace(string linesOfCode){
         // replace all consecutive spaces with a single space
         string newLines = linesOfCode;
@@ -62,11 +54,11 @@ public static class PreprocessorDirectives
                 string newLine = new string(line.Split(';')[0].Trim());
                 for (int i = 0; i < 19; i++)
                 {
-                    if (match(newLine, Aliases[i, 0]))
+                    if (Common.match(newLine, Aliases[i, 0]))
                     {
                         newLine = Regex.Replace(newLine, Aliases[i, 0], Aliases[i, 1]);
                         if(i>17){
-                            string binary = getMatch(line, " (0b([01]{1,8}))").Value.Trim();
+                            string binary = Common.getMatch(line, " (0b([01]{1,8}))").Value.Trim();
                             int dec = 0;
                             byte mul = 0b1;
                             for(int b = binary.Length-1; b>1; b--){
@@ -82,13 +74,13 @@ public static class PreprocessorDirectives
                                 else if (r>47 && r<58) return r - 48;
                                 else return -1;
                             }
-                            string hex = getMatch(line, " (0x([0-9]|[a-f]){1,2})").Value.Trim();
+                            string hex = Common.getMatch(line, " (0x([0-9]|[a-f]){1,2})").Value.Trim();
                             newLine = Regex.Replace(newLine, "<HEX>", Convert.ToString(
                                 convertHexToDec(hex[2])*16 + convertHexToDec(hex[3])
                             ));
                         }
                         else if (i >= 13)
-                            newLine = Regex.Replace(newLine, "<REG>", getMatch(line, " "+LEXICON.TOKENS.REGISTER).Value.Trim());
+                            newLine = Regex.Replace(newLine, "<REG>", Common.getMatch(line, " "+LEXICON.TOKENS.REGISTER).Value.Trim());
                         
 
                         break;
@@ -128,9 +120,9 @@ public static class PreprocessorDirectives
                     labels = new string(string.Concat(labels, (labels.Length>0?"|":"") + line.Split(':')[0] ));
                     labelCoords = new string(string.Concat(labelCoords, (labelCoords.Length>0?",":"") + Convert.ToString(coordCounter) ));
                 }else{ // else, add to the counter depending on the scanned instruction
-                    if(match(line, cost1)) coordCounter += 1;
-                    else if(match(line, cost3)) coordCounter += 3;
-                    else if(match(line, constX))
+                    if(Common.match(line, cost1)) coordCounter += 1;
+                    else if(Common.match(line, cost3)) coordCounter += 3;
+                    else if(Common.match(line, constX))
                         coordCounter += line.Substring(line.IndexOf('\"')).Length - 2;
                     else coordCounter += 2;
                 }

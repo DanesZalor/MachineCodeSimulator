@@ -51,10 +51,10 @@ public static class SyntaxChecker
             public static string labelsAdd(string label)
             {
                 if(label.Length<1) return "";
-                else if(match(label, LEXICON.RESERVED_WORDS,true)) return "label '"+label+"' is a reserved keyword";
+                else if(Common.match(label, LEXICON.RESERVED_WORDS,true)) return "label '"+label+"' is a reserved keyword";
                 else if(label.Length<3) return "label '"+label+"' must have atleast 3 characters";
-                else if(match(label, EXISTING_LABELS,true)) return "label '"+label+"' is a duplicate";
-                else if (match(label, VAGUE_LEXICON.TOKENS.LABEL, true))
+                else if(Common.match(label, EXISTING_LABELS,true)) return "label '"+label+"' is a duplicate";
+                else if (Common.match(label, VAGUE_LEXICON.TOKENS.LABEL, true))
                 {
                     EXISTING_LABELS = new String(EXISTING_LABELS.Replace(")", (EXISTING_LABELS == "()" ? "" : "|") + (label + ")")));
                     return "";
@@ -98,13 +98,6 @@ public static class SyntaxChecker
         for (int i = 0; i < labels.Length; i++)
             NEW_LEXICON.TOKENS.labelsAdd(labels[i]);
     }
-    private static Match getMatch(string line, string pattern, bool exact = false, bool inverse = false)
-    {
-        if (exact) pattern = "^" + pattern + "$";
-        if (inverse) pattern = "\\[^" + pattern + "\\]";
-        return Regex.Match(line, pattern, RegexOptions.IgnoreCase);
-    }
-    private static bool match(string line, string pattern, bool exact = false) { return getMatch(line, pattern, exact).Success; }
 
     /// <summary> find out whats wrong with the arguement(s) </summary> 
     private static string evaluateArgs(string argsline)
@@ -124,17 +117,17 @@ public static class SyntaxChecker
                 },{
                     VAGUE_LEXICON.SYNTAX.ARGUEMENTS.A,NEW_LEXICON.SYNTAX.ARGUEMENTS.A,(
                         (
-                            match(single_arg,VAGUE_LEXICON.TOKENS.OFFSET)?( // is there an offset
-                                !match(getMatch(single_arg, VAGUE_LEXICON.TOKENS.OFFSET).Value, LEXICON.TOKENS.OFFSET, true)?( // is it not a legit offset
+                            Common.match(single_arg,VAGUE_LEXICON.TOKENS.OFFSET)?( // is there an offset
+                                !Common.match(Common.getMatch(single_arg, VAGUE_LEXICON.TOKENS.OFFSET).Value, LEXICON.TOKENS.OFFSET, true)?( // is it not a legit offset
                                     (
-                                        String.Format("'{0}' offset out of bounds",getMatch(single_arg, VAGUE_LEXICON.TOKENS.OFFSET).Value)
+                                        String.Format("'{0}' offset out of bounds",Common.getMatch(single_arg, VAGUE_LEXICON.TOKENS.OFFSET).Value)
                                     )
                                 ):(  // is it a legit offset, then check the register
-                                    !match(single_arg.Split('+', StringSplitOptions.RemoveEmptyEntries)[0].Trim(), LEXICON.SYNTAX.ARGUEMENTS.R, true)?
+                                    !Common.match(single_arg.Split('+', StringSplitOptions.RemoveEmptyEntries)[0].Trim(), LEXICON.SYNTAX.ARGUEMENTS.R, true)?
                                         String.Format("'{0}' not a register",single_arg.Replace("[","").Replace("]","").Trim()):("")
                                 )
                             ):( String.Format("'{0}' {1}", Regex.Replace(single_arg, "(\\[|\\])", "").Trim(), 
-                                match( Regex.Replace(single_arg, "(\\[|\\])", "").Trim(), VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C, true)?
+                                Common.match( Regex.Replace(single_arg, "(\\[|\\])", "").Trim(), VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C, true)?
                                         "not an 8-bit constant":"non-existent token" 
                                 )
                             )
@@ -152,9 +145,9 @@ public static class SyntaxChecker
             };
             for (int j = 0; j < 4; j++)
             {
-                if (match(single_arg, ArgsLexiconTable[j, 0], true))
+                if (Common.match(single_arg, ArgsLexiconTable[j, 0], true))
                 {
-                    if (!match(single_arg, ArgsLexiconTable[j, 1], true))
+                    if (!Common.match(single_arg, ArgsLexiconTable[j, 1], true))
                         return ArgsLexiconTable[j, 2];
                     return "";
                 }
@@ -175,9 +168,9 @@ public static class SyntaxChecker
     {
         string movSyntaxVague = "mov (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.R_X + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.A_R + ")";
         string movSyntax = "mov (" + NEW_LEXICON.SYNTAX.ARGUEMENTS.R_X + "|" + NEW_LEXICON.SYNTAX.ARGUEMENTS.A_R + ")";
-        if (!match(movline, movSyntax, true))
+        if (!Common.match(movline, movSyntax, true))
         {
-            if (!match(movline, movSyntaxVague, true)) return "invalid MOV statement";
+            if (!Common.match(movline, movSyntaxVague, true)) return "invalid MOV statement";
             else return evaluateArgs(
                 movline.Substring(movline.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0].Length)
             );
@@ -188,9 +181,9 @@ public static class SyntaxChecker
     {
         string jmpSyntax = String.Format("(jmp ({0}|{1}))", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.C);
         string jmpSyntaxVague = "jmp (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C + ")";
-        if (!match(jmpline, jmpSyntax, true))
+        if (!Common.match(jmpline, jmpSyntax, true))
         {
-            if (!match(jmpline, jmpSyntaxVague, true)) return "invalid JMP arguement";
+            if (!Common.match(jmpline, jmpSyntaxVague, true)) return "invalid JMP arguement";
             else return evaluateArgs(
                 jmpline.Substring(jmpline.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0].Length)
             );
@@ -205,10 +198,10 @@ public static class SyntaxChecker
         string jcazflagSyntax = "(JN?(C|A|Z|E|B|AE|BE))";
         string jmpSyntax = String.Format("({0} ({1}|{2}))", jcazflagSyntax, LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.C);
         string jmpSyntaxVague = "jn?[a-z]+ (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C + "|" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L + ")";
-        if (!match(jmpline, jmpSyntax, true))
+        if (!Common.match(jmpline, jmpSyntax, true))
         {
-            if (!match(jmpline, jmpSyntaxVague, true)) return "invalid JumpIf arguement";
-            else if (!match(jcaz, jcazflagSyntax, true)) return "'" + jcaz + "' invalid JumpIf flags";
+            if (!Common.match(jmpline, jmpSyntaxVague, true)) return "invalid JumpIf arguement";
+            else if (!Common.match(jcaz, jcazflagSyntax, true)) return "'" + jcaz + "' invalid JumpIf flags";
             else return evaluateArgs(arg);
         }
         return "";
@@ -218,9 +211,9 @@ public static class SyntaxChecker
         string pushSyntax = String.Format("(push ({0}|{1}|{2}))", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.A, NEW_LEXICON.SYNTAX.ARGUEMENTS.C);
         string pushSyntaxVague = String.Format("push ({0}|{1}|{2})", VAGUE_LEXICON.SYNTAX.ARGUEMENTS.A, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C,
                                     VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L);
-        if (!match(pushline, pushSyntax, true))
+        if (!Common.match(pushline, pushSyntax, true))
         {
-            if (!match(pushline, pushSyntaxVague, true)) return "invalid PUSH arguement";
+            if (!Common.match(pushline, pushSyntaxVague, true)) return "invalid PUSH arguement";
             else return evaluateArgs(
                 pushline.Substring(pushline.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0].Length)
             );
@@ -233,9 +226,9 @@ public static class SyntaxChecker
         string popSyntax = String.Format("(pop ({0}|{1}))", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.A);
         string popSyntaxVague = String.Format("pop ({0}|{1})", VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L,
                                 VAGUE_LEXICON.SYNTAX.ARGUEMENTS.A);
-        if (!match(popline, popSyntax, true))
+        if (!Common.match(popline, popSyntax, true))
         {
-            if (!match(popline, popSyntaxVague, true)) return "invalid POP arguement";
+            if (!Common.match(popline, popSyntaxVague, true)) return "invalid POP arguement";
             else return evaluateArgs(
                 popline.Substring(popline.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0].Length)
             );
@@ -247,9 +240,9 @@ public static class SyntaxChecker
     {
         string callSyntax = String.Format("(call ({0}|{1}))", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.C);
         string callSyntaxVague = String.Format("(call ({0}|{1}))", VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C);
-        if (!match(callline, "ret", true) && !match(callline, callSyntax, true))
+        if (!Common.match(callline, "ret", true) && !Common.match(callline, callSyntax, true))
         {
-            if (!match(callline, callSyntaxVague, true)) return "invalid CALL arguement";
+            if (!Common.match(callline, callSyntaxVague, true)) return "invalid CALL arguement";
             else return evaluateArgs(
                 callline.Substring(callline.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0].Length)
             );
@@ -263,7 +256,7 @@ public static class SyntaxChecker
         {
             string operation = aluline.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0];
             string syntax = String.Format("((not|inc|dec|shl|shr) {0})", LEXICON.SYNTAX.ARGUEMENTS.R);
-            if (!match(aluline, syntax, true)) return "invalid " + operation.ToUpper() + " arguement";
+            if (!Common.match(aluline, syntax, true)) return "invalid " + operation.ToUpper() + " arguement";
             return "";
         }
         string evaluateALU_Dyadic(string aluline)
@@ -271,20 +264,20 @@ public static class SyntaxChecker
             string operation = aluline.Split(" ", StringSplitOptions.RemoveEmptyEntries)[0];
             string syntax = String.Format("(cmp|xor|and|or|not|shr|shl|div|mul|sub|add) {0},({0}|{1}|{2})", LEXICON.SYNTAX.ARGUEMENTS.R, NEW_LEXICON.SYNTAX.ARGUEMENTS.A, NEW_LEXICON.SYNTAX.ARGUEMENTS.C);
             string syntaxVague = String.Format("(cmp|xor|and|or|not|shr|shl|div|mul|sub|add) {0},{1}", VAGUE_LEXICON.SYNTAX.ARGUEMENTS.L, VAGUE_LEXICON.SYNTAX.ARGUEMENTS.X);
-            if (!match(aluline, syntax, true))
+            if (!Common.match(aluline, syntax, true))
             {
-                if (!match(aluline, syntaxVague, true)) return "invalid " + operation.ToUpper() + " arguements";
+                if (!Common.match(aluline, syntaxVague, true)) return "invalid " + operation.ToUpper() + " arguements";
                 else return evaluateArgs(aluline.Substring(operation.Length));
             }
             return "";
         }
 
         string evaluation = "";
-        if (match(aluline, "^(not|inc|dec) "))
+        if (Common.match(aluline, "^(not|inc|dec) "))
             evaluation = evaluateALU_Nomadic(aluline);
-        else if (match(aluline, "^(cmp|xor|and|or|div|mul|sub|add) "))
+        else if (Common.match(aluline, "^(cmp|xor|and|or|div|mul|sub|add) "))
             evaluation = evaluateALU_Dyadic(aluline);
-        else if (match(aluline, "^(shl|shr)"))
+        else if (Common.match(aluline, "^(shl|shr)"))
             evaluation = (aluline.Contains(',') ? evaluateALU_Dyadic(aluline) : evaluateALU_Nomadic(aluline));
         return evaluation;
     }
@@ -293,16 +286,16 @@ public static class SyntaxChecker
         const string dbSyntax = "(db (" + LEXICON.SYNTAX.ARGUEMENTS.C+"|(\".*\")))";
         const string dbVague = "(db (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C +"|(\".*\")))";
         string dbarg = dbline.Substring(2).Trim();
-        if(!match(dbline, dbSyntax, true)){
+        if(!Common.match(dbline, dbSyntax, true)){
             Console.Write(dbline + " ");
-            if(!match(dbline, dbVague, true)) return "'"+dbarg+"' invalid db arguement";
+            if(!Common.match(dbline, dbVague, true)) return "'"+dbarg+"' invalid db arguement";
             else return evaluateArgs(dbarg);
         }
         return "";
     }
 
     private static string evaluateETC(string etcline){
-        if(!match(etcline,"(call|ret|hlt)",true)) return "unrecognzied statement";
+        if(!Common.match(etcline,"(call|ret|hlt)",true)) return "unrecognzied statement";
         else return "";
     }
 
@@ -312,25 +305,25 @@ public static class SyntaxChecker
     {
         // extract the instruction line
         {
-            Match m = getMatch(line, ":.*;");
+            Match m = Common.getMatch(line, ":.*;");
             if(m.Success) line = new String(m.Value.Substring(1,m.Value.Length-2));
             
-            m = getMatch(line, ".*;");
+            m = Common.getMatch(line, ".*;");
             if(m.Success) line = new String(m.Value.Trim().Substring(0,m.Value.Length-2));
             
-            m = getMatch(line, ":.*");
+            m = Common.getMatch(line, ":.*");
             if(m.Success) line = new String(m.Value.Trim().Substring(1));
             line = new String(line).Trim();
         }
         if(line.Trim().Length < 1) return "";
-        else if (match(line, "^(mov )")) return evaluateMOV(line);
-        else if (match(line, "^(jmp )")) return evaluateJMP(line);
-        else if (match(line, "^(jn?[a-z]+ )")) return evaluateJmpIf(line);
-        else if (match(line, "^(push )")) return evaluatePUSH(line);
-        else if (match(line, "^(pop )")) return evaluatePOP(line);
-        else if (match(line, "((^(call ))|(^ret$))")) return evaluateCALL(line);
-        else if (match(line, "^(cmp|xor|and|or|shr|shl|div|mul|sub|add|not|inc|dec) ")) return evaluateALU(line);
-        else if (match(line, "^db ")) return evaluateDB(line);
+        else if (Common.match(line, "^(mov )")) return evaluateMOV(line);
+        else if (Common.match(line, "^(jmp )")) return evaluateJMP(line);
+        else if (Common.match(line, "^(jn?[a-z]+ )")) return evaluateJmpIf(line);
+        else if (Common.match(line, "^(push )")) return evaluatePUSH(line);
+        else if (Common.match(line, "^(pop )")) return evaluatePOP(line);
+        else if (Common.match(line, "((^(call ))|(^ret$))")) return evaluateCALL(line);
+        else if (Common.match(line, "^(cmp|xor|and|or|shr|shl|div|mul|sub|add|not|inc|dec) ")) return evaluateALU(line);
+        else if (Common.match(line, "^db ")) return evaluateDB(line);
         else return evaluateETC(line);
     }
 
@@ -342,7 +335,7 @@ public static class SyntaxChecker
         // Scanning Labels Phase
         NEW_LEXICON.TOKENS.labelsClear();
         for (int i = 0; i < lines.Length; i++){
-            string temp = getMatch(lines[i], ".*:").Value.Trim().Replace(":","");
+            string temp = Common.getMatch(lines[i], ".*:").Value.Trim().Replace(":","");
             if(temp.Length<1) continue;
             string label_res = NEW_LEXICON.TOKENS.labelsAdd(temp);
             if(label_res.Length>0){
