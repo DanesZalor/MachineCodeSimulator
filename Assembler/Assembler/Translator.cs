@@ -51,54 +51,54 @@ public static class Translator
     private static byte[] translateMOV(string line)
     {
         byte[] r = new byte[2];
+        string[] args = line.Replace("mov ","").Split(',',StringSplitOptions.TrimEntries);
         if (Common.match(line, LEXICON.SYNTAX.MOV_R_R, true))
         {
             Match m = Common.getMatch(line, LEXICON.TOKENS.REGISTER);
-            r[0] = RegToByte(m.Value);
-            r[1] = RegToByte(m.NextMatch().Value);
+            r[0] = RegToByte(args[0]);
+            r[1] = RegToByte(args[1]);
         }
         else if (Common.match(line, LEXICON.SYNTAX.MOV_R_C, true))
         {
-            r[0] = RegToByte(Common.getMatch(line, LEXICON.TOKENS.REGISTER).Value, 0b0000_1000);
-            r[1] = Convert.ToByte(Common.getMatch(line,LEXICON.TOKENS.CONST).Value);
+            r[0] = RegToByte(args[0], 0b0000_1000);
+            r[1] = Convert.ToByte(args[1]);
         }
         else if (Common.match(line, LEXICON.SYNTAX.MOV_R_A, true)) // load
         {
-            Match m = Common.getMatch(line, LEXICON.TOKENS.REGISTER);
-            if (Common.match(line, LEXICON.TOKENS.ADDRESS_REGISTER_OFFSET))
+            args[1] = args[1].Replace("[","").Replace("]","");
+
+            if (Common.match(args[1], LEXICON.TOKENS.OFFSET))
             {
-                r[0] = RegToByte(m.Value, 0b0001_0000);
-                r[1] = RegOffsetToByte(
-                            Common.getMatch(line, LEXICON.TOKENS.ADDRESS_REGISTER_OFFSET).Value
-                        );
+                r[0] = RegToByte(args[0], 0b0001_0000);
+                r[1] = RegOffsetToByte(args[1]);
             }
             else if (Common.match(line, LEXICON.TOKENS.ADDRESS_REGISTER))
             {
-                r[0] = RegToByte(m.Value, 0b0001_0000);
-                r[1] = RegToByte(m.NextMatch().Value);
+                r[0] = RegToByte(args[0], 0b0001_0000);
+                r[1] = RegToByte(args[1]);
             }
             else if (Common.match(line, LEXICON.TOKENS.ADDRESS_CONST))
             {
-                r[0] = Convert.ToByte(RegToByte(m.Value) | 0b0001_1000);
-                r[1] = Convert.ToByte(Common.getMatch(line, LEXICON.TOKENS.CONST).Value);
+                r[0] = RegToByte(args[0],0b0001_1000);
+                r[1] = Convert.ToByte(args[1]);
             }
         }
         else if (Common.match(line, LEXICON.SYNTAX.MOV_A_R, true)) // store
         {
-            string[] args = line.Split(',',StringSplitOptions.TrimEntries);
-            args[0] = args[0].Replace("mov ","").Replace("[","").Replace("]",""); 
+            args[0] = args[0].Replace("[","").Replace("]",""); 
+
             if (Common.match(args[0], LEXICON.TOKENS.OFFSET))
             {
                 r[0] = RegToByte(args[1], 0b0010_0000);
                 r[1] = RegOffsetToByte(args[0]);
                 
             }
-            else if (Common.match(line, LEXICON.TOKENS.REGISTER))
+            else if (Common.match(args[0], LEXICON.TOKENS.REGISTER))
             {
                 r[0] = RegToByte(args[1], 0b0010_0000);
                 r[1] = RegToByte(args[0]);
             }
-            else if (Common.match(line, LEXICON.TOKENS.CONST))
+            else if (Common.match(args[0], LEXICON.TOKENS.CONST))
             {
                 r[0] = RegToByte(args[1], 0b0010_1000);
                 r[1] = Convert.ToByte(args[0]);
