@@ -131,20 +131,22 @@ public static class Translator
     }
     private static byte[] translatePUSH(string line)
     {
-        byte[] r = new byte[0] { };
-        if (Common.match(line, LEXICON.SYNTAX.PUSH_R)){
-            r = new byte[1] {RegToByte(Common.getMatch(line, LEXICON.TOKENS.REGISTER).Value) };
-            r[0] |= 0b0101_0000;
-        }else if (Common.match(line, LEXICON.SYNTAX.PUSH_A)){
+        byte[] r = new byte[2];
+        string arg = line.Replace("push ","");
+
+        if (Common.match(line, LEXICON.SYNTAX.PUSH_R))
+            r = new byte[1] { RegToByte(arg, 0b0101_0000) };
+        
+        else if (Common.match(line, LEXICON.SYNTAX.PUSH_A)){
             if(Common.match(line, LEXICON.TOKENS.ADDRESS_REGISTER_OFFSET)){
-                r = new byte[2]{ 
-                    0b0101_1000, 
-                    RegOffsetToByte(line)
-                };
+                r[0] = 0b0101_1000;
+                r[1] = RegOffsetToByte(arg);
             }
         }
-        else if(Common.match(line, LEXICON.SYNTAX.PUSH_C))
-            r = new byte[2] { 0b0101_1010, Convert.ToByte(Common.getMatch(line, LEXICON.TOKENS.CONST).Value) };
+        else if(Common.match(line, LEXICON.SYNTAX.PUSH_C)){
+            r[0] = 0b0101_1010;
+            r[1] = Convert.ToByte(arg);
+        }
         
         return r;
     }

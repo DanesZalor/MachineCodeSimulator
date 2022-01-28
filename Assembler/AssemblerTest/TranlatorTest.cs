@@ -60,12 +60,12 @@ public class TranslationCheck
         // JCAZ Const
         [InlineData("jaz 254", new byte[2] { 0b0100_1011, 254 })]
         [InlineData("jaz 101", new byte[2] { 0b0100_1011, 101 })]
-        /*// PUSH Reg
+        // PUSH Reg
         [InlineData("push b", new byte[1] { 0b0101_0001 })]
         [InlineData("push g", new byte[1] { 0b0101_0110 })]
         [InlineData("push 125", new byte[2] { 0b0101_1010, 125 })]
-        [InlineData("push [g + 12]", new byte[2] { 0b0101_1000, 0b0110_0110 })]
-        */
+        [InlineData("push [g+12]", new byte[2] { 0b0101_1000, 0b0110_0110 })]
+        /**/
         public void translatesAssemblyInstructionsToMachineCodeCorrectly(string line, byte[] expected_res)
         {
             byte[] actual_res = Assembler.Translator.translateLine(line);
