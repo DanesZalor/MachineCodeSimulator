@@ -14,18 +14,18 @@ public class SyntaxCheckTest
     }
 
     [Theory]
-    [InlineData("freg_1")]
-    [InlineData("freg_2")]
-    [InlineData("freg_3")]
-    [InlineData("dolor_1", false)]
-    [InlineData("dolor_2", false)]
-    [InlineData("jojo_1")]
-    [InlineData("jojo_2")]
-    [InlineData("jojo_3")]
-    [InlineData("kokong_1")]
-    [InlineData("kokong_2")]
-    [InlineData("kokong_3")]
-    [InlineData("kokong_4", false)]
+    [InlineData("correct1")]
+    [InlineData("correct2")]
+    [InlineData("correct3")]
+    [InlineData("correct4")]
+    [InlineData("correct5")]
+    [InlineData("correct6")]
+    [InlineData("correct7")]
+    [InlineData("correct8")]
+    [InlineData("correct9")]
+    [InlineData("wrongSyntax1", false)]
+    [InlineData("wrongSyntax2", false)]
+    [InlineData("wrongSyntax3", false)]
     /* reads ../../../TestCaes/filename (assuming it exists), 
         if noError==false, look for ../../../TestCases/filename_SyntaxErrors
     */ 
