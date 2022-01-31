@@ -1,0 +1,81 @@
+; this test case is to test all possibilities of MOV Reg, Reg
+
+; mov a, __
+mov a, a
+moV a, b
+mOv a, c
+mOV a, d
+Mov a, e
+MoV a, f
+MOv a, g
+MOV a, sp
+
+; mov b, __
+mov b, a
+mov b, b
+mov b, c
+mov b, d
+mov b, e
+mov b, f
+mov b, g
+mov b, sp
+
+; mov c, __
+mov c, a
+mov c, b
+mov c, c
+mov c, d
+mov c, e
+mov c, f
+mov c, g
+mov c, sp
+
+; mov d, __
+mov d, a
+mov d, b
+mov d, c
+mov d, d
+mov d, e
+mov d, f
+mov d, g
+mov d, sp
+
+; mov e, __
+mov e, a
+mov e, b
+mov e, c
+mov e, d
+mov e, e
+mov e, f
+mov e, g
+mov e, sp
+
+; mov f, __
+mov f, a
+mov f, b
+mov f, c
+mov f, d
+mov f, e
+mov f, f
+mov f, g
+mov f, sp
+
+; mov g, __
+mov g, a
+mov g, b
+mov g, c
+mov g, d
+mov g, e
+mov g, f
+mov g, g
+mov g, sp
+
+; mov sp, __
+mov sp, a
+mov sp, b
+mov sp, c
+mov sp, d
+mov sp, e
+mov sp, f
+mov sp, g
+mov sp, sp
