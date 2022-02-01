@@ -290,7 +290,7 @@ public static class SyntaxChecker
         return "";
     }
     private static string evaluateETC(string etcline){
-        if(!Common.match(etcline,"(call|ret|hlt)",true)) return "unrecognzied statement";
+        if(!Common.match(etcline,"(call|ret|hlt|clf)",true)) return "unrecognzied statement";
         else return "";
     }
 
@@ -308,16 +308,19 @@ public static class SyntaxChecker
             }
             line = Common.replace(line, "((;.*)|(([a-z])((\\w)*)):)","").Trim();
         }
-        if(line.Trim().Length < 1) return "";
-        else if (Common.match(line, "^(mov )")) return evaluateMOV(line);
-        else if (Common.match(line, "^(jmp )")) return evaluateJMP(line);
-        else if (Common.match(line, "^(jn?[a-z]+ )")) return evaluateJmpIf(line);
-        else if (Common.match(line, "^(push )")) return evaluatePUSH(line);
-        else if (Common.match(line, "^(pop )")) return evaluatePOP(line);
-        else if (Common.match(line, "((^(call ))|(^ret$))")) return evaluateCALL(line);
-        else if (Common.match(line, "^(cmp|xor|and|or|shr|shl|div|mul|sub|add|not|inc|dec) ")) return evaluateALU(line);
-        else if (Common.match(line, "^db ")) return evaluateDB(line);
-        else return evaluateETC(line);
+        
+        Func<string, string>[] evalFuncs = {
+            evaluateMOV, evaluateJMP, evaluateJmpIf, evaluatePUSH, 
+            evaluatePOP, evaluateCALL, evaluateALU, evaluateDB, evaluateETC
+        };
+        string[] lineGramamrs = {
+            "^(mov )","^(jmp )","^(jn?[a-z]+ )","^(push )","^(pop )","((^(call ))|(^ret$))", 
+            "^(cmp|xor|and|or|shr|shl|div|mul|sub|add|not|inc|dec) ","^db ",".*"
+        };
+        if(line.Length < 1) return "";
+        for(int i = 0; i<lineGramamrs.Length; i++)
+            if(Common.match(line, lineGramamrs[i])) return evalFuncs[i](line);
+        return "";
     }
 
     ///<summary> evaluates a multiline program including label declarations </summary> 
