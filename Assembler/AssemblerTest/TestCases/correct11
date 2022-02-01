@@ -1,0 +1,9 @@
+start:  mov a, 10
+        mov b, 1
+        mov g, g
+
+loopstart:  cmp a, b
+            jnbe loopend    ; end loop if a<=b
+            sub a, 1
+            jmp loopstart
+loopend:    hlt

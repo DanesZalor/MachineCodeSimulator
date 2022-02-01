@@ -1,0 +1,11 @@
+start:  mov a, 0x0a
+        mov b, 0b1
+        db 0x22
+        db 0b1001
+        db 25
+
+loopstart:  cmp a, b
+            jnbe loopend    ;end loop if a<=b
+            sub a, 1
+            jmp loopstart
+loopend:    hlt

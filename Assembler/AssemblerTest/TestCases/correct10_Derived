@@ -1,0 +1,5 @@
+mov a, 0
+mov b, 10
+inc a
+cmp a, b
+jc 4

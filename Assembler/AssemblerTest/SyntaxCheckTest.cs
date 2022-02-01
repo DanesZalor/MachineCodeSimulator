@@ -1,7 +1,6 @@
 using Xunit;
 using System;
 using System.IO;
-using Assembler;
 namespace AssemblerTest;
 
 public class SyntaxCheckTest
@@ -12,7 +11,7 @@ public class SyntaxCheckTest
     [InlineData("instructionsTest/MOV_R_A")]
     [InlineData("instructionsTest/MOV_A_R")]
     public void InstructionsTest(string filename){
-        string actual_res = SyntaxChecker.evaluateProgram(readFile(filename));
+        string actual_res = Assembler.SyntaxChecker.evaluateProgram(Common.readFile(filename));
         Assert.Equal("", actual_res);
     }
 
@@ -33,21 +32,9 @@ public class SyntaxCheckTest
         if noError==false, look for ../../../TestCases/filename_SyntaxErrors
     */ 
     public void ReadTestCaseFileAndEvaluate(string filename, bool noError = true){
-        string actual_res = SyntaxChecker.evaluateProgram(readFile(filename));
-        string expected_res = (noError ? "" : readFile(filename+"_SyntaxErrors"));
+        string actual_res = Assembler.SyntaxChecker.evaluateProgram(Common.readFile(filename));
+        string expected_res = (noError ? "" : Common.readFile(filename+"_SyntaxErrors"));
         //Assert.True(expected_res== actual_res, actual_res);
         Assert.Equal( expected_res , actual_res);
-    }
-
-    /// <summary> reads a file assuming ../../../TestCases/filename exists </summary>
-    private static string readFile(string filename){
-        string path = Path.Combine(
-            System.IO.Directory.GetCurrentDirectory(), 
-            ".." + Path.DirectorySeparatorChar + 
-            ".." + Path.DirectorySeparatorChar + 
-            ".." + Path.DirectorySeparatorChar + 
-            "TestCases/" + filename
-        );
-        return new string(System.IO.File.ReadAllText(path));
     }
 }

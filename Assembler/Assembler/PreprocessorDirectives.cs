@@ -23,7 +23,7 @@ public static class PreprocessorDirectives
 
     private static string replaceAliases(string linesOfCode)
     {
-        string[,] Aliases = new string[19, 2]{
+        string[,] Aliases = new string[20, 2]{
             {"jnc ","jaz "},{"jna ","jcz "},{"jnz ","jca "},
             {"je ","jz "},{"jne ","jca "},{"jb ","jc "},
             {"jnb ","jaz "},{"jae ","jaz "},{"jnae ","jc "},
@@ -32,6 +32,7 @@ public static class PreprocessorDirectives
             {String.Format("(mul|div) {0},{1}1",LEXICON.SYNTAX.ARGUEMENTS.R, LEXICON.SPACE),""},
             // add/sub by 0 is removed
             {String.Format("(add|sub) {0},{1}0",LEXICON.SYNTAX.ARGUEMENTS.R, LEXICON.SPACE),""},
+            {String.Format("mov (({0}a{0},{0}a)|({0}b{0},{0}b)|({0}c{0},{0}c)|({0}d{0},{0}d)|({0}e{0},{0}e)|({0}f{0},{0}f)|({0}g{0},{0}g)|({0}sp{0},{0}sp))", LEXICON.SPACE),""},
             //special cases
             // add r, 1 -> inc r
             {String.Format("add {0},{1}1", LEXICON.SYNTAX.ARGUEMENTS.R, LEXICON.SPACE),"inc <REG>"},
@@ -52,12 +53,12 @@ public static class PreprocessorDirectives
             for (string? line = reader.ReadLine(); line != null; line = reader.ReadLine())
             {
                 string newLine = new string(line.Split(';')[0].Trim());
-                for (int i = 0; i < 19; i++)
+                for (int i = 0; i < 20; i++)
                 {
                     if (Common.match(newLine, Aliases[i, 0]))
                     {
                         newLine = Regex.Replace(newLine, Aliases[i, 0], Aliases[i, 1]);
-                        if(i>17){
+                        if(i>18){
                             string binary = Common.getMatch(line, " (0b([01]{1,8}))").Value.Trim();
                             int dec = 0;
                             byte mul = 0b1;
@@ -67,7 +68,7 @@ public static class PreprocessorDirectives
                             }
                             newLine = Regex.Replace(newLine, "<BIN>", Convert.ToString(dec));
                         }
-                        else if(i>16){ // hex alias to decimal
+                        else if(i>17){ // hex alias to decimal
                             int convertHexToDec(char s){
                                 int r = Convert.ToInt16(s);
                                 if (r>96 && r<103) return r - 87;
@@ -79,7 +80,7 @@ public static class PreprocessorDirectives
                                 convertHexToDec(hex[2])*16 + convertHexToDec(hex[3])
                             ));
                         }
-                        else if (i >= 13)
+                        else if (i >= 14)
                             newLine = Regex.Replace(newLine, "<REG>", Common.getMatch(line, " "+LEXICON.TOKENS.REGISTER).Value.Trim());
                         
 
