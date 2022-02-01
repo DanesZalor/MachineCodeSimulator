@@ -78,8 +78,8 @@ The assembly code will be reduced to smaller bits for optimization
     | `MOV Rx, Rx` (same registers) | ` ` |
 
 4. There are also aliases for constants. Binary constants in the form of `0b[0-1]{1,8}` and Hexademicals in the form of `0x([0-9]|[a-f]){2}`. These can be translated into Decimals for easier compilation.
-5. Lastly the labels will be replaced with their corresponding constants
-
+5. The labels will be replaced with their corresponding constants
+6. The spacing will be replaced by a uniform spacing for easier compilation
  
 
 Example: From 
