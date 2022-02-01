@@ -2,6 +2,6 @@ mov a  ,    0
 mov b   ,10
 mov c  , c ; useless
 iterate:    add a, 1 ; a++
-mul b, 1; useless
+mul b, 1 ; useless
 cmp   a, b
 jb iterate

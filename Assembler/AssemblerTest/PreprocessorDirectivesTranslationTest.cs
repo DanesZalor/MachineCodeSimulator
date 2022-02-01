@@ -7,8 +7,11 @@ public class PreprocessorDirectivesTest
     [InlineData("correct11")]
     [InlineData("correct12")]
     public void readFileAndDerive(string filename){
-        string actual_res = Assembler.PreprocessorDirectives.translateAlias(Common.readFile(filename));
+        string filecontent = Common.readFile(filename);
+
+        string actual_res = Assembler.PreprocessorDirectives.translateAlias(filecontent);
         string expected_res = Common.readFile(filename+"_Derived");
+
         Assert.Equal(expected_res, actual_res);
     }
 }
