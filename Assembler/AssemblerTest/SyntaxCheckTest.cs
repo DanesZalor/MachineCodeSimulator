@@ -7,7 +7,10 @@ namespace AssemblerTest;
 public class SyntaxCheckTest
 {
     [Theory]
-    [InlineData("instructionsTest/all_MOV_R_R")]
+    [InlineData("instructionsTest/MOV_R_R")]
+    [InlineData("instructionsTest/MOV_R_C")]
+    [InlineData("instructionsTest/MOV_R_A")]
+    [InlineData("instructionsTest/MOV_A_R")]
     public void InstructionsTest(string filename){
         string actual_res = SyntaxChecker.evaluateProgram(readFile(filename));
         Assert.Equal("", actual_res);
