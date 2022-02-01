@@ -16,4 +16,8 @@ public static class Common
     {
         return getMatch(line, pattern, exact).Success;
     }
+
+    public static string replace(string line, string pattern, string replacement){
+        return Regex.Replace(line, pattern, replacement, RegexOptions.IgnoreCase);
+    }
 }
