@@ -308,12 +308,13 @@ public static class SyntaxChecker
     {
         
         { // extract the instruction line
-            byte numOfColons = 0;
-            for(int i = 0; i<line.Length; i++){
+            byte numOfColons = 0; 
+            for(int i = 0; i<line.Length; i++){ // to prevent line with more than 1 label 
                 if(line[i]==';') break;
                 if(line[i]==':') numOfColons++;
                 if(numOfColons>1) return "only 1 label per line";
             }
+            
             line = Common.replace(line, "((;.*)|(([a-z])((\\w)*)):)","").Trim();
             if(line.Length < 1) return "";
         }

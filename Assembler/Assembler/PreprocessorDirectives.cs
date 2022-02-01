@@ -53,7 +53,7 @@ public static class PreprocessorDirectives
             for (string? line = reader.ReadLine(); line != null; line = reader.ReadLine())
             {
                 // removes the comments
-                string newLine = new string(line.Split(';')[0].Trim());
+                string newLine = Common.replace(line, ";.*","").Trim();
                 for (int i = 0; i < 20; i++)
                 {
                     if (Common.match(newLine, Aliases[i, 0]))
