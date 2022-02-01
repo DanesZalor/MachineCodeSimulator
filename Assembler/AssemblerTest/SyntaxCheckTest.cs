@@ -44,7 +44,7 @@ public class SyntaxCheckTest
     [Theory]
     [InlineData("mov a, a")]
     [InlineData("mov a, a ; comment")]
-    //[InlineData("mov a, a; comment")]
+    [InlineData("mov a, a; comment")]
     [InlineData("mov a, [b] ; comment")]
     [InlineData("mov a, [b]; comment")]
     public void SingleLineEval(string line){

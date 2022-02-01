@@ -301,11 +301,12 @@ public static class SyntaxChecker
         // extract the instruction line
         {
             byte numOfColons = 0;
-            for(int i = 0; i<line.Length || line[i]!=';'; i++){
+            for(int i = 0; i<line.Length; i++){
+                if(line[i]==';') break;
                 if(line[i]==':') numOfColons++;
                 if(numOfColons>1) return "only 1 label per line";
             }
-            line = Regex.Replace(line, "((;.*)|(([a-z])((\\w)*)):)","").Trim();
+            line = Common.replace(line, "((;.*)|(([a-z])((\\w)*)):)","").Trim();
         }
         if(line.Trim().Length < 1) return "";
         else if (Common.match(line, "^(mov )")) return evaluateMOV(line);
