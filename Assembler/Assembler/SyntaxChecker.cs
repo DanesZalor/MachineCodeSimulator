@@ -294,12 +294,20 @@ public static class SyntaxChecker
         else return "";
     }
 
+    private static Func<string, string>[] lineEvaluatorFuncs = {
+        evaluateMOV, evaluateJMP, evaluateJmpIf, evaluatePUSH, 
+        evaluatePOP, evaluateCALL, evaluateALU, evaluateDB, evaluateETC
+    };
+    private static string[] lineStarterGrammars = {
+        "^(mov )","^(jmp )","^(jn?[a-z]+ )","^(push )","^(pop )","((^(call ))|(^ret$))", 
+        "^(cmp|xor|and|or|shr|shl|div|mul|sub|add|not|inc|dec) ","^db ",".*"
+    };
     /// <summary> evaluates instructions' grammar. </summary>
     /// <returns> a detailed feedback of syntax error. Returns an empty string if there is none </returns>
     public static string evaluateLine(string line)
     {
-        // extract the instruction line
-        {
+        
+        { // extract the instruction line
             byte numOfColons = 0;
             for(int i = 0; i<line.Length; i++){
                 if(line[i]==';') break;
@@ -307,19 +315,12 @@ public static class SyntaxChecker
                 if(numOfColons>1) return "only 1 label per line";
             }
             line = Common.replace(line, "((;.*)|(([a-z])((\\w)*)):)","").Trim();
+            if(line.Length < 1) return "";
         }
         
-        Func<string, string>[] evalFuncs = {
-            evaluateMOV, evaluateJMP, evaluateJmpIf, evaluatePUSH, 
-            evaluatePOP, evaluateCALL, evaluateALU, evaluateDB, evaluateETC
-        };
-        string[] lineGramamrs = {
-            "^(mov )","^(jmp )","^(jn?[a-z]+ )","^(push )","^(pop )","((^(call ))|(^ret$))", 
-            "^(cmp|xor|and|or|shr|shl|div|mul|sub|add|not|inc|dec) ","^db ",".*"
-        };
-        if(line.Length < 1) return "";
-        for(int i = 0; i<lineGramamrs.Length; i++)
-            if(Common.match(line, lineGramamrs[i])) return evalFuncs[i](line);
+        // if line matches the ith grammar, use the ith function 
+        for(int i = 0; i<lineStarterGrammars.Length; i++)
+            if(Common.match(line, lineStarterGrammars[i])) return lineEvaluatorFuncs[i](line);
         return "";
     }
 
