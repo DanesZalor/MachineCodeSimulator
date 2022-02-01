@@ -44,9 +44,9 @@ public class SyntaxCheckTest
     [Theory]
     [InlineData("mov a, a")]
     [InlineData("mov a, a ; comment")]
-    //[InlineData("mov a, a; comment")]
+    [InlineData("mov a, a; comment")]
     [InlineData("mov a, [b] ; comment")]
-    //[InlineData("mov a, [b]; comment")]
+    [InlineData("mov a, [b]; comment")]
     public void SingleLineEval(string line){
         string actual_res = Assembler.SyntaxChecker.evaluateLine(line);
         Assert.True(""==actual_res, actual_res);
