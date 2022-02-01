@@ -300,15 +300,12 @@ public static class SyntaxChecker
     {
         // extract the instruction line
         {
-            Match m = Common.getMatch(line, ":.*;");
-            if(m.Success) line = new String(m.Value.Substring(1,m.Value.Length-2));
-            
-            m = Common.getMatch(line, ".*;");
-            if(m.Success) line = new String(m.Value.Trim().Substring(0,m.Value.Length-2));
-            
-            m = Common.getMatch(line, ":.*");
-            if(m.Success) line = new String(m.Value.Trim().Substring(1));
-            line = new String(line).Trim();
+            byte numOfColons = 0;
+            for(int i = 0; i<line.Length || line[i]!=';'; i++){
+                if(line[i]==':') numOfColons++;
+                if(numOfColons>1) return "only 1 label per line";
+            }
+            line = Regex.Replace(line, "((;.*)|(([a-z])((\\w)*)):)","").Trim();
         }
         if(line.Trim().Length < 1) return "";
         else if (Common.match(line, "^(mov )")) return evaluateMOV(line);
@@ -327,10 +324,11 @@ public static class SyntaxChecker
     {
         string[] lines = linesOfCode.Split('\n');
         string codeEval = "";
+
         // Scanning Labels Phase
         NEW_LEXICON.TOKENS.labelsClear();
         for (int i = 0; i < lines.Length; i++){
-            string temp = Common.getMatch(lines[i], ".*:").Value.Trim().Replace(":","");
+            string temp = Common.getMatch(lines[i], "^"+VAGUE_LEXICON.TOKENS.LABEL+":").Value.Trim().Replace(":","");
             if(temp.Length<1) continue;
             string label_res = NEW_LEXICON.TOKENS.labelsAdd(temp);
             if(label_res.Length>0){
@@ -342,8 +340,10 @@ public static class SyntaxChecker
         for (int i = (codeEval.Length>0?lines.Length:0); i < lines.Length; i++){
             string singleLine = lines[i].Trim();
             
-            if (singleLine.EndsWith(":") || singleLine.StartsWith(";") || singleLine.Length < 1) 
-                continue;
+            if ( singleLine.StartsWith(";") || singleLine.Length < 1 || 
+                 (singleLine.EndsWith(":") && Common.match(singleLine, VAGUE_LEXICON.TOKENS.LABEL, true)) 
+                ) 
+                continue; // is a comment line or an empty line
             
             string lineEval = evaluateLine(singleLine);
             if (lineEval != "")
