@@ -46,12 +46,13 @@ public static class Translator
     {
         byte[] r = new byte[2];
         string[] args = line.Substring(4).Split(','); // remove "mov " and split
-        if (Common.match(line, LEXICON.SYNTAX.MOV_R_R, true))
+        
+        if (Common.match(line, LEXICON.SYNTAX.MOV_R_R, true)) // mov
         {
             r[0] = RegToByte(args[0]);
             r[1] = RegToByte(args[1]);
         }
-        else if (Common.match(line, LEXICON.SYNTAX.MOV_R_C, true))
+        else if (Common.match(line, LEXICON.SYNTAX.MOV_R_C, true)) // data
         {
             r[0] = RegToByte(args[0], 0b0000_1000);
             r[1] = Convert.ToByte(args[1]);
