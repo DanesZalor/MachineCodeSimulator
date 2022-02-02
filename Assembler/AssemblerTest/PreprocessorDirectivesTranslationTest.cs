@@ -7,6 +7,7 @@ public class PreprocessorDirectivesTest
     [InlineData("correct10")]
     [InlineData("correct11")]
     [InlineData("correct12")]
+    [InlineData("correct13")]
     public void readFileAndDerive(string filename){
         string filecontent = Common.readFile(filename);
 

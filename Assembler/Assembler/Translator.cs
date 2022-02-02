@@ -12,6 +12,7 @@ public static class Translator
         public const string JMP = "^(" + LEXICON.SPACE + "jmp )";
         public const string JCAZ = "^(" + LEXICON.SPACE + LEXICON.SYNTAX.JCAZ + " )";
         public const string PUSH = "^(" + LEXICON.SPACE + "push )";
+        public const string POP = "^(" + LEXICON.SPACE + "pop )";
     }
 
     /** Convert a string read as a Register to byte code

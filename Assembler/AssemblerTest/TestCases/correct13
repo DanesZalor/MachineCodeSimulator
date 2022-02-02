@@ -1,0 +1,5 @@
+start:  mov a,  a
+        mov b   ,   2
+        push [  a   + 3]
+        mov [ c + 2 ], a
+hlt
