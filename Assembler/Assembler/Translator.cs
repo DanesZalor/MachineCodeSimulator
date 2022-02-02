@@ -33,8 +33,7 @@ public static class Translator
     private static byte OffsetToByte(string offSetLine)
     {
         byte b2 = 0;
-        //sbyte offset = Convert.ToSByte(Common.getMatch(offSetLine, LEXICON.TOKENS.OFFSET).Value.Replace(" ", ""));
-        sbyte offset = Convert.ToSByte(offSetLine.Replace(" ",""));
+        sbyte offset = Convert.ToSByte(offSetLine);
         if (offset < 0) { b2 |= 0b1000_0000; offset = (sbyte)((offset * -1) - 1); }
         if (offset >= 8) { b2 |= 0b0100_0000; offset -= 8; }
         if (offset >= 4) { b2 |= 0b0010_0000; offset -= 4; }
