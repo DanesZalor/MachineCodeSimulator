@@ -18,10 +18,10 @@ public class TranslationCheck
         [InlineData("mov g,c",new byte[2] { 0b0000_0110,0b0000_0010 })]
         [InlineData("mov d,sp",new byte[2] { 0b0000_0011,0b0000_0111 })]
         // DATA Instruction
-        [InlineData("mov D,254",new byte[2] { 0b000_1011,254 })]
-        [InlineData("mov D,31",new byte[2] { 0b000_1011,31 })]
-        [InlineData("mov D,1",new byte[2] { 0b000_1011,1 })]
-        [InlineData("mov D,0",new byte[2] { 0b000_1011,0 })]
+        [InlineData("mov d,254",new byte[2] { 0b000_1011,254 })]
+        [InlineData("mov d,31",new byte[2] { 0b000_1011,31 })]
+        [InlineData("mov d,1",new byte[2] { 0b000_1011,1 })]
+        [InlineData("mov d,0",new byte[2] { 0b000_1011,0 })]
         // LOAD Reg,[Reg+Offset] Instruction
         [InlineData("mov a,[a+12]",new byte[2] { 0b001_0000,0b0110_0000 })]
         [InlineData("mov a,[sp-12]",new byte[2] { 0b001_0000,0b1101_1111 })]

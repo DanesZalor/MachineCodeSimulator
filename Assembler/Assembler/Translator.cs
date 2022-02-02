@@ -21,7 +21,7 @@ public static class Translator
     */
     private static byte RegToByte(string reg, byte conjunct = 0b0) 
     {
-        reg = reg.Trim().ToLower();
+        //reg = reg.Trim().ToLower();
         if (reg == "sp") return (byte)(0b0000_0111 | conjunct);
         return Convert.ToByte( (reg[0] - 97) | conjunct ); // returns a : 0, b : 1, ... g: 6
     }
