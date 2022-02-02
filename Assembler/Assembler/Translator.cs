@@ -5,23 +5,12 @@ namespace Assembler;
 /// <summary> Contains the necessary function for the translation </summary>
 public static class Translator
 {
-    /// <summary> starters of statement like MOV: "((space)*mov )"
-    private static class STARTERS
-    {
-        public const string MOV = "^(" + LEXICON.SPACE + "mov )";
-        public const string JMP = "^(" + LEXICON.SPACE + "jmp )";
-        public const string JCAZ = "^(" + LEXICON.SPACE + LEXICON.SYNTAX.JCAZ + " )";
-        public const string PUSH = "^(" + LEXICON.SPACE + "push )";
-        public const string POP = "^(" + LEXICON.SPACE + "pop )";
-    }
-
     /** Convert a string read as a Register to byte code
     * " b " = 0b0000_0001
     * " g " = 0b0000_0110
     */
     private static byte RegToByte(string reg, byte conjunct = 0b0) 
     {
-        //reg = reg.Trim().ToLower();
         if (reg == "sp") return (byte)(0b0000_0111 | conjunct);
         return Convert.ToByte( (reg[0] - 97) | conjunct ); // returns a : 0, b : 1, ... g: 6
     }
@@ -155,13 +144,13 @@ public static class Translator
     public static byte[] translateLine(string line)
     {
         line = line.Trim();
-        if (Common.match(line, STARTERS.MOV))
+        if (Common.match(line, "^mov "))
             return translateMOV(line);
-        else if (Common.match(line, STARTERS.JMP))
+        else if (Common.match(line, "^jmp "))
             return translateJMP(line);
-        else if (Common.match(line, STARTERS.JCAZ))
+        else if (Common.match(line, "^"+LEXICON.SYNTAX.JCAZ+" "))
             return translateJCAZ(line);
-        else if (Common.match(line, STARTERS.PUSH))
+        else if (Common.match(line, "^push "))
             return translatePUSH(line);
         else
             return new byte[0];
