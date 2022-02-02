@@ -23,7 +23,7 @@ public static class Translator
     {
         byte b2 = 0;
         sbyte offset = Convert.ToSByte(offSetLine);
-        if (offset < 0) { b2 |= 0b1000_0000; offset = (sbyte)((offset * -1) - 1); }
+        if (offset < 0) { b2 |= 0b1000_0000; offset = (sbyte)((offset * -1) - 1); } // + or -
         if (offset >= 8) { b2 |= 0b0100_0000; offset -= 8; }
         if (offset >= 4) { b2 |= 0b0010_0000; offset -= 4; }
         if (offset >= 2) { b2 |= 0b0001_0000; offset -= 2; }
@@ -40,7 +40,7 @@ public static class Translator
     private static byte[] translateMOV(string line)
     {
         byte[] r = new byte[2];
-        string[] args = line.Replace("mov ","").Split(',',StringSplitOptions.TrimEntries);
+        string[] args = line.Substring(4).Split(','); // remove "mov " and split
         if (Common.match(line, LEXICON.SYNTAX.MOV_R_R, true))
         {
             r[0] = RegToByte(args[0]);
@@ -53,7 +53,7 @@ public static class Translator
         }
         else if (Common.match(line, LEXICON.SYNTAX.MOV_R_A, true)) // load
         {
-            args[1] = args[1].Replace("[","").Replace("]","");
+            args[1] = args[1].Substring(1,args[1].Length-2); //args[1].Replace("[","").Replace("]","")
             r[0] = RegToByte(args[0], 0b0001_0000);
             if (Common.match(args[1], LEXICON.TOKENS.OFFSET))
                 r[1] = RegOffsetToByte(args[1]);
@@ -69,7 +69,7 @@ public static class Translator
         }
         else if (Common.match(line, LEXICON.SYNTAX.MOV_A_R, true)) // store
         {
-            args[0] = args[0].Replace("[","").Replace("]",""); 
+            args[0] = args[0].Substring(1,args[0].Length-2); // remove the "[" & "]"
             r[0] = RegToByte(args[1], 0b0010_0000);
             if (Common.match(args[0], LEXICON.TOKENS.OFFSET))   
                 r[1] = RegOffsetToByte(args[0]);
@@ -87,27 +87,27 @@ public static class Translator
     }
     private static byte[] translateJMP(string line)
     {
-        string arg = line.Replace("jmp ", "");
-        byte[] r = new byte[0];
+        string arg = line.Substring(4); // remove "jmp " 
         if (Common.match(line, LEXICON.SYNTAX.JMP_R, true))
-            r = new byte[1] { RegToByte(arg, 0b0011_0000) };
+            return new byte[1] { RegToByte(arg, 0b0011_0000) };
         
         else if (Common.match(line, LEXICON.SYNTAX.JMP_C, true))
-            r = new byte[2] { 0b0011_1000, Convert.ToByte(arg) };
-        return r;
+            return new byte[2] { 0b0011_1000, Convert.ToByte(arg) };
+        
+        else return new byte[0]; // never called when the input program is in correct syntax
     }
     private static byte[] translateJCAZ(string line)
     {
-        byte getJCAZFlags(string flagstring, byte conjugate = 0b0)
+        byte getJCAZFlags(string flagstring, byte conjugate = 0b0100_0000)
         {
-            if (Common.match(flagstring, "c")) conjugate |= 0b0000_0100;
-            if (Common.match(flagstring, "a")) conjugate |= 0b0000_0010;
-            if (Common.match(flagstring, "z")) conjugate |= 0b0000_0001;
+            if (flagstring.Contains('c')) conjugate |= 0b0000_0100;
+            if (flagstring.Contains('a')) conjugate |= 0b0000_0010;
+            if (flagstring.Contains('z')) conjugate |= 0b0000_0001;
             return conjugate;
         }
         byte[] r = new byte[2];
         string arg = line.Split(' ')[1];
-        r[0] = getJCAZFlags(Common.getMatch(line, LEXICON.SYNTAX.JCAZ).Value, 0b0100_0000);
+        r[0] = getJCAZFlags(Common.getMatch(line, LEXICON.SYNTAX.JCAZ).Value);
         if (Common.match(line, LEXICON.SYNTAX.JCAZ_R, true))
             r[1] = RegToByte(arg);
             
@@ -121,7 +121,7 @@ public static class Translator
     private static byte[] translatePUSH(string line)
     {
         byte[] r = new byte[2];
-        string arg = line.Replace("push ","");
+        string arg = line.Substring(5); // remove "push "
 
         if (Common.match(line, LEXICON.SYNTAX.PUSH_R))
             r = new byte[1] { RegToByte(arg, 0b0101_0000) };
@@ -143,7 +143,6 @@ public static class Translator
     /// <sumary>translated the line into its corresponding byte[] that represents machine code. returns an empty array if it is grammatically incorrect</summary> 
     public static byte[] translateLine(string line)
     {
-        line = line.Trim();
         if (Common.match(line, "^mov "))
             return translateMOV(line);
         else if (Common.match(line, "^jmp "))
