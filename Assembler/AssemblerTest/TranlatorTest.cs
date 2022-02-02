@@ -67,6 +67,8 @@ public class TranslationCheck
         [InlineData("push 205",new byte[2] { 0b0101_1010,205 })]
         [InlineData("push [g+12]",new byte[2] { 0b0101_1000,0b0110_0110 })]
         [InlineData("push [c-16]",new byte[2] { 0b0101_1000,0b1111_1010 })]
+        [InlineData("push [sp]",new byte[2] { 0b0101_1000,0b0000_0111 })]
+        [InlineData("push [200]",new byte[2] { 0b0101_1001, 200 })]
         /**/
         public void translatesAssemblyInstructionsToMachineCodeCorrectly(string line,byte[] expected_res)
         {

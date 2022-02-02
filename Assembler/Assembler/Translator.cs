@@ -37,6 +37,11 @@ public static class Translator
             OffsetToByte(Common.getMatch(ro_line, LEXICON.TOKENS.OFFSET).Value)
         );
     }
+
+    private static byte AddressToByte(string addressLine){
+        return 0;
+    }
+
     private static byte[] translateMOV(string line)
     {
         byte[] r = new byte[2];
@@ -127,9 +132,18 @@ public static class Translator
             r = new byte[1] { RegToByte(arg, 0b0101_0000) };
         
         else if (Common.match(line, LEXICON.SYNTAX.PUSH_A)){
-            if(Common.match(line, LEXICON.TOKENS.ADDRESS_REGISTER_OFFSET)){
-                r[0] = 0b0101_1000;
+            arg = arg.Substring(1,arg.Length-2);
+            r[0] = 0b0101_1000;
+
+            if(Common.match(line, LEXICON.TOKENS.ADDRESS_REGISTER_OFFSET))
                 r[1] = RegOffsetToByte(arg);
+            
+            else if (Common.match(arg, LEXICON.TOKENS.REGISTER))
+                r[1] = RegToByte(arg);
+
+            else if(Common.match(line, LEXICON.TOKENS.CONST)){
+                r[0] |= 0b1;
+                r[1] = Convert.ToByte(arg);
             }
         }
         else if(Common.match(line, LEXICON.SYNTAX.PUSH_C)){
@@ -137,6 +151,16 @@ public static class Translator
             r[1] = Convert.ToByte(arg);
         }
         
+        return r;
+    }
+    private static byte[] translatePOP(string line){
+        byte[] r = new byte[2];
+        string arg = line.Substring(4); // remove "pop "
+
+        if (Common.match(line, LEXICON.SYNTAX.PUSH_R))
+            r = new byte[1] { RegToByte(arg, 0b0110_0000) };
+
+
         return r;
     }
 
