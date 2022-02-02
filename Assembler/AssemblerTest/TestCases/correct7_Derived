@@ -1,8 +1,8 @@
-mov a, 2
-mov b, 7
-mov c, a
+mov a,2
+mov b,7
+mov c,a
 dec b
-mul a, c
+mul a,c
 dec b
-cmp b, d
+cmp b,d
 jca 7

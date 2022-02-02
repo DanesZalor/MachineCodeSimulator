@@ -1,4 +1,4 @@
-mov b, 2
+mov b,2
 push [a+3]
-mov [c+2], a
+mov [c+2],a
 hlt

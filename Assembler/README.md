@@ -98,12 +98,12 @@ loopend:    hlt
 ```
 To
 ```
-mov a, 10
-mov b, 1
+mov a,10
+mov b,1
 db 34
 db 9
 db 25
-cmp a, b
+cmp a,b
 ja 15
 dec a
 jmp 7

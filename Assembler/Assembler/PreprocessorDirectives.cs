@@ -9,15 +9,20 @@ public static class PreprocessorDirectives
     private static string removeExcessWhitespace(string linesOfCode){
         // replace all consecutive spaces with a single space
         string newLines = linesOfCode;
-        
-        // replace all consecutive (2 or more) new lines with a single new line 
-        newLines = new string(Regex.Replace(newLines,"(\n){2,}","\n"));
-        
-        // replace all consecutive (2 or more) spaces with a single space
-        newLines = new string(Regex.Replace(newLines,"( ){2,}"," "));
+
+        string[,] grammarReplace = {
+            {"(\n){2,}","\n"},      // replace all consecutive (2 or more) new lines with a single new line 
+            {"( ){2,}"," "},        // replace all consecutive (2 or more) spaces with a single space
+            {"(\\[( ){1,})","["},   // remove extra spaces in []
+            {"(( ){1,}\\])","]"}
+        }; 
+        for(int i = 0; i<4; i++)
+            newLines = new string(Regex.Replace(newLines,grammarReplace[i,0],grammarReplace[i,1]));
+    
+        foreach(char c in "+-,") newLines = String.Join(c, newLines.Split(c, StringSplitOptions.TrimEntries));
 
         // removes all white space around ","
-        newLines = String.Join(", ",newLines.Split(',', StringSplitOptions.TrimEntries));        
+        //newLines = String.Join(", ",newLines.Split(',', StringSplitOptions.TrimEntries)); 
         return newLines;
     }
 
