@@ -283,7 +283,6 @@ public static class SyntaxChecker
         const string dbVague = "(db (" + VAGUE_LEXICON.SYNTAX.ARGUEMENTS.C +"|(\".*\")))";
         string dbarg = dbline.Substring(2).Trim();
         if(!Common.match(dbline, dbSyntax, true)){
-            Console.Write(dbline + " ");
             if(!Common.match(dbline, dbVague, true)) return "'"+dbarg+"' invalid db arguement";
             else return evaluateArgs(dbarg);
         }
