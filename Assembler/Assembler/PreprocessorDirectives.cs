@@ -26,7 +26,7 @@ public static class PreprocessorDirectives
         return newLines;
     }
 
-    private static string replaceAliases(string linesOfCode)
+    public static string replaceAliases(string linesOfCode)
     {
         string[,] Aliases = new string[20, 2]{
             {"jnc ","jaz "},{"jna ","jcz "},{"jnz ","jca "},
@@ -107,6 +107,22 @@ public static class PreprocessorDirectives
     */
     private static string replaceLabels(string linesOfCode)
     {
+        int getCostOfLine(string line){
+            const string cost1 = "^((clf|ret|hlt)|"+ 
+                "((not|shl|shr|inc|dec|call|pop|push|jmp|jca?z?|jc?az?|jc?a?z) "+
+                LEXICON.SYNTAX.ARGUEMENTS.R + ")|(db "+LEXICON.SYNTAX.ARGUEMENTS.C+"))$";
+            const string cost2 = "(^(mov|jmp|jca?z?|jc?az?|jc?a?z|push|pop|call))|"+
+                                    "(^(cmp|xor|not|and|or|shl|shr|div|mul|sub|add) "+
+                                        LEXICON.SYNTAX.ARGUEMENTS.R+","+LEXICON.SYNTAX.ARGUEMENTS.R+")";
+            const string constX = "^(db \".*\")&";
+
+            if(Common.match(line, cost1)) return 1;
+            else if(Common.match(line, cost2)) return 2;
+            else if(Common.match(line, constX))
+                return line.Substring(line.IndexOf('\"')).Length - 2;
+            else return 3;
+        }
+
         // Scan-Labels
         string labels = "";
         string labelCoords = "";
@@ -114,11 +130,6 @@ public static class PreprocessorDirectives
         // gather labels and coordinates
         using (var reader = new StringReader(linesOfCode))
         {
-            const string cost1 = "^((clf|ret|hlt)|"+ 
-                "((not|shl|shr|inc|dec|call|pop|push|jmp|jca?z?|jc?az?|jc?a?z) "+
-                LEXICON.SYNTAX.ARGUEMENTS.R + ")|(db "+LEXICON.SYNTAX.ARGUEMENTS.C+"))$";
-            const string cost3 = "^(cmp|xor|not|and|or|shl|shr|div|mul|sub|add)";
-            const string constX = "^(db \".*\")&";
             int coordCounter = 0;
 
             for (string? line = reader.ReadLine(); line != null; line = reader.ReadLine())
@@ -127,11 +138,7 @@ public static class PreprocessorDirectives
                     labels = new string(string.Concat(labels, (labels.Length>0?"|":"") + line.Split(':')[0] ));
                     labelCoords = new string(string.Concat(labelCoords, (labelCoords.Length>0?",":"") + Convert.ToString(coordCounter) ));
                 }else{ // else, add to the counter depending on the scanned instruction
-                    if(Common.match(line, cost1)) coordCounter += 1;
-                    else if(Common.match(line, cost3)) coordCounter += 3;
-                    else if(Common.match(line, constX))
-                        coordCounter += line.Substring(line.IndexOf('\"')).Length - 2;
-                    else coordCounter += 2;
+                    coordCounter += getCostOfLine(line);
                 }
             }
         }

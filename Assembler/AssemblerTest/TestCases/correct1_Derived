@@ -5,7 +5,7 @@ hlt
 call 16
 call 20
 cmp a,b
-jca 6
+jca 7
 ret
 add b,2
 ret

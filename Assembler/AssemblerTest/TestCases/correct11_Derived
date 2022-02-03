@@ -1,7 +1,7 @@
 mov a,10
 mov b,1
 cmp a,b
-ja 12
+ja 11
 dec a
 jmp 4
 hlt

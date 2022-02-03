@@ -4,7 +4,7 @@ db 34
 db 9
 db 25
 cmp a,b
-ja 15
+ja 14
 dec a
 jmp 7
 hlt
