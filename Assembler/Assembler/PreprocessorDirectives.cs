@@ -114,7 +114,7 @@ public static class PreprocessorDirectives
         // gather labels and coordinates
         using (var reader = new StringReader(linesOfCode))
         {
-            const string cost1 = "^((clf|ret)|"+ 
+            const string cost1 = "^((clf|ret|hlt)|"+ 
                 "((not|shl|shr|inc|dec|call|pop|push|jmp|jca?z?|jc?az?|jc?a?z) "+
                 LEXICON.SYNTAX.ARGUEMENTS.R + ")|(db "+LEXICON.SYNTAX.ARGUEMENTS.C+"))$";
             const string cost3 = "^(cmp|xor|not|and|or|shl|shr|div|mul|sub|add)";

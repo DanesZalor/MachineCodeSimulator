@@ -3,7 +3,11 @@
 JMP start
 
 string:
-    DB "annaH"
+    DB 97   ; a
+    DB 110  ; n
+    DB 110  ; n
+    DB 97   ; a
+    DB 72   ; H
     DB 0
 
 start:
