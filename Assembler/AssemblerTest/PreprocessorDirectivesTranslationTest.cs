@@ -5,6 +5,7 @@ public class PreprocessorDirectivesTest
     [Theory]
     [InlineData("correct1")]
     [InlineData("correct2")]
+    [InlineData("correct3")]
     [InlineData("correct7")]
     [InlineData("correct8")]
     [InlineData("correct10")]

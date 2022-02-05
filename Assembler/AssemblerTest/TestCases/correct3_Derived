@@ -1,0 +1,14 @@
+mov a,8
+mov d,a
+mov b,32
+call 15
+mov a,d
+mov c,1
+call 20
+hlt
+shl a
+cmp a,b
+jca 15
+shr a
+cmp a,c
+jca 20
