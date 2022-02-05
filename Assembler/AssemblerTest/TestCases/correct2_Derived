@@ -1,0 +1,7 @@
+mov a,3
+mov b,10
+call 7
+hlt
+inc a
+cmp a,b
+jca 7
