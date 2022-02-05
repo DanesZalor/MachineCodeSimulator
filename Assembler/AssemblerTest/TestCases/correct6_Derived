@@ -1,0 +1,17 @@
+mov a,0
+mov b,0
+and a,b
+jca 14
+inc a
+add b,3
+jmp 6
+mov a,1
+mov b,1
+xor a,b
+jca 27
+mul a,2
+jmp 22
+mov a,14
+mov b,20
+or a,b
+hlt

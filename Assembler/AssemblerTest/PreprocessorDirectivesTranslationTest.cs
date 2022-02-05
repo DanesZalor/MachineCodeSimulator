@@ -8,6 +8,7 @@ public class PreprocessorDirectivesTest
     [InlineData("correct3")]
     [InlineData("correct4")]
     [InlineData("correct5")]
+    [InlineData("correct6")]
     [InlineData("correct7")]
     [InlineData("correct8")]
     [InlineData("correct10")]
