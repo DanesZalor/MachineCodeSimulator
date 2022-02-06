@@ -176,6 +176,21 @@ public static class Translator
         return r;
     }
 
+    private static byte[] translateCALL(string line){
+        byte[] r = new byte[2];
+        string arg = line.Substring(5); // remove "call "
+
+        if(Common.match(arg, LEXICON.TOKENS.REGISTER,true)) // call reg
+            r = new byte[1] { RegToByte(arg, 0b0111_0000)};
+
+        else if (Common.match(arg, LEXICON.TOKENS.DECIMAL)){
+            r[0] = 0b0111_1000;
+            r[1] = Convert.ToByte(arg);
+        } 
+
+        return r;
+    }
+
     /// <sumary>translated the line into its corresponding byte[] that represents machine code. returns an empty array if it is grammatically incorrect</summary> 
     public static byte[] translateLine(string line)
     {
@@ -189,6 +204,8 @@ public static class Translator
             return translatePUSH(line);
         else if (Common.match(line, "^pop "))
             return translatePOP(line);
+        else if (Common.match(line, "^call "))
+            return translateCALL(line);
         else
             return new byte[0];
     }
