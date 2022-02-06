@@ -229,7 +229,7 @@ public static class Translator
             else{ // op r,x
                 byte[] r = new byte[3]{op_conjugate, (byte)(regA | 0b0000_1000), 0b0};
                 
-                if(Common.match(args[1], LEXICON.TOKENS.ADDRESS)){ // op r,a
+                if(Common.match(args[1], LEXICON.TOKENS.ADDRESS,true)){ // op r,a
                     // remove []
                     args[1] = args[1].Substring(1,args[1].Length-2);
                     
@@ -244,10 +244,12 @@ public static class Translator
                         r[2] = Convert.ToByte(args[1]);
                     }
                         
-                }else if(Common.match(args[1],LEXICON.TOKENS.DECIMAL)){ // op r,c
+                }else if(Common.match(args[1],LEXICON.TOKENS.DECIMAL,true)){ // op r,c
                     r[1] |= 0b10;
                     r[2] = Convert.ToByte(args[1]);
                 }
+
+                return r;
             }
         }
         return new byte[0]{};

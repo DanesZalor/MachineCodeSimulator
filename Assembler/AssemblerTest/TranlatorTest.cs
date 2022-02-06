@@ -89,6 +89,14 @@ public class TranslationCheck
     //ALU2
     [InlineData("add a,c", new byte[2]{ 0b1100_1000, 0b0000_0010 })]
     [InlineData("sub d,sp", new byte[2]{ 0b1100_1001, 0b0011_0111 })]
+    [InlineData("xor b,[f+1]", new byte[3]{ 0b1100_0001, 0b0001_1000, 0b0000_1101 })]
+    [InlineData("and g,[a+15]", new byte[3]{ 0b1100_0010, 0b0110_1000, 0b0111_1000 })]
+    [InlineData("or g,[a-15]", new byte[3]{ 0b1100_0011, 0b0110_1000, 0b1111_0000 })]
+    [InlineData("shl g,[a]", new byte[3]{ 0b1100_0100, 0b0110_1000, 0b0000_0000 })]
+    [InlineData("shr b,[151]", new byte[3]{ 0b1100_0101, 0b0001_1001, 151 })]
+    [InlineData("mul c,[12]", new byte[3]{ 0b1100_0110, 0b0010_1001, 12 })]
+    [InlineData("div d,123", new byte[3]{ 0b1100_0111, 0b0011_1010, 123 })]
+    [InlineData("add e,0", new byte[3]{ 0b1100_1000, 0b0100_1010, 0 })]
     public void translatesAssemblyInstructionsToMachineCodeCorrectly(string line,byte[] expected_res)
     {
         byte[] actual_res = Assembler.Translator.translateLine(line);
