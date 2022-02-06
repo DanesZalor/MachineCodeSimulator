@@ -90,10 +90,10 @@ public static class Translator
     private static byte[] translateJMP(string line)
     {
         string arg = line.Substring(4); // remove "jmp " 
-        if (Common.match(line, LEXICON.SYNTAX.JMP_R, true))
+        if (Common.match(arg, LEXICON.TOKENS.REGISTER)) // jmp r
             return new byte[1] { RegToByte(arg, 0b0011_0000) };
         
-        else if (Common.match(line, LEXICON.SYNTAX.JMP_C, true))
+        else if (Common.match(arg, LEXICON.TOKENS.DECIMAL)) // jmp c
             return new byte[2] { 0b0011_1000, Convert.ToByte(arg) };
         
         else return new byte[0]; // never called when the input program is in correct syntax
