@@ -208,7 +208,47 @@ public static class Translator
             return new byte[1] { RegToByte(args[0],op_conjugate) };
         }
         else if(args.Length==2 && Common.match(op,"(cmp|xor|and|or|shl|shr|mul|div|add|sub)")){
+            byte op_conjugate = 0b0;
+            switch(op){
+                case "cmp": op_conjugate = 0b1100_0000; break;
+                case "xor": op_conjugate = 0b1100_0001; break;
+                case "and": op_conjugate = 0b1100_0010; break;
+                case "or":  op_conjugate = 0b1100_0011; break;
+                case "shl": op_conjugate = 0b1100_0100; break;
+                case "shr": op_conjugate = 0b1100_0101; break;
+                case "mul": op_conjugate = 0b1100_0110; break;
+                case "div": op_conjugate = 0b1100_0111; break;
+                case "add": op_conjugate = 0b1100_1000; break;
+                case "sub": op_conjugate = 0b1100_1001; break;
+            }
+            
+            byte regA = (byte)(RegToByte(args[0])<<4);
+            if(Common.match(args[1], LEXICON.TOKENS.REGISTER,true)) // op r,r
+                return new byte[2]{op_conjugate, RegToByte(args[1], regA ) };
+            
+            else{ // op r,x
+                byte[] r = new byte[3]{op_conjugate, (byte)(regA | 0b0000_1000), 0b0};
+                
+                if(Common.match(args[1], LEXICON.TOKENS.ADDRESS)){ // op r,a
+                    // remove []
+                    args[1] = args[1].Substring(1,args[1].Length-2);
+                    
+                    if(Common.match(args[1], LEXICON.TOKENS.OFFSET))
+                        r[2] = RegOffsetToByte(args[1]);
+                    
+                    else if (Common.match(args[1], LEXICON.TOKENS.REGISTER))
+                        r[2] = RegToByte(args[1]);
 
+                    else if (Common.match(args[1], LEXICON.TOKENS.DECIMAL)){
+                        r[1] |= 0b1;
+                        r[2] = Convert.ToByte(args[1]);
+                    }
+                        
+                }else if(Common.match(args[1],LEXICON.TOKENS.DECIMAL)){ // op r,c
+                    r[1] |= 0b10;
+                    r[2] = Convert.ToByte(args[1]);
+                }
+            }
         }
         return new byte[0]{};
     }
