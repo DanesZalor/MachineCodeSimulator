@@ -38,10 +38,6 @@ public static class Translator
         );
     }
 
-    private static byte AddressToByte(string addressLine){
-        return 0;
-    }
-
     private static byte[] translateMOV(string line)
     {
         byte[] r = new byte[2];
