@@ -9,7 +9,7 @@ public static class LEXICON
     {
         public const string REGISTER = "([a-g]|(sp))";
         private const string STRING = "(\".*\")";
-        private const string DECIMAL = "(0*(" +
+        public const string DECIMAL = "(0*(" +
             "(25[0-5])|" +       // 250-255
             "(2[0-4][0-9])|" +  // 200 - 249
             "(1[0-9]{0,2})|" +  // 1, 10-19, 100-199
