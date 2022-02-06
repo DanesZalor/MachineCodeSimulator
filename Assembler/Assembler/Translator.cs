@@ -154,10 +154,25 @@ public static class Translator
         byte[] r = new byte[2];
         string arg = line.Substring(4); // remove "pop "
 
-        if (Common.match(line, LEXICON.SYNTAX.PUSH_R))
+        if(Common.match(arg, LEXICON.TOKENS.ADDRESS,true)){ // pop a
+            // remove []
+            arg = arg.Substring(1,arg.Length-2);
+            r[0] = 0b0110_1000;
+
+            if(Common.match(arg, LEXICON.TOKENS.OFFSET))
+                r[1] = RegOffsetToByte(arg);
+            
+            else if (Common.match(arg, LEXICON.TOKENS.REGISTER))
+                r[1] = RegToByte(arg);
+
+            else if(Common.match(line, LEXICON.TOKENS.CONST)){
+                r[0] |= 0b1;
+                r[1] = Convert.ToByte(arg);
+            }
+        }else if(Common.match(arg, LEXICON.TOKENS.REGISTER,true)){ // pop r
             r = new byte[1] { RegToByte(arg, 0b0110_0000) };
-
-
+            
+        }
         return r;
     }
 
@@ -172,6 +187,8 @@ public static class Translator
             return translateJCAZ(line);
         else if (Common.match(line, "^push "))
             return translatePUSH(line);
+        else if (Common.match(line, "^pop "))
+            return translatePOP(line);
         else
             return new byte[0];
     }

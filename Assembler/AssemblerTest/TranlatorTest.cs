@@ -70,7 +70,12 @@ public class TranslationCheck
     [InlineData("push [c-16]",new byte[2] { 0b0101_1000,0b1111_1010 })]
     [InlineData("push [sp]",new byte[2] { 0b0101_1000,0b0000_0111 })]
     [InlineData("push [200]",new byte[2] { 0b0101_1001, 200 })]
-    /**/
+    // POP
+    [InlineData("pop c", new byte[1]{ 0b0110_0010 })]
+    [InlineData("pop d", new byte[1]{ 0b0110_0011 })]
+    [InlineData("pop [b]", new byte[2]{ 0b0110_1000, 0b0000_0001 })]
+    [InlineData("pop [b-12]", new byte[2]{ 0b0110_1000, 0b1101_1001 })]
+    [InlineData("pop [f+12]", new byte[2]{ 0b0110_1000, 0b0110_0101 })]
     public void translatesAssemblyInstructionsToMachineCodeCorrectly(string line,byte[] expected_res)
     {
         byte[] actual_res = Assembler.Translator.translateLine(line);
