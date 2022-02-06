@@ -191,22 +191,16 @@ public static class Translator
         return r;
     }
 
+    private static string[] LineStarters = {"mov", "jmp", LEXICON.SYNTAX.JCAZ, "push", "pop", "call"};
+    private static Func<string,byte[]>[] translateFuncs = {
+        translateMOV, translateJMP, translateJCAZ, translatePUSH, translatePOP, translateCALL
+    };
     /// <sumary>translated the line into its corresponding byte[] that represents machine code. returns an empty array if it is grammatically incorrect</summary> 
     public static byte[] translateLine(string line)
     {
-        if (Common.match(line, "^mov "))
-            return translateMOV(line);
-        else if (Common.match(line, "^jmp "))
-            return translateJMP(line);
-        else if (Common.match(line, "^"+LEXICON.SYNTAX.JCAZ+" "))
-            return translateJCAZ(line);
-        else if (Common.match(line, "^push "))
-            return translatePUSH(line);
-        else if (Common.match(line, "^pop "))
-            return translatePOP(line);
-        else if (Common.match(line, "^call "))
-            return translateCALL(line);
-        else
-            return new byte[0];
+        for(int i = 0; i < 6; i++)
+            if (Common.match(line, LineStarters[i])) return translateFuncs[i](line);
+        
+        return new byte[0];
     }
 }
