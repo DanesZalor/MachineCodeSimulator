@@ -110,10 +110,10 @@ public static class Translator
         byte[] r = new byte[2];
         string arg = line.Split(' ')[1];
         r[0] = getJCAZFlags(Common.getMatch(line, LEXICON.SYNTAX.JCAZ).Value);
-        if (Common.match(line, LEXICON.SYNTAX.JCAZ_R, true))
+        if (Common.match(arg, LEXICON.TOKENS.REGISTER, true))
             r[1] = RegToByte(arg);
             
-        else if (Common.match(line, LEXICON.SYNTAX.JCAZ_C, true))
+        else if (Common.match(arg, LEXICON.TOKENS.CONST, true))
         {
             r[0] |= 0b1000;
             r[1] = Convert.ToByte(arg);
