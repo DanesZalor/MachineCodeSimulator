@@ -26,9 +26,10 @@ public class TranslationCheck
     [InlineData("mov e,[g+1]",new byte[2] { 0b001_0100,0b0000_1110 })]
     [InlineData("mov e,[g-1]",new byte[2] { 0b001_0100,0b1000_0110 })]
     // LOAD Reg,[Reg] Instruction
+    
     [InlineData("mov e,[g]",new byte[2] { 0b0001_0100,0b0000_0110 })]
     [InlineData("mov e,[a]",new byte[2] { 0b0001_0100,0b0000_0000 })]
-    [InlineData("mov a ,[sp]",new byte[2] { 0b0001_0000,0b0000_0111 })]
+    [InlineData("mov a,[sp]",new byte[2] { 0b0001_0000,0b0000_0111 })]
     // LOAD Reg,[Const] Instruction
     [InlineData("mov e,[255]",new byte[2] { 0b0001_1100,0b1111_1111 })]
     [InlineData("mov f,[63]",new byte[2] { 0b0001_1101,0b0011_1111 })]
@@ -44,6 +45,7 @@ public class TranslationCheck
     // STORE [Const],Reg
     [InlineData("mov [255],c",new byte[2] { 0b0010_1010,255 })]
     [InlineData("mov [128],sp",new byte[2] { 0b0010_1111,128 })]
+    
     
     // JMP Reg
     [InlineData("jmp b",new byte[1] { 0b0011_0001 })]
