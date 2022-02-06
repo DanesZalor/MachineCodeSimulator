@@ -80,6 +80,12 @@ public class TranslationCheck
     [InlineData("call e", new byte[1]{ 0b0111_0100})]
     [InlineData("call f", new byte[1]{ 0b0111_0101})]
     [InlineData("call 21", new byte[2]{ 0b0111_1000, 21})]
+    //ALU1
+    [InlineData("not c", new byte[1]{ 0b1000_0010 })]
+    [InlineData("inc d", new byte[1]{ 0b1000_1011 })]
+    [InlineData("dec e", new byte[1]{ 0b1001_0100 })]
+    [InlineData("shl f", new byte[1]{ 0b1001_1101 })]
+    [InlineData("shr g", new byte[1]{ 0b1010_0110 })]
     public void translatesAssemblyInstructionsToMachineCodeCorrectly(string line,byte[] expected_res)
     {
         byte[] actual_res = Assembler.Translator.translateLine(line);

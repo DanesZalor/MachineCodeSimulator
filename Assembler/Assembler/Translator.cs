@@ -191,14 +191,39 @@ public static class Translator
         return r;
     }
 
-    private static string[] LineStarters = {"mov", "jmp", LEXICON.SYNTAX.JCAZ, "push", "pop", "call"};
+    public static byte[] translateALU(string line){
+        string[] tmp = line.Split(' ');
+        string op = tmp[0]; 
+        string[] args = tmp[1].Split(',');
+
+        if(args.Length==1 && Common.match(op,"(not|inc|dec|shl|shr)")){ // ALU 1 arg
+            byte op_conjugate = 0b0;
+            switch(op){
+                case "not": op_conjugate = 0b1000_0000; break;
+                case "inc": op_conjugate = 0b1000_1000; break;
+                case "dec": op_conjugate = 0b1001_0000; break;
+                case "shl": op_conjugate = 0b1001_1000; break;
+                case "shr": op_conjugate = 0b1010_0000; break;
+            }
+            return new byte[1] { RegToByte(args[0],op_conjugate) };
+        }
+        else if(args.Length==2 && Common.match(op,"(cmp|xor|and|or|shl|shr|mul|div|add|sub)")){
+
+        }
+        return new byte[0]{};
+    }
+
+    private static string[] LineStarters = {
+        "mov", "jmp", LEXICON.SYNTAX.JCAZ, "push", "pop", "call", 
+        "(cmp|xor|and|or|shl|shr|mul|div|add|sub|inc|dec|not)"
+    };
     private static Func<string,byte[]>[] translateFuncs = {
-        translateMOV, translateJMP, translateJCAZ, translatePUSH, translatePOP, translateCALL
+        translateMOV, translateJMP, translateJCAZ, translatePUSH, translatePOP, translateCALL, translateALU
     };
     /// <sumary>translated the line into its corresponding byte[] that represents machine code. returns an empty array if it is grammatically incorrect</summary> 
     public static byte[] translateLine(string line)
     {
-        for(int i = 0; i < 6; i++)
+        for(int i = 0; i < 7; i++)
             if (Common.match(line, LineStarters[i])) return translateFuncs[i](line);
         
         return new byte[0];
