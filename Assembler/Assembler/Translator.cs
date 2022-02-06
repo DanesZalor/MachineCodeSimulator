@@ -125,14 +125,12 @@ public static class Translator
         byte[] r = new byte[2];
         string arg = line.Substring(5); // remove "push "
 
-        if (Common.match(line, LEXICON.SYNTAX.PUSH_R))
-            r = new byte[1] { RegToByte(arg, 0b0101_0000) };
-        
-        else if (Common.match(line, LEXICON.SYNTAX.PUSH_A)){
+        if(Common.match(arg, LEXICON.TOKENS.ADDRESS,true)){ // push a
+            // remove []
             arg = arg.Substring(1,arg.Length-2);
             r[0] = 0b0101_1000;
 
-            if(Common.match(line, LEXICON.TOKENS.ADDRESS_REGISTER_OFFSET))
+            if(Common.match(arg, LEXICON.TOKENS.OFFSET))
                 r[1] = RegOffsetToByte(arg);
             
             else if (Common.match(arg, LEXICON.TOKENS.REGISTER))
@@ -142,8 +140,10 @@ public static class Translator
                 r[0] |= 0b1;
                 r[1] = Convert.ToByte(arg);
             }
-        }
-        else if(Common.match(line, LEXICON.SYNTAX.PUSH_C)){
+        }else if(Common.match(arg, LEXICON.TOKENS.REGISTER,true)){ // push r
+            r = new byte[1] { RegToByte(arg, 0b0101_0000) };
+            
+        }else if(Common.match(arg, LEXICON.TOKENS.CONST,true)){ // push c
             r[0] = 0b0101_1010;
             r[1] = Convert.ToByte(arg);
         }
