@@ -47,8 +47,9 @@ public class SyntaxCheckTest
     [InlineData("mov a, a; comment")]
     [InlineData("mov a, [b] ; comment")]
     [InlineData("mov a, [b]; comment")]
-    public void SingleLineEval(string line){
+    [InlineData("mov a, [ b + 0 ]", "'+ 0' offset out of bounds")] // might as well include this sa alias translation ?
+    public void SingleLineEval(string line, string expected_res = ""){
         string actual_res = Assembler.SyntaxChecker.evaluateLine(line);
-        Assert.True(""==actual_res, actual_res);
+        Assert.True(expected_res==actual_res, actual_res);
     }
 }
