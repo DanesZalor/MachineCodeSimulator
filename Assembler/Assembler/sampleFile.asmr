@@ -1,7 +1,0 @@
-mov a, 0        ; counter
-mov b, 10       ; limit
-
-iterate:    
-    inc a
-    cmp a, b
-    jb iterate  ; if a<b

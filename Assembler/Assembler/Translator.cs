@@ -282,4 +282,28 @@ public static class Translator
         
         return new byte[0];
     }
+
+    /** Assumptions: 
+            The arguement is syntactically correct
+            and is derived via Preprocessor Translations Phase
+            The program does not exceed 256 byte
+    */
+    public static byte[] translateProgram(string linesOfCode){
+        byte[] bin = new byte[256];
+
+        string[] lines = linesOfCode.Split("\n");
+        byte ctr = 0;
+        foreach(string line in lines){
+            byte[] bytes = translateLine(line);
+            
+            foreach(byte b in bytes)
+                bin[ctr++] = b;
+        }
+        
+        byte[] finalbin = new byte[ctr];
+        for(int i = 0; i<finalbin.Length; i++)
+            finalbin[i] = bin[i];
+
+        return finalbin;
+    }
 }
