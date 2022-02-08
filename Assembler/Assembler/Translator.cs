@@ -255,17 +255,29 @@ public static class Translator
         return new byte[0]{};
     }
 
+    private static byte[] translateETC(string line){
+        byte[] r = new byte[1];
+        switch(line){
+            case "clf": r[0] = 0b1101_0000; break;
+            case "ret": r[0] = 0b1101_0001; break;
+            case "hlt": r[0] = 0b1101_0010; break;
+        }
+        return r;
+    }
+
     private static string[] LineStarters = {
         "mov", "jmp", LEXICON.SYNTAX.JCAZ, "push", "pop", "call", 
-        "(cmp|xor|and|or|shl|shr|mul|div|add|sub|inc|dec|not)"
+        "(cmp|xor|and|or|shl|shr|mul|div|add|sub|inc|dec|not)",
+        "(ret|hlt|clf)"
     };
     private static Func<string,byte[]>[] translateFuncs = {
-        translateMOV, translateJMP, translateJCAZ, translatePUSH, translatePOP, translateCALL, translateALU
+        translateMOV, translateJMP, translateJCAZ, translatePUSH,
+        translatePOP, translateCALL, translateALU, translateETC
     };
     /// <sumary>translated the line into its corresponding byte[] that represents machine code. returns an empty array if it is grammatically incorrect</summary> 
     public static byte[] translateLine(string line)
     {
-        for(int i = 0; i < 7; i++)
+        for(int i = 0; i < 8; i++)
             if (Common.match(line, LineStarters[i])) return translateFuncs[i](line);
         
         return new byte[0];

@@ -97,6 +97,10 @@ public class TranslationCheck
     [InlineData("mul c,[12]", new byte[3]{ 0b1100_0110, 0b0010_1001, 12 })]
     [InlineData("div d,123", new byte[3]{ 0b1100_0111, 0b0011_1010, 123 })]
     [InlineData("add e,0", new byte[3]{ 0b1100_1000, 0b0100_1010, 0 })]
+    //etc
+    [InlineData("clf", new byte[1]{0b1101_0000} )]
+    [InlineData("ret", new byte[1]{0b1101_0001} )]
+    [InlineData("hlt", new byte[1]{0b1101_0010} )]
     public void translatesAssemblyInstructionsToMachineCodeCorrectly(string line,byte[] expected_res)
     {
         byte[] actual_res = Assembler.Translator.translateLine(line);
