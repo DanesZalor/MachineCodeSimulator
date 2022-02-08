@@ -10,6 +10,7 @@ namespace AssemblerTest;
 */
 public class TranslationCheck
 {
+    /*
     public class SingleLineEval{
         [Theory]
         // MOV Instruction
@@ -108,7 +109,7 @@ public class TranslationCheck
             Assert.Equal(expected_res,actual_res);
             
         }
-    }
+    }*/
 
 
     [Theory]
