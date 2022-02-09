@@ -1,0 +1,7 @@
+mov a,1
+mov b,2
+cmp a,b
+jcz 9
+hlt
+inc a
+jmp 4
