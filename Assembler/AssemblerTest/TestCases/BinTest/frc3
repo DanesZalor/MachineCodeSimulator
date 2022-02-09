@@ -1,0 +1,9 @@
+mov b,5
+mov d,232
+sub b,1
+add c,1
+add a,2
+mov [d],a
+inc d
+cmp b,c
+jca 7
