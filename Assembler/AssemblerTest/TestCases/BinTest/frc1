@@ -1,0 +1,8 @@
+mov A,2
+mov B,7
+mov C,A
+dec B
+mul A,C
+dec B
+cmp B,D
+jca 7
