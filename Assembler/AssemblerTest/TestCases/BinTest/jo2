@@ -1,0 +1,12 @@
+mov a,1
+mov b,2
+jmp 9
+inc a
+jmp 9
+cmp a,b
+jcz 6
+mov a,253
+mov b,1
+add a,b
+jaz 24
+hlt
