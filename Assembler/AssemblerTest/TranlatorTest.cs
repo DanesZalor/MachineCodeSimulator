@@ -115,6 +115,10 @@ public class TranslationCheck
     [Theory]
     [InlineData("BinTest/test1", new byte[5]{0b1000, 0b1010, 0b1001, 0b10, 0b1101_0000})]
     [InlineData("BinTest/jo1", new byte[12]{0b1000, 1, 0b1001, 2, 0b1100_0000, 0b0000_0001, 0b0100_1101, 9, 0b1101_0010, 0b10001_000, 0b0011_1000, 4})]
+    [InlineData("BinTest/sulay1", new byte[23]{0b1000, 0b1010, 0b1001, 0b10, 0b111_1000, 0b00000111, 0b1101_0010, 0b111_1000, 0b10000, 0b111_1000, 0b010100, 0b1100_0000, 0b0000_0001, 0b100_1110, 0b0111, 0b1101_0001, 0b1100_1000, 0b0001_1001, 0b10, 0b1101_0001, 0b1100_1001, 0b0000_1001, 0b10, 0b1100_0001})]
+    [InlineData("BinTest/sulay2", new byte[24]{0b1000, 0b1000, 0b1011, 0b1000, 0b1001, 0b100000, 0b111_1000, 0b01111, 0b1000, 0b1011, 0b1010, 0b1, 1101_0010, 0b10011, 0b1100_0000, 0b0000_0001, 0b100_1110, 0b0111, 0b10100, 0b000, 0b1100_0000, 0b0000_0010, 0b100_1110, 0b10100})]
+    [InlineData("BinTest/sulay3", new byte[11]{0b1000, 0b11, 0b1001, 0b1010, 0b111_1000, 0b0111, 0b1101_0010, 0b10001, 0b000, 0b1100_0000, 0b0000_0001, 0b10110})]
+
     public void TestCompileFile(string filename, byte[] expected_res){
         byte[] actual_res = Assembler.Translator.translateProgram(Common.readFile(filename));
         Assert.Equal(expected_res, actual_res);
