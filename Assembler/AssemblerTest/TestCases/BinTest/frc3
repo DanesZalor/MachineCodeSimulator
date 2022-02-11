@@ -1,7 +1,7 @@
 mov b,5
 mov d,232
-sub b,1
-add c,1
+dec b
+inc c
 add a,2
 mov [d],a
 inc d
