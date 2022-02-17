@@ -1,13 +1,13 @@
-mov a,10   
+mov a,10
 mov b,2
-call 7     
-hlt        
-call 16    
-call 20    
-cmp a,b    
-jca 7      
-ret        
-add b,2    
-ret        
-sub a,2    
-ret  
+call 7
+hlt
+call 16
+call 20
+cmp a,b
+jca 7
+ret
+add b,2
+ret
+sub a,2
+ret
