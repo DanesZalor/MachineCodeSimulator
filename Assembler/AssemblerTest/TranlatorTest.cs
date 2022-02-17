@@ -161,11 +161,11 @@ public class TranslationCheck
     [InlineData("BinTest/frc1", new byte[14]{
         0b1000, 2,
         0b1001, 7,
-        0b0010, 0b1000,
+        0b0010, 0b0000,
         0b1001_0001,
         0b1100_0110, 0b0000_0010,
         0b1001_0001,
-        0b1100_0000, 0b1001_1011,
+        0b1100_0000, 0b0001_0011,
         0b0100_1110, 7
     })]
     [InlineData("BinTest/frc2", new byte[38]{
@@ -212,6 +212,7 @@ public class TranslationCheck
             if(!arrayEqual){
                 Console.Write("a = ["); for(int i = 0; i < a.Length; i++) Console.Write(a[i] + ","); Console.WriteLine(" size:" +Convert.ToString(a.Length));
                 Console.Write("b = ["); for(int i = 0; i < b.Length; i++) Console.Write(b[i] + ","); Console.WriteLine(" size:" +Convert.ToString(b.Length));
+                Assert.True(false);
             }
         }
 
