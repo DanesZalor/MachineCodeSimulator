@@ -10,5 +10,5 @@ mov b,1
 xor a,b
 mov a,14
 mov b,20
-OR a,b
-HLT
+or a,b
+hlt
