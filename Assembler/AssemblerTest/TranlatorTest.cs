@@ -232,10 +232,19 @@ public class TranslationCheck
         0b1100_0000, 0b0000_0010, 
         0b100_1110, 20
     })]
-    //[InlineData("BinTest/sulay3", new byte[11]{0b1000, 0b11, 0b1001, 0b1010, 0b111_1000, 0b0111, 0b1101_0010, 0b10001, 0b000, 0b1100_0000, 0b0000_0001, 0b10110})]
-
+    [InlineData("BinTest/sulay3", new byte[12]{
+        0b1000, 3,
+        0b1001, 10,
+        0b111_1000, 7, 
+        0b1101_0010,
+        0b10001000,
+        0b1100_0000, 0b1,
+        0b100_1110, 7
+    })]
+    
     public void TestCompileFile(string filename, byte[] expected_res){
         void assertEqual(byte[] a, byte[] b){
+            
             bool equalLength = (a.Length==b.Length);
             if(!equalLength){
                 Console.Write("a.Length="+ Convert.ToString(a.Length));
