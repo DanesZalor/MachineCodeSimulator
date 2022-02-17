@@ -171,21 +171,21 @@ public class TranslationCheck
     [InlineData("BinTest/frc2", new byte[38]{
         0b0011_1000, 8,
         97,110,110,97,72,0,
-        0b10010, 2,
-        0b10011, 232,
+        0b1010, 2,
+        0b1011, 232,
         0b1000, 0,
         0b0101_0000,
         0b0011_1000, 19,
         0b0011_1000, 30,
-        0b1000, 0b0000_0010,
-        0b0101_0000,
-        0b1001_0010,
+        0b1_0000, 0b0000_0010, 
+        0b0101_0000, 
+        0b1000_1010, 
         0b1100_0000, 0b0001_1000, 0b0000_0010,
         0b0100_1110, 19,
         0b0011_1000, 30,
         0b0110_0000,
         0b0010_0000, 0b0000_0011,
-        0b1000_0011,
+        0b1000_1011, 
         0b1100_0000, 0b0000_0001,
         0b0100_1110, 30
     })]
@@ -203,10 +203,15 @@ public class TranslationCheck
     
     public void TestCompileFile(string filename, byte[] expected_res){
         void assertEqual(byte[] a, byte[] b){
-            Assert.Equal(a.Length, b.Length);
-            //for(int i = 0; i<a.Length; i++) Assert.True(a[i]==b[i], Convert.ToString(i) + " index " +Convert.ToString(a[i]) + " and " + Convert.ToString(b[i]) );
-            bool arrayEqual = true;
-            for(int i = 0; i<a.Length; i++){
+            bool equalLength = (a.Length==b.Length);
+            if(!equalLength){
+                Console.Write("a.Length="+ Convert.ToString(a.Length));
+                Console.WriteLine("   b.Length="+ Convert.ToString(b.Length));
+                //Assert.True(false);
+            }
+
+            bool arrayEqual = equalLength;
+            for(int i = 0; i<a.Length && arrayEqual; i++){
                 if(a[i]!=b[i]) arrayEqual = false;
             }
             if(!arrayEqual){
