@@ -28,9 +28,17 @@
         /// <summary> gets a string readable state of the CPU <br> 
         /// This is for debugging purposes only </summary>
         public string getState(){
+            
+            string get_GP_State(){
+                return String.Format(
+                    "[{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}]",
+                    GP[0],GP[1],GP[2],GP[3],GP[4],GP[5],GP[6],GP[7]
+                );
+            }
+
             return String.Format(
-                "GP = [{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7} ]\n",
-                GP[0],GP[1],GP[2],GP[3],GP[4],GP[5],GP[6],GP[7]
+                "GP = {0}\nIR = {1}\tIAR = {2}\tSP = {3}",
+                get_GP_State(), IR.value, IAR.value, SP.value
             );
         }
 
