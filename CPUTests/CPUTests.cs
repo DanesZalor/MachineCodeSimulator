@@ -9,13 +9,16 @@ namespace CPUTests{
             byte[] program = {
                 0b1000, 0b1010, // mov a,10 
                 0b1001, 0b10,   // mov b,2
-                //0b0000, 0b0001  // mov a,b
+                0b0010, 0b0001, // mov c,b
+                0b0011, 0b0000  // mov d,a
             };
             
             CPU.CPU cpu = new CPU.CPU(program);
             cpu.InstructionCycleTick();
             cpu.InstructionCycleTick();
-            System.Console.WriteLine(cpu.getState());
+            cpu.InstructionCycleTick();
+            cpu.InstructionCycleTick();
+            System.Console.WriteLine(cpu.getState_inString());
         }
     }
 }

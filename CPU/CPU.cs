@@ -25,25 +25,6 @@
                 ram.write(i, program[i]);    
         }
 
-        /// <summary> gets a string readable state of the CPU <br> 
-        /// This is for debugging purposes only </summary>
-        public string getState(){
-            
-            string get_GP_State(){
-                return String.Format(
-                    "[{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}]",
-                    GP[0].value, GP[1].value, GP[2].value,
-                    GP[3].value, GP[4].value, GP[5].value,
-                    GP[6].value, GP[7].value
-                );
-            }
-
-            return String.Format(
-                "GP = {0}\nIR = {1}\tIAR = {2}\tSP = {3}",
-                get_GP_State(), IR.value, IAR.value, SP.value
-            );
-        }
-
         public void InstructionCycleTick(){
             IR.value = ram.read(IAR.value); // Set Instruction Register 
             byte incrementInstruction = 1;
@@ -67,7 +48,39 @@
             IAR.value += incrementInstruction;     // Increment Instruction Address Register
         }
 
-        
+
+        /***************************************************************/
+        /// <summary> DEBUGGING PURPOSE ONLY </summary>
+        public string getState_inString(){
+            
+            string get_GP_State(){
+                return String.Format(
+                    "[{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}]",
+                    GP[0].value, GP[1].value, GP[2].value,
+                    GP[3].value, GP[4].value, GP[5].value,
+                    GP[6].value, GP[7].value
+                );
+            }
+
+            return String.Format(
+                "GP = {0}\nIR = {1}\tIAR = {2}\tSP = {3}",
+                get_GP_State(), IR.value, IAR.value, SP.value
+            );
+        }
+
+        public Dictionary<string,byte> getState(){
+            Dictionary<string,byte> r = new Dictionary<string,byte>();
+            
+            string[] gpr = {"ra", "rb", "rc", "rd", "re", "rf", "rg", "sp"};
+            for(int i = 0; i<8; i++)
+                r.Add(gpr[i],GP[i].value);
+            
+            r.Add("ir", IR.value);
+            r.Add("iar", IAR.value);
+            r.Add("sp", SP.value);
+
+            return r;
+        }
     }
 }
 
