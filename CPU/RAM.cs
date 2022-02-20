@@ -22,6 +22,11 @@ namespace CPU{
             return content[address];
         }
 
+        /// <summary> Only exists for int overload so i dont have to typecast the arguement to byte every fucking time
+        public byte read(int address){
+            return read((byte)address);
+        }
+
         /// <summary> writes a byte to two consecutive cells </summary>
         public void write(byte address, byte data){
             content[address] = (byte)(data);
