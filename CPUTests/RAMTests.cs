@@ -26,5 +26,13 @@ namespace CPUTests{
             ram.write(5,data);
             Assert.Equal(ram.read(5),expected);
         }
+
+        [Fact]
+        public void RAM_correctState(){
+            ram.write(0,230);
+            ram.write(1,42);
+            ram.write(2,12);
+            Assert.Equal("[230, 42, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", ram.getState());
+        }
     }
 }

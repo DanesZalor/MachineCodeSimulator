@@ -9,8 +9,13 @@ namespace CPU{
         }
 
         /// <summary> for manual testing purposes only. to be removed in production </summary> ///
-        public void print(){
-            for(int i = 0; i<content.Length; i++) Console.Write( Convert.ToString(content[i]) + " " );
+        public string getState(){
+            string r = "[";
+            for(int i = 0; i<content.Length; i++) 
+                r = string.Concat(r, 
+                    Convert.ToString(content[i]) + (i<content.Length-1?", ":"") 
+                ); 
+            return string.Concat(r, "]");
         }
 
         public int getSize(){
