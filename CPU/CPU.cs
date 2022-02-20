@@ -1,8 +1,10 @@
 ﻿namespace CPU{
     
-    public class Register{
+    private class Register{
         public byte value;
     }
+
+
     public class CPU{
         private ALU alu;
         private RAM ram;
@@ -11,6 +13,11 @@
         private Register IAR; // Instruction Address Register
         private Register SP; // Stack Pointer Register
         
+        public CPU(){
+            alu = new ALU();
+            ram = new RAM();
+        }
+
         public void InstructionCycleTick(){
             IR.value = ram.read(IAR.value); // Set Instruction Register 
             {// DO Instruction
