@@ -10,7 +10,6 @@ namespace CPU
             ON = 0b0000_1111,
             C = 0b1000,
             A = 0b0100,
-            E = 0b0001,
             Z = 0b0001,
         };
 
@@ -56,90 +55,90 @@ namespace CPU
         }
 
         /// <summary> compares A and B. Affected flags [A,E,Z] </summary> 
-        public void CMP(ushort A, ushort B)
+        public void CMP(byte A, byte B)
         {
             setFlagsIf(A > B, FLAG.A);
             setFlagsIf(A == B, FLAG.Z);
         }
 
         /// <summary same as CMP(A,B) but also does A xor B and put the result in A </summary>
-        public void XOR(ref ushort A, ushort B)
+        public void XOR(ref byte A, byte B)
         {
             CMP(A, B);
-            A = (ushort)(A ^ B);
+            A = (byte)(A ^ B);
         }
 
         /// <summary> Flips all the bits of A. Affected flags [Z] </summary>
-        public void NOT(ref ushort A)
+        public void NOT(ref byte A)
         {
-            A = (ushort)(~A);
+            A = (byte)(~A);
             setFlagsIf(A == 0, FLAG.Z);
         }
 
         /// <summary> changes A into conjunction of A and B. Affected flags [Z] </summary>
-        public void AND(ref ushort A, ushort B)
+        public void AND(ref byte A, byte B)
         {
-            A = (ushort)(A & B);
+            A = (byte)(A & B);
             setFlagsIf(A == 0, FLAG.Z);
         }
 
         /// <summary> changes A into disjunction of A and B. Affected flags [Z] </summary>
-        public void OR(ref ushort A, ushort B)
+        public void OR(ref byte A, byte B)
         {
-            A = (ushort)(A | B);
+            A = (byte)(A | B);
             setFlagsIf(A == 0, FLAG.Z);
         }
 
         /// <summary> changes A into Left shift A by B times. Affected flags [C] </summary>
-        public void SHL(ref ushort A, ushort B)
+        public void SHL(ref byte A, byte B)
         {
-            // CARRY ON if A<<B which is an INT32 is greater than the ushort.MaxValue
+            // CARRY ON if A<<B which is an INT32 is greater than the byte.MaxValue
             int res = A << B;
-            setFlagsIf((res) > ushort.MaxValue, FLAG.C);
-            A = (ushort)res;
+            setFlagsIf((res) > byte.MaxValue, FLAG.C);
+            A = (byte)res;
             setFlagsIf(A == 0, FLAG.Z);
         }
 
         /// <summary> changes A into Right shift A by B times. Affected flags [C] </summary>
-        public void SHR(ref ushort A, ushort B)
+        public void SHR(ref byte A, byte B)
         {
             // CARRY ON if A>>B is not equal to A/2^B
             int res = A >> B;
             setFlagsIf(res != A / (Math.Pow(2, B)), FLAG.C);
-            A = (ushort)res;
+            A = (byte)res;
             setFlagsIf(A == 0, FLAG.Z);
         }
 
         /// <summary> changes A into A / B. Affected flags [Z] </summary>
-        public void DIV(ref ushort A, ushort B)
+        public void DIV(ref byte A, byte B)
         {
             if (B == 0) return; // division by zero error
 
-            A = (ushort)(A / B);
+            A = (byte)(A / B);
             setFlagsIf(A == 0, FLAG.Z);
         }
         /// <summary> changes A into A * B. Affected flags [C,Z] </summary>
-        public void MUL(ref ushort A, ushort B)
+        public void MUL(ref byte A, byte B)
         {
             int res = A * B;
-            setFlagsIf(res > ushort.MaxValue, FLAG.C);
-            A = (ushort)res;
+            setFlagsIf(res > byte.MaxValue, FLAG.C);
+            A = (byte)res;
             setFlagsIf(A == 0, FLAG.Z);
         }
         /// <summary> changes A into A - B. Affected flags [C,Z] </summary>
-        public void SUB(ref ushort A, ushort B)
+        public void SUB(ref byte A, byte B)
         {
             int res = A - B;
             setFlagsIf(res < 0, FLAG.C);
-            A = (ushort)res;
+            A = (byte)res;
             setFlagsIf(A == 0, FLAG.Z);
         }
         /// <summary> changes A into A + B. Affected flags [C,Z] </summary>
-        public void ADD(ref ushort A, ushort B)
+        public void ADD(ref byte A, byte B)
         {
             int res = A + B;
-            setFlagsIf(res > ushort.MaxValue, FLAG.C);
-            A = (ushort)res;
+            setFlagsIf(res > byte.MaxValue, FLAG.C);
+            A = (byte)res;
             setFlagsIf(A == 0, FLAG.Z);
         }
 

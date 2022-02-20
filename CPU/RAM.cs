@@ -4,7 +4,7 @@ namespace CPU{
     public class RAM {
         private byte[] content;
         
-        public RAM(ushort size){
+        public RAM(byte size){
             content = new byte[size];
         }
 
@@ -18,19 +18,13 @@ namespace CPU{
         }
 
         /// <summary> Get a single cell of the RAM. Might be deprecated </summary>
-        public byte read1(ushort address){
+        public byte read(byte address){
             return content[address];
         }
 
-        /// <summary> get 2 consecutive cells of the RAM and return as a ushort </summary>
-        public ushort read(ushort address){
-            return (ushort)((content[address]<<8) + (content[address+1]));
-        }
-
-        /// <summary> writes a ushort to two consecutive cells </summary>
-        public void write(ushort address, ushort data){
-            content[address] = (byte)(data>>8);
-            content[address+1] = (byte)data;
+        /// <summary> writes a byte to two consecutive cells </summary>
+        public void write(byte address, byte data){
+            content[address] = (byte)(data);
         }
     }
 }
