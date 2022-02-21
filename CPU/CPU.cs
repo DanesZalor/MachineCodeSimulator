@@ -77,7 +77,6 @@
             
             r.Add("ir", IR.value);
             r.Add("iar", IAR.value);
-            r.Add("sp", SP.value);
 
             return r;
         }

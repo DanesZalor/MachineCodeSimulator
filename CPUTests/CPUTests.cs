@@ -1,4 +1,5 @@
 using Xunit;
+using System.Collections.Generic;
 using CPU;
 
 namespace CPUTests{
@@ -14,11 +15,21 @@ namespace CPUTests{
             };
             
             CPU.CPU cpu = new CPU.CPU(program);
-            cpu.InstructionCycleTick();
-            cpu.InstructionCycleTick();
-            cpu.InstructionCycleTick();
-            cpu.InstructionCycleTick();
-            System.Console.WriteLine(cpu.getState_inString());
+            
+            { // execute mov a,10 
+                cpu.InstructionCycleTick();
+                IDictionary<string,byte> state = cpu.getState();
+                Assert.Equal(10, state["ra"]);
+                Assert.Equal(0, state["rb"]);
+            }
+            { // execute mov b,2 
+                cpu.InstructionCycleTick();
+                IDictionary<string,byte> state = cpu.getState();
+                Assert.Equal(10, state["ra"]);
+                Assert.Equal(2, state["rb"]);
+            }
+            
+
         }
     }
 }
