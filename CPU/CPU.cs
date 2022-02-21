@@ -33,21 +33,42 @@
             IR.value = ram.read(IAR.value); // Set Instruction Register 
             byte incrementInstruction = 1;
             {// DO Instruction
-                
-                if(IR.value<0b1000){ // MOV_R_R [0000_0AAA,0000_0BBB]
+
+                if(IR.value<0b1000){ // MOV_R_R // [0000_0AAA,0000_0BBB]
 
                     // RA.value = RB.value
                     GP[IR.value].value = GP[ ram.read(IAR.value+1) ].value;
                     incrementInstruction = 2;
                 }
-                else if(IR.value>0b111 && IR.value<0b10000){ // MOV_R_C [0000_1AAA, <8:Const>]
+                else if(IR.value<0b1_0000){ // MOV_R_C // [0000_1AAA, <8:Const>]
 
-                    byte ra = (byte)(IR.value & 0b111);
                     // RA.value = Const
-                    GP[ra].value = ram.read(IAR.value+1);
+                    GP[
+                        (byte)(IR.value & 0b111) // AAA
+                    ].value = ram.read(IAR.value+1);
                     incrementInstruction = 2;
                 }
-            
+                else if(IR.value<0b1_1000){ // MOV_R_[RO] // [0001_0AAA <5:Offset>BBB]
+
+                    // adjacent ram cell to the pointed cell (instruction)
+                    byte i2 = ram.read(IAR.value+1);
+                    
+                    // get BBB
+                    byte bbbCode = (byte)(i2 & 0b111);
+                    
+                    // get <5:offset>
+                    byte offsetCode = (byte)((i2 & 0b0111_1000) >> 3);
+                    sbyte offset = (sbyte)( ((i2&0b1000_0000)>0)?( (offsetCode+1)*-1 ):(offsetCode));
+                    
+                    // RA.value = RAM[ RB.value + Offset ]
+                    GP[
+                        (byte)(IR.value & 0b111) // AAA
+                    ].value = ram.read(
+                        GP[bbbCode].value // BBB 
+                        + offset          // Offset
+                    );
+                    incrementInstruction = 2;
+                }
             }
             IAR.value += incrementInstruction;     // Increment Instruction Address Register
         }
@@ -55,7 +76,7 @@
 
         /*************   FOR TESTING ONLY   **************/
         // REQUIRED for automated testing. DO NOT REMOVE
-        public string getState_inString(){
+        public void printState(){
             
             string get_GP_State(){
                 return String.Format(
@@ -66,10 +87,11 @@
                 );
             }
 
-            return String.Format(
+            string prt = String.Format(
                 "GP = {0}\nIR = {1}\tIAR = {2}\tSP = {3}",
                 get_GP_State(), IR.value, IAR.value, SP.value
             );
+            Console.WriteLine(prt);
         }
 
         public Dictionary<string,byte> getState(){

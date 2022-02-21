@@ -26,36 +26,42 @@ namespace CPUTests{
         public void Test1()
         {
             byte[] program = {
-                0b1000, 0b1010, // mov a,10 
-                0b1001, 0b10,   // mov b,2
-                0b0010, 0b0001, // mov c,b
-                0b0011, 0b0000  // mov d,a
+                0b1000, 0b1010,         // mov a,10 
+                0b1001, 0b10,           // mov b,2
+                0b0010, 0b0001,         // mov c,b
+                0b0011, 0b0000,         // mov d,a
+                0b10010, 0b110001,      // mov c,[b+6]
+                0b10100, 0b001,         // mov e,[b]
+                0b10000, 0b11001_011    // mov a,[d-10]
             };
             
             CPU.CPU cpu = new CPU.CPU(program);
             
             { // execute mov a,10 
                 cpu.InstructionCycleTick();
-                IDictionary<string,byte> state = cpu.getState();
                 AssertCPUState(cpu, ra:10, rb:0, iar:2);
             }
             { // execute mov b,2 
                 cpu.InstructionCycleTick();
-                IDictionary<string,byte> state = cpu.getState();
-                AssertCPUState(cpu, ra:10, rb:2, rc:0, rd:0);
+                AssertCPUState(cpu, ra:10, rb:2, rc:0, rd:0, iar:4);
             }
             { // execute "mov c,b" and "mov d,a" 
                 cpu.InstructionCycleTick();
                 cpu.InstructionCycleTick();
-                IDictionary<string,byte> state = cpu.getState();
                 AssertCPUState(cpu, ra:10, rb:2, rc:2, rd:10, iar:8);
             }
-            { // execute 0x00 0x00 >> mov a,a
+            { // execute mov c,[b+6]
                 cpu.InstructionCycleTick();
-                IDictionary<string,byte> state = cpu.getState();
-                AssertCPUState(cpu, ra:10, iar:10);
+                AssertCPUState(cpu, rc:18, iar:10);
             }
-
+            { // execute mov e,[b]
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu,re:9,iar:12);
+            }
+            { // execute mov a,[d-16]
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu,ra:8);
+            }
         }
     }
 }
