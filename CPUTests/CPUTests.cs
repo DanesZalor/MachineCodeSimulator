@@ -40,7 +40,8 @@ namespace CPUTests{
                 0b10010, 0b110001,      // mov c,[b+6]
                 0b10100, 0b001,         // mov e,[b]
                 0b10000, 0b11001_011,   // mov a,[d-10]
-                0b11_101,0b1010         // mov f,[10]
+                0b11_101,10,            // mov f,[10]
+                0b11_001,9,             // mov b,[9]
             };
             
             CPU.CPU cpu = new CPU.CPU(program);
@@ -73,6 +74,10 @@ namespace CPUTests{
             { // execute mov f,[10]
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, rf:20, iar:16);
+            }
+            { // execute mov b,[9]
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, rb:49, iar:18);
             }
         }
     }
