@@ -7,11 +7,19 @@ using CPU;
 namespace CPUTests{
     public class CPUTests{
         
-        private void AssertCPUState(short ra=-1, short rb=-1, short rc=-1, short rd=-1,
-                                    short re=-1, short rf=-1, short rg=-1, short sp=-1,
-                                    short ir=-1, short iar=-1 
-                                    ){
+        /// <summary> Assert the state of CPU c <br>set the optional parameters to make it undergo assertion </summary>
+        private void AssertCPUState(
+            CPU.CPU c, short ra=-1, short rb=-1, short rc=-1, short rd=-1,
+            short re=-1, short rf=-1, short rg=-1, short sp=-1, short ir=-1, short iar=-1
+            ){
             
+            short[] args = {ra,rb,rc,rd,re,rf,rg,sp,ir,iar};
+            string[] keys= {"ra","rb","rc","rd","re","rf","rg","sp","ir","iar"};
+            IDictionary<string,byte> state = c.getState();
+            for(int i=0; i<10; i++){
+                if(args[i]>-1)
+                    Assert.Equal(args[i], state[keys[i]]);
+            }
         }
 
         [Fact]
@@ -29,36 +37,24 @@ namespace CPUTests{
             { // execute mov a,10 
                 cpu.InstructionCycleTick();
                 IDictionary<string,byte> state = cpu.getState();
-                Assert.Equal(10, state["ra"]);
-                Assert.Equal(0, state["rb"]);
-                Assert.Equal(2, state["iar"]);
+                AssertCPUState(cpu, ra:10, rb:0, iar:2);
             }
             { // execute mov b,2 
                 cpu.InstructionCycleTick();
                 IDictionary<string,byte> state = cpu.getState();
-                Assert.Equal(10, state["ra"]);
-                Assert.Equal(2, state["rb"]);
-                Assert.Equal(0, state["rc"]);
-                Assert.Equal(0, state["rd"]);
+                AssertCPUState(cpu, ra:10, rb:2, rc:0, rd:0);
             }
             { // execute "mov c,b" and "mov d,a" 
                 cpu.InstructionCycleTick();
                 cpu.InstructionCycleTick();
                 IDictionary<string,byte> state = cpu.getState();
-                Assert.Equal(10, state["ra"]);
-                Assert.Equal(2, state["rb"]);
-                Assert.Equal(2, state["rc"]);
-                Assert.Equal(10, state["rd"]);
-                Assert.Equal(8, state["iar"]);
+                AssertCPUState(cpu, ra:10, rb:2, rc:2, rd:10, iar:8);
             }
             { // execute 0x00 0x00 >> mov a,a
                 cpu.InstructionCycleTick();
                 IDictionary<string,byte> state = cpu.getState();
-                Assert.Equal(10, state["ra"]);
-                Assert.Equal(10, state["iar"]);
+                AssertCPUState(cpu, ra:10, iar:10);
             }
-
-            Console.WriteLine(cpu.getState_inString());
 
         }
     }
