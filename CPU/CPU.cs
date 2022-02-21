@@ -53,8 +53,8 @@
         }
 
 
-        /***************************************************************/
-        /// <summary> DEBUGGING PURPOSE ONLY </summary>
+        /*************   FOR TESTING ONLY   **************/
+        // REQUIRED for automated testing. DO NOT REMOVE
         public string getState_inString(){
             
             string get_GP_State(){
