@@ -32,7 +32,7 @@ namespace CPUTests{
             ram.write(0,230);
             ram.write(1,42);
             ram.write(2,12);
-            Assert.Equal("[230, 42, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", ram.getState());
+            Assert.Equal("[230, 42, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]", ram.getState_inString());
         }
     }
 }

@@ -7,7 +7,7 @@
             }
         }
         private ALU alu;
-        public RAM ram;
+        private RAM ram;
         private Register[] GP = new CPU.Register[8]; // general purpose registers
         private Register SP { // Stack Pointer (or GP[7])
             get => GP[7];
@@ -34,13 +34,13 @@
             byte incrementInstruction = 1;
             {// DO Instruction
 
-                if(IR.value<0b1000){ // MOV R,R // [0000_0AAA,0000_0BBB]
+                if(IR.value <= 0b111){ // MOV R,R // [0000_0AAA,0000_0BBB]
 
                     // RA.value = RB.value
                     GP[IR.value].value = GP[ ram.read(IAR.value+1) ].value;
                     incrementInstruction = 2;
                 }
-                else if(IR.value<0b1_0000){ // MOV R,C // [0000_1AAA, <8:Const>]
+                else if(IR.value <= 0b1111){ // MOV R,C // [0000_1AAA, <8:Const>]
 
                     // RA.value = Const
                     GP[
@@ -48,7 +48,7 @@
                     ].value = ram.read(IAR.value+1);
                     incrementInstruction = 2;
                 }
-                else if(IR.value<0b1_1000){ // MOV R,[RO] // [0001_0AAA <5:Offset>BBB]
+                else if(IR.value <= 0b1_0111){ // MOV R,[RO] // [0001_0AAA <5:Offset>BBB]
 
                     // adjacent ram cell to the pointed cell (instruction)
                     byte i2 = ram.read(IAR.value+1);
@@ -69,13 +69,28 @@
                     );
                     incrementInstruction = 2;
                 }
-                else if(IR.value<0b10_0000){ //  MOV R,[C] // [0001_1AAA <8:Const>]
+                else if(IR.value <= 0b1_1111){ //  MOV R,[C] // [0001_1AAA <8:Const>]
                     
                     byte i2 = ram.read(IAR.value+1);
                     
                     GP[
                         (byte)(IR.value & 0b111) // AAA
                     ].value = ram.read(i2);
+                    incrementInstruction = 2;
+                }
+                else if(IR.value <= 0b10_0111){ //  MOV [RO],R // [0010_0BBB <5:Offset>AAA]
+                    
+                    byte i2 = ram.read(IAR.value+1);
+
+                    // get <5:offset>
+                    byte offsetCode = (byte)((i2 & 0b0111_1000) >> 3);
+                    sbyte offset = (sbyte)( ((i2&0b1000_0000)>0)?( (offsetCode+1)*-1 ):(offsetCode));
+
+                    // RAM[ RA.value + offset ] = RB.value
+                    ram.write(
+                        (byte)( GP[ i2 & 0b111 ].value + offset ), // AAA + Offset
+                        GP[IR.value & 0b111].value
+                    );
                     incrementInstruction = 2;
                 }
             }
@@ -104,6 +119,9 @@
             Console.WriteLine(prt);
         }
 
+        public byte[] getRAMState(){
+            return ram.getState();
+        }
         public Dictionary<string,byte> getState(){
             Dictionary<string,byte> r = new Dictionary<string,byte>();
             
