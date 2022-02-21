@@ -93,6 +93,14 @@
                     );
                     incrementInstruction = 2;
                 }
+                else if(IR.value <= 0b10_1111){ //  MOV [C],R // [0010_1AAA <8:Const>]
+
+                    ram.write(
+                        ram.read(IAR.value+1), // Const
+                        GP[ IR.value & 0b111 ].value // AAA
+                    );
+                    incrementInstruction = 2;
+                }
             }
             
             IAR.value += incrementInstruction;     // Increment Instruction Address Register

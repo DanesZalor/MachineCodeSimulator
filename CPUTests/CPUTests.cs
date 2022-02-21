@@ -40,11 +40,14 @@ namespace CPUTests{
                 0b10010, 0b110001,      // mov c,[b+6]
                 0b10100, 0b001,         // mov e,[b]
                 0b10000, 0b11001_011,   // mov a,[d-10]
-                0b11_101,10,            // mov f,[10]
-                0b11_001,9,             // mov b,[9]
+                0b11_101, 10,           // mov f,[10]
+                0b11_001, 9,            // mov b,[9]
                 0b10_0001, 0b0,         // mov [a],b
                 0b10_0101, 0b10111_000, // mov [a-8],f
                 0b10_0101, 0b00110_100, // mov [e+6],f
+                0b10_1011, 240,         // mov [240],d
+                0b10_1001, 129,         // mov [129],b
+                0b10_1101, 239,         // mov [239],f
             };
             
             CPU.CPU cpu = new CPU.CPU(program);
@@ -97,19 +100,32 @@ namespace CPUTests{
                 cpu.InstructionCycleTick();
                 Assert.Equal(49,cpu.getRAMState()[8]);
             }
-            { // mov [a-8],f
+            { // execute mov [a-8],f
                 Assert.Equal(8,cpu.getRAMState()[0]);
                 // ram[0] : 0b1000 -> 20
 
                 cpu.InstructionCycleTick();
                 Assert.Equal(20,cpu.getRAMState()[0]);
             }
-            { // mov [e+6],f
+            { // execute mov [e+6],f
                 Assert.Equal(10, cpu.getRAMState()[15]);
                 // ram[15] : 10 -> 20
 
                 cpu.InstructionCycleTick();
                 Assert.Equal(20, cpu.getRAMState()[15]);
+            }
+            { // execute mov [240],d
+                cpu.InstructionCycleTick();
+                Assert.Equal(10, cpu.getRAMState()[240]);
+            }
+            { // execute mov [129],b
+                cpu.InstructionCycleTick();
+                Assert.Equal(49, cpu.getRAMState()[129]);   
+            }
+            { // execute mov [239],f
+                cpu.InstructionCycleTick();
+                Assert.Equal(20, cpu.getRAMState()[239]);
+                Assert.Equal(10, cpu.getRAMState()[240]);
             }
         }
     }
