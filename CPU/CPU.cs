@@ -9,15 +9,19 @@
         private ALU alu;
         public RAM ram;
         private Register[] GP = new CPU.Register[8]; // general purpose registers
+        private Register SP { // Stack Pointer (or GP[7])
+            get => GP[7];
+            set => GP[7] = value;
+        }
         private Register IR; // Instruction Register
         private Register IAR; // Instruction Address Register
-        private Register SP; // Stack Pointer Register
+        
         
         public CPU(byte[] program){
             for(int i = 0; i<8; i++) GP[i] = new CPU.Register();
+            SP.value = 255;
             IR = new CPU.Register();
             IAR = new CPU.Register();
-            SP = new CPU.Register(255);
             alu = new ALU();
             ram = new RAM();
 

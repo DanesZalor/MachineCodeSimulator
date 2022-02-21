@@ -1,9 +1,19 @@
-using Xunit;
+using System;
 using System.Collections.Generic;
+
+using Xunit;
 using CPU;
 
 namespace CPUTests{
     public class CPUTests{
+        
+        private void AssertCPUState(short ra=-1, short rb=-1, short rc=-1, short rd=-1,
+                                    short re=-1, short rf=-1, short rg=-1, short sp=-1,
+                                    short ir=-1, short iar=-1 
+                                    ){
+            
+        }
+
         [Fact]
         public void Test1()
         {
@@ -21,14 +31,34 @@ namespace CPUTests{
                 IDictionary<string,byte> state = cpu.getState();
                 Assert.Equal(10, state["ra"]);
                 Assert.Equal(0, state["rb"]);
+                Assert.Equal(2, state["iar"]);
             }
             { // execute mov b,2 
                 cpu.InstructionCycleTick();
                 IDictionary<string,byte> state = cpu.getState();
                 Assert.Equal(10, state["ra"]);
                 Assert.Equal(2, state["rb"]);
+                Assert.Equal(0, state["rc"]);
+                Assert.Equal(0, state["rd"]);
             }
-            
+            { // execute "mov c,b" and "mov d,a" 
+                cpu.InstructionCycleTick();
+                cpu.InstructionCycleTick();
+                IDictionary<string,byte> state = cpu.getState();
+                Assert.Equal(10, state["ra"]);
+                Assert.Equal(2, state["rb"]);
+                Assert.Equal(2, state["rc"]);
+                Assert.Equal(10, state["rd"]);
+                Assert.Equal(8, state["iar"]);
+            }
+            { // execute 0x00 0x00 >> mov a,a
+                cpu.InstructionCycleTick();
+                IDictionary<string,byte> state = cpu.getState();
+                Assert.Equal(10, state["ra"]);
+                Assert.Equal(10, state["iar"]);
+            }
+
+            Console.WriteLine(cpu.getState_inString());
 
         }
     }
