@@ -17,8 +17,15 @@ namespace CPUTests{
             string[] keys= {"ra","rb","rc","rd","re","rf","rg","sp","ir","iar"};
             IDictionary<string,byte> state = c.getState();
             for(int i=0; i<10; i++){
-                if(args[i]>-1)
-                    Assert.Equal(args[i], state[keys[i]]);
+                if(args[i]>-1){
+                    Assert.True(
+                        args[i]==state[keys[i]],
+                        String.Format(
+                            "'{0}' Expected: {1}\t Actual: {2}", 
+                            keys[i],args[i], state[keys[i]]
+                        )
+                    );
+                }
             }
         }
 
@@ -32,7 +39,8 @@ namespace CPUTests{
                 0b0011, 0b0000,         // mov d,a
                 0b10010, 0b110001,      // mov c,[b+6]
                 0b10100, 0b001,         // mov e,[b]
-                0b10000, 0b11001_011    // mov a,[d-10]
+                0b10000, 0b11001_011,   // mov a,[d-10]
+                0b11_101,0b1010         // mov f,[10]
             };
             
             CPU.CPU cpu = new CPU.CPU(program);
@@ -60,7 +68,11 @@ namespace CPUTests{
             }
             { // execute mov a,[d-16]
                 cpu.InstructionCycleTick();
-                AssertCPUState(cpu,ra:8);
+                AssertCPUState(cpu,ra:8, iar:14);
+            }
+            { // execute mov f,[10]
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, rf:20, iar:16);
             }
         }
     }

@@ -34,13 +34,13 @@
             byte incrementInstruction = 1;
             {// DO Instruction
 
-                if(IR.value<0b1000){ // MOV_R_R // [0000_0AAA,0000_0BBB]
+                if(IR.value<0b1000){ // MOV R,R // [0000_0AAA,0000_0BBB]
 
                     // RA.value = RB.value
                     GP[IR.value].value = GP[ ram.read(IAR.value+1) ].value;
                     incrementInstruction = 2;
                 }
-                else if(IR.value<0b1_0000){ // MOV_R_C // [0000_1AAA, <8:Const>]
+                else if(IR.value<0b1_0000){ // MOV R,C // [0000_1AAA, <8:Const>]
 
                     // RA.value = Const
                     GP[
@@ -48,7 +48,7 @@
                     ].value = ram.read(IAR.value+1);
                     incrementInstruction = 2;
                 }
-                else if(IR.value<0b1_1000){ // MOV_R_[RO] // [0001_0AAA <5:Offset>BBB]
+                else if(IR.value<0b1_1000){ // MOV R,[RO] // [0001_0AAA <5:Offset>BBB]
 
                     // adjacent ram cell to the pointed cell (instruction)
                     byte i2 = ram.read(IAR.value+1);
@@ -69,7 +69,17 @@
                     );
                     incrementInstruction = 2;
                 }
+                else if(IR.value<0b10_0000){ //  MOV R,[C] // [0001_1AAA <8:Const>]
+                    
+                    byte i2 = ram.read(IAR.value+1);
+                    
+                    GP[
+                        (byte)(IR.value & 0b111) // AAA
+                    ].value = ram.read(i2);
+                    incrementInstruction = 2;
+                }
             }
+            
             IAR.value += incrementInstruction;     // Increment Instruction Address Register
         }
 
