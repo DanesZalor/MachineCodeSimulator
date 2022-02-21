@@ -30,7 +30,7 @@ namespace CPUTests{
         }
 
         [Fact]
-        public void Test1()
+        public void MOVTests()
         {
             byte[] program = {
                 0b1000, 0b1010,         // mov a,10 
@@ -43,15 +43,19 @@ namespace CPUTests{
                 0b11_101,10,            // mov f,[10]
                 0b11_001,9,             // mov b,[9]
                 0b10_0001, 0b0,         // mov [a],b
+                0b10_0101, 0b10111_000, // mov [a-8],f
+                0b10_0101, 0b00110_100, // mov [e+6],f
             };
             
             CPU.CPU cpu = new CPU.CPU(program);
             
             { // execute mov a,10 
+                AssertCPUState(cpu, ra:0, rb:0, iar:0);
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, ra:10, rb:0, iar:2);
             }
             { // execute mov b,2 
+                AssertCPUState(cpu, ra:10, rb:0, rc:0, rd:0, iar:2);
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, ra:10, rb:2, rc:0, rd:0, iar:4);
             }
@@ -61,6 +65,9 @@ namespace CPUTests{
                 AssertCPUState(cpu, ra:10, rb:2, rc:2, rd:10, iar:8);
             }
             { // execute mov c,[b+6]
+                AssertCPUState(cpu, rc:2); 
+                // rc : 2 -> 10
+
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, rc:18, iar:10);
             }
@@ -69,6 +76,9 @@ namespace CPUTests{
                 AssertCPUState(cpu,re:9,iar:12);
             }
             { // execute mov a,[d-16]
+                AssertCPUState(cpu,ra:10); 
+                // ra : 10 -> 8
+
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu,ra:8, iar:14);
             }
@@ -81,8 +91,25 @@ namespace CPUTests{
                 AssertCPUState(cpu, rb:49, iar:18);
             }
             { // execute mov [a],b
+                Assert.Equal(0b10010,cpu.getRAMState()[8]);
+                // ram[18] : 0b10010 -> 49
+
                 cpu.InstructionCycleTick();
                 Assert.Equal(49,cpu.getRAMState()[8]);
+            }
+            { // mov [a-8],f
+                Assert.Equal(8,cpu.getRAMState()[0]);
+                // ram[0] : 0b1000 -> 20
+
+                cpu.InstructionCycleTick();
+                Assert.Equal(20,cpu.getRAMState()[0]);
+            }
+            { // mov [e+6],f
+                Assert.Equal(10, cpu.getRAMState()[15]);
+                // ram[15] : 10 -> 20
+
+                cpu.InstructionCycleTick();
+                Assert.Equal(20, cpu.getRAMState()[15]);
             }
         }
     }
