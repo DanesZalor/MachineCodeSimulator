@@ -113,9 +113,8 @@
 
             byte doJMP(){
                 // JMP R // [0011_0AAA]
-                if(IAR.value <= 0b11_0111){
+                if(IAR.value <= 0b11_0111)
                     IAR.value = GP[ IR.value & 0b111 ].value;
-                }
                 
                 // JMP C // [0011_1000 <8:Const>]
                 else if(IAR.value == 0b11_1000) 

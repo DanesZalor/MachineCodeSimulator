@@ -129,21 +129,6 @@ namespace CPUTests{
         }
 
         [Fact]
-        public void stateTest(){
-            
-            // arrange
-            byte[] program = {};
-            CPU.CPU cpu = new CPU.CPU(program);
-
-            // act
-            cpu.setState(ra:10,rb:20,rc:30,rd:40,re:50,rf:60,sp:70,iar:80,ir:90);
-
-            // assert
-            AssertCPUState(cpu, ra:10,rb:20,rc:30,rd:40,re:50,rf:60,sp:70,iar:80,ir:90);
-        }
-
-
-        [Fact]
         public void JMPTest(){
             byte[] program = {
                 0b1110, 10,         // mov g,10
