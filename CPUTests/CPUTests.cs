@@ -128,6 +128,39 @@ namespace CPUTests{
                 Assert.Equal(10, cpu.getRAMState()[240]);
             }
         }
+
+        [Fact]
+        public void MOVTest_Kokong()
+        {
+            byte[] program = {
+                0b0000_1000, 0b0000_0101,   // mov a, 5
+                0b0000_0001, 0b0000_0000,   // mov b,a
+                0b0010_0001, 0b0010_0000,   // mov [a+2],b
+                0b0001_0000, 0b0010_0000,   // mov a,[a+2]
+                0b0001_1001, 0b0000_0010,   // mov b,[1+1]
+                0b0010_1000, 0b0000_0010,   // mov [1+1],a
+            };
+            
+            CPU.CPU cpu = new CPU.CPU(program);
+            
+            /*{ // execute mov a,10 
+                AssertCPUState(cpu, ra:0, rb:0, iar:0);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, ra:10, rb:0, iar:2);
+            }
+            
+            { // execute mov [a-8],f
+                Assert.Equal(8,cpu.getRAMState()[0]);
+                // ram[0] : 0b1000 -> 20
+
+                cpu.InstructionCycleTick();
+                Assert.Equal(20,cpu.getRAMState()[0]);
+            }
+            */
+            {
+                
+            }
+        }
     }
 }
 
