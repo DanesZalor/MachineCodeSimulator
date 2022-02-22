@@ -118,44 +118,40 @@
                     IAR.value = GP[ IR.value & 0b111 ].value;
                 
                 // JMP C // [0011_1000 <8:Const>]
-                else if(IR.value == 0b11_1000) 
+                else //if(IR.value == 0b11_1000) 
                     IAR.value = ram.read(IAR.value+1);
-
-                // JCAZ R // [0100_0CAZ 0000_0AAA]
-                else if(IR.value <= 0b100_0111){
-
-                    // evaluate IR (the jump flags)
-                    if(alu.evaluateFlags( (ALU.FLAG)(IR.value & 0b111) ))
-
-                        // next byte in ram will be read as the REG to jump towards
-                        IAR.value = GP[ ram.read(IAR.value+1) & 0b111 ].value;
-
-                    else return 2;
-                }
-
-                // JCAZ C // [0100_1CAZ <8:Const>]
-                else{  // if(IR.value <= 0b100_1111){
-                    
-                    // evaluate IR (the jump flags)
-                    if(alu.evaluateFlags( (ALU.FLAG)(IR.value & 0b111) ))
-
-                        // next byte in ram will be read as the CONST to jump towards
-                        IAR.value = ram.read(IAR.value+1);
-
-                    else return 2;
-                }
 
                 return 0;
             }
 
+            byte doJCAZ(){
+                
+                // evaluate IR (the jump flags)
+                if(alu.evaluateFlags( (ALU.FLAG)(IR.value & 0b111) )){
+
+                     if(IR.value <= 0b100_0111)
+                        // next byte in ram will be read as the REG to jump towards
+                        IAR.value = GP[ ram.read(IAR.value+1) & 0b111 ].value;
+
+                    // evaluate IR (the jump flags)
+                    else if(alu.evaluateFlags( (ALU.FLAG)(IR.value & 0b111) ))
+                        // next byte in ram will be read as the CONST to jump towards
+                        IAR.value = ram.read(IAR.value+1);
+
+                    return 0;
+                }
+                else return 2;
+            }
             
             {// DO Instruction
                 IR.value = ram.read(IAR.value); // Set Instruction Register 
                 byte increment = 0;
                 if(IR.value <= 0b10_1111) // MOVs instructions
                     increment = doMOV();
-                else if(IR.value <= 0b100_1111) // JMP/JCAZ instructions
+                else if(IR.value <= 0b11_1000) // JMP instructions
                     increment = doJMP();
+                else if(IR.value <= 0b100_1111) // JCAZ instructions
+                    increment = doJCAZ();
                 
                 IAR.value += increment;
             }
