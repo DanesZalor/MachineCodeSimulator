@@ -141,7 +141,78 @@ namespace CPUTests{
             // assert
             AssertCPUState(cpu, ra:10,rb:20,rc:30,rd:40,re:50,rf:60,sp:70,iar:80,ir:90);
         }
-        
+
+        [Fact]
+        //ADD, SUB, MUL, DIV
+        public void ARITHTest_Sulay()
+        {
+            byte[] program = {
+                0b1100_1000, 0b000_1010, 0b10,    //ADD A, 2
+                0b1100_1000, 0b000_1001,          //ADD B, A
+                0b1100_1000, 0b001,               //ADD A, [B] 
+                0b0010, 10,                       //MOV C, 10
+                0b0011, 8,//MOV D, 8
+                0b1100_1001, 0b010_1010, 0b10,    //SUB C, 2
+                0b1100_1001, 0b011_1010,          //SUB D, C
+                0b1100_1001, 0b000,               //SUB C, [A]
+                //MOV A, 10
+                //MUL 2
+                //DIV 2
+                //MUL C
+                //DIV C
+                //MUL [B]
+                //DIV [B]
+            };
+            CPU.CPU cpu = new CPU.CPU(program);
+
+            { // execute add a, 2 
+                AssertCPUState(cpu, ra:0, rb:0, rc:0, rd:0, iar:0);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, ra:2, rb:0, rc:0, rd:0, iar:3);
+            }
+
+            { // execute add b, a 
+                AssertCPUState(cpu, ra:2, rb:0, rc:0, rd:0, iar:3);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, ra:2, rb:2, rc:0, rd:0, iar:5);
+            }
+
+            { // execute add a, [b] 
+                AssertCPUState(cpu, ra:2, rb:2, rc:0, rd:0, iar:5);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, ra:4, rb:2, rc:0, rd:0, iar:7);
+            }
+
+            { // execute mov c, 10 
+                AssertCPUState(cpu, ra:4, rb:2, rc:0, rd:0, iar:7);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, ra:4, rb:2, rc:10, rd:0, iar:9);
+            }
+               
+            { // execute mov d, 8 
+                AssertCPUState(cpu, ra:4, rb:2, rc:10, rd:0, iar:9);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, ra:4, rb:2, rc:10, rd:8, iar:11);
+            }
+
+            { // execute sub c, 2 
+                AssertCPUState(cpu, ra:4, rb:2, rc:10, rd:8, iar:11);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, ra:4, rb:2, rc:8, rd:8, iar:14);
+            }
+
+            { // execute sub d, c 
+                AssertCPUState(cpu, ra:4, rb:2, rc:8, rd:8, iar:14);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, ra:4, rb:2, rc:8, rd:0, iar:16);
+            }
+
+            { // execute sub c, [a] 
+                AssertCPUState(cpu, ra:4, rb:2, rc:8, rd:0, iar:16);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, ra:4, rb:2, rc:7, rd:0, iar:18);
+            }
+        }
     }
 }
 
