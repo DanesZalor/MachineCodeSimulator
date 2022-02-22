@@ -30,7 +30,10 @@
         }
 
         
-        byte doMOV(){
+
+        public void InstructionCycleTick(){
+
+            byte doMOV(){
                 // MOV R,R // [0000_0AAA,0000_0BBB] 
                 if(IR.value <= 0b111){ 
                     
@@ -107,9 +110,6 @@
                 }
                 return 2;
             }
-        public void InstructionCycleTick(){
-
-            
 
             void doJMP(){
                 // JMP reg // [0011_0AAA]
@@ -124,7 +124,7 @@
                 byte increment = 0;
                 if(IR.value <= 0b10_1111) // MOVs instructions
                     increment = doMOV();
-                if(IR.value <= 0b100_1111) // JMP instructions
+                else if(IR.value <= 0b100_1111) // JMP instructions
                     doJMP();
                 
                 IAR.value += increment;
