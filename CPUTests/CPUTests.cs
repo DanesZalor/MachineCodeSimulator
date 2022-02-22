@@ -157,21 +157,37 @@ namespace CPUTests{
             
             byte[] program = {
                 0b100_0100, 0b1,        // jc b
-                2,3,4,5,6,              // filler
+                0,0,0,0,0,0,            // filler
                 0b100_1010, 0,          // ja 0
             };
             CPU.CPU cpu = new CPU.CPU(program);
 
             { // execute "jc b"
-                
-                cpu.setState(rb:7, aluflags:ALU.FLAG.C);
+                cpu.setState(rb:8, aluflags:ALU.FLAG.C);
                 cpu.InstructionCycleTick();
-                AssertCPUState(cpu, rb:7, iar:7);
+                AssertCPUState(cpu, rb:8, iar:8);
             }
             { // execute "ja 0"
                 cpu.setState(aluflags:ALU.FLAG.A);
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, iar:0);
+            }
+            { // execute "jc b" again but with wrong flags
+                cpu.setState(aluflags:ALU.FLAG.Z);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu,iar:2);
+            }
+            { // execute fillers "0,0" = "mov a,a" which does nothing
+                AssertCPUState(cpu, iar:2);
+                cpu.InstructionCycleTick();
+                cpu.InstructionCycleTick();
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:8);
+            }
+            { // execute "ja 0" again but with wrong flags
+                cpu.setState(aluflags:ALU.FLAG.C);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu,iar:10);
             }
         }
         

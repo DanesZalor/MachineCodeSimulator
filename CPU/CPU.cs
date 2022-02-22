@@ -129,6 +129,8 @@
 
                         // next byte in ram will be read as the REG to jump towards
                         IAR.value = GP[ ram.read(IAR.value+1) & 0b111 ].value;
+
+                    else return 2;
                 }
 
                 // JCAZ C // [0100_1CAZ <8:Const>]
@@ -139,6 +141,8 @@
 
                         // next byte in ram will be read as the CONST to jump towards
                         IAR.value = ram.read(IAR.value+1);
+
+                    else return 2;
                 }
 
                 return 0;
