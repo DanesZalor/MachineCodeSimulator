@@ -120,7 +120,7 @@
                 // JMP C // [0011_1000 <8:Const>]
                 else if(IR.value == 0b11_1000) 
                     IAR.value = ram.read(IAR.value+1);
-                    
+
                 return 0;
             }
 
@@ -131,7 +131,7 @@
                 if(IR.value <= 0b10_1111) // MOVs instructions
                     increment = doMOV();
                 else if(IR.value <= 0b100_1111) // JMP instructions
-                    doJMP();
+                    increment = doJMP();
                 
                 IAR.value += increment;
             }
