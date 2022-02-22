@@ -141,6 +141,27 @@ namespace CPUTests{
             // assert
             AssertCPUState(cpu, ra:10,rb:20,rc:30,rd:40,re:50,rf:60,sp:70,iar:80,ir:90);
         }
+
+
+        [Fact]
+        public void JMPTest(){
+            byte[] program = {
+                0b1110, 10,         // mov g,10
+                0b0011_0110,        // jmp g
+                3,4,5,6,7,8,9,      // filler
+                0b0011_1000, 2,    // jmp 2
+            };
+            CPU.CPU cpu = new CPU.CPU(program);
+
+            { // execute mov g,10
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, rg:10, iar:2);
+            }
+            { // execute jmp g
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:10);
+            }
+        }
         
     }
 }
