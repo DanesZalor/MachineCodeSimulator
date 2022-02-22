@@ -255,6 +255,11 @@ public static class Translator
         return new byte[0]{};
     }
 
+    private static byte[] translateDB(string line){
+        string arg = line.Substring(3); // remove "db "
+        return new byte[]{Convert.ToByte(arg)};
+    }
+
     private static byte[] translateETC(string line){
         byte[] r = new byte[1];
         switch(line){
@@ -268,16 +273,16 @@ public static class Translator
     private static string[] LineStarters = {
         "mov", "jmp", LEXICON.SYNTAX.JCAZ, "push", "pop", "call", 
         "(cmp|xor|and|or|shl|shr|mul|div|add|sub|inc|dec|not)",
-        "(ret|hlt|clf)"
+        "db","(ret|hlt|clf)"
     };
     private static Func<string,byte[]>[] translateFuncs = {
         translateMOV, translateJMP, translateJCAZ, translatePUSH,
-        translatePOP, translateCALL, translateALU, translateETC
+        translatePOP, translateCALL, translateALU, translateDB, translateETC
     };
     /// <sumary>translated the line into its corresponding byte[] that represents machine code. returns an empty array if it is grammatically incorrect</summary> 
     public static byte[] translateLine(string line)
     {
-        for(int i = 0; i < 8; i++)
+        for(int i = 0; i < 9; i++)
             if (Common.match(line, LineStarters[i])) return translateFuncs[i](line);
         
         return new byte[0];

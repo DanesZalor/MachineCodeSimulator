@@ -113,15 +113,167 @@ public class TranslationCheck
 
 
     [Theory]
+<<<<<<< HEAD:Assembler/AssemblerTest/TranlatorTest.cs
     [InlineData("BinTest/test1", new byte[5]{0b1000, 0b1010, 0b1001, 0b10, 0b1101_0000})]
     [InlineData("BinTest/jo1", new byte[12]{0b1000, 1, 0b1001, 2, 0b1100_0000, 0b0000_0001, 0b0100_1101, 9, 0b1101_0010, 0b10001_000, 0b0011_1000, 4})]
     [InlineData("BinTest/sulay1", new byte[24]{0b1000, 0b1010, 0b1001, 0b10, 0b111_1000, 0b00000111, 0b1101_0010, 0b111_1000, 0b10000, 0b111_1000, 0b010100, 0b1100_0000, 0b0000_0001, 0b100_1110, 0b0111, 0b1101_0001, 0b1100_1000, 0b0001_1001, 0b10, 0b1101_0001, 0b1100_1001, 0b0000_1001, 0b10, 0b1100_0001})]
     [InlineData("BinTest/sulay2", new byte[24]{0b1000, 0b1000, 0b1011, 0b1000, 0b1001, 0b100000, 0b111_1000, 0b01111, 0b1000, 0b1011, 0b1010, 0b1, 1101_0010, 0b10011, 0b1100_0000, 0b0000_0001, 0b100_1110, 0b0111, 0b10100, 0b000, 0b1100_0000, 0b0000_0010, 0b100_1110, 0b10100})]
     [InlineData("BinTest/sulay3", new byte[12]{0b1000, 0b11, 0b1001, 0b1010, 0b111_1000, 0b0111, 0b1101_0010, 0b10001, 0b000, 0b1100_0000, 0b0000_0001, 0b10110})]
 
+=======
+    [InlineData("BinTest/test1", new byte[5]{
+        0b1000, 0b1010, 
+        0b1001, 0b10, 
+        0b1101_0000
+    })]
+    [InlineData("BinTest/jo1", new byte[12]{
+        0b1000, 1, 
+        0b1001, 2, 
+        0b1100_0000, 0b0000_0001,
+        0b0100_1101, 9, 
+        0b1101_0010, 
+        0b10001_000,
+        0b0011_1000, 4
+    })]
+    [InlineData("BinTest/jo2", new byte[22]{
+        0b1000, 1, 
+        0b1001, 2, 
+        0b0011_1000, 9, 
+        0b10001_000, 
+        0b0011_1000, 9, 
+        0b1100_0000, 0b0000_0001, 
+        0b0100_1101, 6, 
+        0b1000, 253, 
+        0b1001, 1, 
+        0b1100_1000, 0b0000_0001, 
+        0b0100_1011, 24, 
+        0b1101_0010
+    })]
+    [InlineData("BinTest/jo3", new byte[27]{
+        0b1000, 0, 
+        0b1001, 0, 
+        0b1100_0010, 0b0000_0001, 
+        0b0100_1110, 14, 
+        0b10001_000, 
+        0b1100_1000, 0b0001_1010, 3, 
+        0b0011_1000, 4, 
+        0b1000, 1, 
+        0b1001, 1, 
+        0b1100_0001, 0b0000_0001, 
+        0b1000, 14, 
+        0b1001, 20, 
+        0b1100_0011, 0b0000_0001, 
+        0b1101_0010
+    })]
+  
+    [InlineData("BinTest/frc1", new byte[14]{
+        0b1000, 2,
+        0b1001, 7,
+        0b0010, 0b0000,
+        0b1001_0001,
+        0b1100_0110, 0b0000_0010,
+        0b1001_0001,
+        0b1100_0000, 0b0001_0011,
+        0b0100_1110, 7
+    })]
+    [InlineData("BinTest/frc2", new byte[38]{
+        0b0011_1000, 8,
+        97,110,110,97,72,0,
+        0b1010, 2,
+        0b1011, 232,
+        0b1000, 0,
+        0b0101_0000,
+        0b0011_1000, 19,
+        0b0011_1000, 30,
+        0b1_0000, 0b0000_0010, 
+        0b0101_0000, 
+        0b1000_1010, 
+        0b1100_0000, 0b0001_1000, 0b0000_0010,
+        0b0100_1110, 19,
+        0b0011_1000, 30,
+        0b0110_0000,
+        0b0010_0000, 0b0000_0011,
+        0b1000_1011, 
+        0b1100_0000, 0b0000_0001,
+        0b0100_1110, 30
+    })]
+    [InlineData("BinTest/frc3", new byte[]{
+        0b0000_1001, 5,
+        0b0000_1011, 232,
+        0b1001_0001,
+        0b1000_1010,
+        0b1100_1000, 0b0000_1010, 2,
+        0b0010_0000, 0b0000_0011,
+        0b1000_1011,
+        0b1100_0000, 0b0001_0010,
+        0b0100_1110, 7
+    })]
+    
+    [InlineData("BinTest/sulay1", new byte[24]{
+        0b1000, 10,
+        0b1001, 2,
+        0b111_1000, 7, 
+        0b1101_0010, 
+        0b111_1000, 16,
+        0b111_1000, 20, 
+        0b1100_0000, 0b0000_0001,
+        0b100_1110, 7, 
+        0b1101_0001, 
+        0b1100_1000, 0b0001_1010, 2, 
+        0b1101_0001, 
+        0b1100_1001, 0b0000_1010, 2, 
+        0b1101_0001
+    })]
+    [InlineData("BinTest/sulay2", new byte[25]{
+        0b1000, 8,
+        0b0011, 0b0000, 
+        0b1001, 32, 
+        0b111_1000, 15, 
+        0b0, 0b11, 
+        0b1010, 1, 
+        0b0111_1000, 20,
+        0b1101_0010, 
+        0b1001_1000, 
+        0b1100_0000, 0b1, 
+        0b100_1110, 15, 
+        0b1010_0000,  
+        0b1100_0000, 0b0000_0010, 
+        0b100_1110, 20
+    })]
+    [InlineData("BinTest/sulay3", new byte[12]{
+        0b1000, 3,
+        0b1001, 10,
+        0b111_1000, 7, 
+        0b1101_0010,
+        0b10001000,
+        0b1100_0000, 0b1,
+        0b100_1110, 7
+    })]
+    
+>>>>>>> master:Assembler/AssemblerTest/TranslatorTest.cs
     public void TestCompileFile(string filename, byte[] expected_res){
+        void assertEqual(byte[] a, byte[] b){
+            
+            bool equalLength = (a.Length==b.Length);
+            if(!equalLength){
+                Console.Write("a.Length="+ Convert.ToString(a.Length));
+                Console.WriteLine("   b.Length="+ Convert.ToString(b.Length));
+                //Assert.True(false);
+            }
+
+            bool arrayEqual = equalLength;
+            for(int i = 0; i<a.Length && arrayEqual; i++){
+                if(a[i]!=b[i]) arrayEqual = false;
+            }
+            if(!arrayEqual){
+                Console.Write("a = ["); for(int i = 0; i < a.Length; i++) Console.Write(a[i] + ","); Console.WriteLine(" size:" +Convert.ToString(a.Length));
+                Console.Write("b = ["); for(int i = 0; i < b.Length; i++) Console.Write(b[i] + ","); Console.WriteLine(" size:" +Convert.ToString(b.Length));
+                Assert.True(false);
+            }
+        }
+
         byte[] actual_res = Assembler.Translator.translateProgram(Common.readFile(filename));
-        Assert.Equal(expected_res, actual_res);
+        assertEqual(expected_res, actual_res);
     }
     
 }
