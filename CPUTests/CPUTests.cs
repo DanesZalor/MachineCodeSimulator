@@ -134,7 +134,7 @@ namespace CPUTests{
                 0b1110, 10,         // mov g,10
                 0b0011_0110,        // jmp g
                 3,4,5,6,7,8,9,      // filler
-                0b0011_1000, 2,    // jmp 2
+                0b11_1000, 2,    // jmp 2
             };
             CPU.CPU cpu = new CPU.CPU(program);
 
@@ -145,6 +145,10 @@ namespace CPUTests{
             { // execute jmp g
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, iar:10);
+            }
+            { // execute jmp 2
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:2);
             }
         }
         
