@@ -156,19 +156,22 @@ namespace CPUTests{
         public void JCAZTest(){
             
             byte[] program = {
-                0b100_0100, 0b1,    // jc b
-                2,3,4,5,6,            // filler
-                0
+                0b100_0100, 0b1,        // jc b
+                2,3,4,5,6,              // filler
+                0b100_1010, 0,          // ja 0
             };
             CPU.CPU cpu = new CPU.CPU(program);
 
-            { // execute "mov b,8" and "jc b"
+            { // execute "jc b"
                 
                 cpu.setState(rb:7, aluflags:ALU.FLAG.C);
-                
                 cpu.InstructionCycleTick();
-
-                AssertCPUState(cpu, rb:7);
+                AssertCPUState(cpu, rb:7, iar:7);
+            }
+            { // execute "ja 0"
+                cpu.setState(aluflags:ALU.FLAG.A);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:0);
             }
         }
         

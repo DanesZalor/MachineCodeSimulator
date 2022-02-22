@@ -123,12 +123,22 @@
 
                 // JCAZ R // [0100_0CAZ 0000_0AAA]
                 else if(IR.value <= 0b100_0111){
-                    
-                    byte jmpFlags = (byte)(IR.value & 0b111);
 
-                    if(alu.evaluateFlags( (ALU.FLAG)jmpFlags )){
+                    // evaluate IR (the jump flags)
+                    if(alu.evaluateFlags( (ALU.FLAG)(IR.value & 0b111) ))
+
+                        // next byte in ram will be read as the REG to jump towards
                         IAR.value = GP[ ram.read(IAR.value+1) & 0b111 ].value;
-                    }
+                }
+
+                // JCAZ C // [0100_1CAZ <8:Const>]
+                else{  // if(IR.value <= 0b100_1111){
+                    
+                    // evaluate IR (the jump flags)
+                    if(alu.evaluateFlags( (ALU.FLAG)(IR.value & 0b111) ))
+
+                        // next byte in ram will be read as the CONST to jump towards
+                        IAR.value = ram.read(IAR.value+1);
                 }
 
                 return 0;
@@ -205,7 +215,7 @@
             }
 
             if(aluflags != ALU.FLAG.NONE )
-                alu.setFlags( aluflags);
+                alu.setFlags(aluflags);
         }
     }
 }
