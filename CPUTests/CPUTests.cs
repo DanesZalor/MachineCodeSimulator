@@ -30,8 +30,7 @@ namespace CPUTests{
         }
 
         [Fact]
-        public void MOVTests()
-        {
+        public void MOVTests(){
             byte[] program = {
                 0b1000, 0b1010,         // mov a,10 
                 0b1001, 0b10,           // mov b,2
@@ -128,6 +127,21 @@ namespace CPUTests{
                 Assert.Equal(10, cpu.getRAMState()[240]);
             }
         }
+
+        [Fact]
+        public void stateTest(){
+            
+            // arrange
+            byte[] program = {};
+            CPU.CPU cpu = new CPU.CPU(program);
+
+            // act
+            cpu.setState(ra:10,rb:20,rc:30,rd:40,re:50,rf:60,sp:70,iar:80,ir:90);
+
+            // assert
+            AssertCPUState(cpu, ra:10,rb:20,rc:30,rd:40,re:50,rf:60,sp:70,iar:80,ir:90);
+        }
+        
     }
 }
 

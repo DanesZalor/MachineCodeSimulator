@@ -111,11 +111,16 @@
                 return 2;
             }
 
-            void doJMP(){
-                // JMP reg // [0011_0AAA]
+            byte doJMP(){
+                // JMP R // [0011_0AAA]
                 if(IAR.value <= 0b11_0111)
                     IAR.value = GP[ IAR.value & 0b111 ].value;
                 
+                // JMP C // [0011_1000 <8:Const>]
+                else if(IAR.value == 0b11_1000) 
+                    IAR.value = GP[ ram.read(IAR.value+1) ].value;
+
+                return 0;
             }
 
             
@@ -166,6 +171,20 @@
             r.Add("iar", IAR.value);
 
             return r;
+        }
+
+        /// <summary> All short arguements yes, but make sure to use byte values (0-255) </summary>
+        public void setState(
+            short ra=-1, short rb=-1, short rc=-1, short rd=-1,short re=-1, 
+            short rf=-1, short rg=-1, short sp=-1, short ir=-1,short iar=-1){
+            
+            Register[] r = {GP[0], GP[1], GP[2], GP[3], GP[4], GP[5], GP[6], SP, IR, IAR};
+            short[] args = {ra,rb,rc,rd,re,rf,rg,sp,ir,iar};
+
+            for(int i=0; i< args.Length; i++){
+                if(args[i]>=0 && args[i]<256)
+                    r[i].value = (byte)args[i];
+            }
         }
     }
 }
