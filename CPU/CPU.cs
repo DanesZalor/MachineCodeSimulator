@@ -121,6 +121,16 @@
                 else if(IR.value == 0b11_1000) 
                     IAR.value = ram.read(IAR.value+1);
 
+                // JCAZ R // [0100_0CAZ 0000_0AAA]
+                else if(IR.value <= 0b100_0111){
+                    
+                    byte jmpFlags = (byte)(IR.value & 0b111);
+
+                    if(alu.evaluateFlags( (ALU.FLAG)jmpFlags )){
+                        IAR.value = GP[ ram.read(IAR.value+1) & 0b111 ].value;
+                    }
+                }
+
                 return 0;
             }
 
@@ -130,7 +140,7 @@
                 byte increment = 0;
                 if(IR.value <= 0b10_1111) // MOVs instructions
                     increment = doMOV();
-                else if(IR.value <= 0b100_1111) // JMP instructions
+                else if(IR.value <= 0b100_1111) // JMP/JCAZ instructions
                     increment = doJMP();
                 
                 IAR.value += increment;
@@ -140,6 +150,9 @@
 
         /*************   FOR TESTING ONLY   **************/
         // REQUIRED for automated testing. DO NOT REMOVE
+        // can remove this when putting it in the game.
+
+        /// <summary> TESTING PURPOSE ONLY <br> DO NOT USE UNLESS FOR AUTOMATED TESTING </summary>
         public void printState(){
             
             string get_GP_State(){
@@ -158,9 +171,12 @@
             Console.WriteLine(prt);
         }
 
+        /// <summary> TESTING PURPOSE ONLY <br> DO NOT USE UNLESS FOR AUTOMATED TESTING </summary>
         public byte[] getRAMState(){
             return ram.getState();
         }
+
+        /// <summary> TESTING PURPOSE ONLY <br> DO NOT USE UNLESS FOR AUTOMATED TESTING </summary>
         public Dictionary<string,byte> getState(){
             Dictionary<string,byte> r = new Dictionary<string,byte>();
             
@@ -174,10 +190,11 @@
             return r;
         }
 
-        /// <summary> All short arguements yes, but make sure to use byte values (0-255) </summary>
+        /// <summary> TESTING PURPOSE ONLY <br> DO NOT USE UNLESS FOR AUTOMATED TESTING 
+        /// <br> All short arguements yes, but make sure to use byte values (0-255) </summary>
         public void setState(
             short ra=-1, short rb=-1, short rc=-1, short rd=-1,short re=-1, 
-            short rf=-1, short rg=-1, short sp=-1, short ir=-1,short iar=-1){
+            short rf=-1, short rg=-1, short sp=-1, short ir=-1,short iar=-1, ALU.FLAG aluflags=ALU.FLAG.NONE){
             
             Register[] r = {GP[0], GP[1], GP[2], GP[3], GP[4], GP[5], GP[6], SP, IR, IAR};
             short[] args = {ra,rb,rc,rd,re,rf,rg,sp,ir,iar};
@@ -186,6 +203,9 @@
                 if(args[i]>=0 && args[i]<256)
                     r[i].value = (byte)args[i];
             }
+
+            if(aluflags != ALU.FLAG.NONE )
+                alu.setFlags( aluflags);
         }
     }
 }

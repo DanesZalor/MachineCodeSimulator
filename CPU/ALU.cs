@@ -6,6 +6,7 @@ namespace CPU
         [Flags]
         public enum FLAG : byte
         {
+            NONE = 0b1000_0000,
             OFF = 0b0000_0000,
             ON = 0b0000_1111,
             C = 0b1000,

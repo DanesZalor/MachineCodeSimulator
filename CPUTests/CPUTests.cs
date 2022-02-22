@@ -151,6 +151,26 @@ namespace CPUTests{
                 AssertCPUState(cpu, iar:2);
             }
         }
+
+        [Fact]
+        public void JCAZTest(){
+            
+            byte[] program = {
+                0b100_0100, 0b1,    // jc b
+                2,3,4,5,6,            // filler
+                0
+            };
+            CPU.CPU cpu = new CPU.CPU(program);
+
+            { // execute "mov b,8" and "jc b"
+                
+                cpu.setState(rb:7, aluflags:ALU.FLAG.C);
+                
+                cpu.InstructionCycleTick();
+
+                AssertCPUState(cpu, rb:7);
+            }
+        }
         
     }
 }
