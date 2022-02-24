@@ -132,6 +132,13 @@
                         SP.value--,
                         ram.read(ram.read(IAR.value+1))
                     );
+                
+                // PUSH C // [0101_1010 <8:Const>]
+                else if(IR.value == 0b101_1010)
+                    ram.write(
+                        SP.value--,
+                        ram.read(IAR.value+1)
+                    );
 
                 return 2;
             }

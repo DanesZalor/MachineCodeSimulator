@@ -198,7 +198,8 @@ namespace CPUTests{
                 0b101_1000, 0b10_110,   // push [g+2]
                 0b11_1000,7,            // jmp 7
                 69,123,
-                0b101_1001, 6           // push [6] 
+                0b101_1001, 6,          // push [6] 
+                0b101_1010, 169,        // push 169
             };
             CPU.CPU cpu = new CPU.CPU(program);
 
@@ -221,6 +222,11 @@ namespace CPUTests{
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, iar:9, sp:252);
                 Assert.Equal(123, cpu.getRAMState()[253]);
+            }
+            { // execute "push 169"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:11, sp:251);
+                Assert.Equal(169, cpu.getRAMState()[252]);
             }
         }
     }
