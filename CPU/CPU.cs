@@ -143,6 +143,30 @@
                 return 2;
             }
 
+            byte doPOP(){
+                
+                // POP R // [0110_0AAA]
+                if(IR.value <= 0b110_0111){
+                    GP[ IR.value & 0b111 ].value = ram.read(++SP.value);
+                    return 1;
+                }
+
+                // POP [RO] // [0110_1000 <5:Offset>AAA]
+                else if(IR.value <= 0b110_1000)
+                    ram.write(
+                        getOffsetByteFromInstruction(IAR.value+1),
+                        ram.read(++SP.value)
+                    );
+                
+                else if(IR.value <= 0b110_1001)
+                    ram.write(
+                        ram.read(IAR.value+1),
+                        ram.read(++SP.value)
+                    );
+
+                return 2;
+            }
+
             {// DO Instruction
                 IR.value = ram.read(IAR.value); // Set Instruction Register 
                 byte increment = 0;
@@ -154,6 +178,8 @@
                     increment = doJCAZ();
                 else if(IR.value <= 0b101_1010) // PUSH instructions
                     increment = doPUSH();
+                else if(IR.value <= 0b0110_1001) // POP instructions
+                    increment = doPOP();
 
                 IAR.value += increment;
             }

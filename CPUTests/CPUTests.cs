@@ -194,12 +194,15 @@ namespace CPUTests{
         [Fact]
         public void PUSHTest(){
             byte[] program = {
-                0b101_0110,             // push g
-                0b101_1000, 0b10_110,   // push [g+2]
-                0b11_1000,7,            // jmp 7
+                0b101_0110,                 // push g
+                0b101_1000, 0b10_110,       // push [g+2]
+                0b11_1000,7,                // jmp 7
                 69,123,
-                0b101_1001, 6,          // push [6] 
-                0b101_1010, 169,        // push 169
+                0b101_1001, 6,              // push [6] 
+                0b101_1010, 169,            // push 169
+                0b110_0101,                 // pop f
+                0b110_1000, 0b10100_010,    // pop [c-5] // point to 69 or @5
+                0b110_1001, 5               // pop [5]
             };
             CPU.CPU cpu = new CPU.CPU(program);
 
@@ -227,6 +230,19 @@ namespace CPUTests{
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, iar:11, sp:251);
                 Assert.Equal(169, cpu.getRAMState()[252]);
+            }
+            { // execute "pop f"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, rf:169, sp:252);
+            }{ // execute "pop [c-5]"
+                cpu.setState(rc:10);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, sp:253);
+                Assert.Equal(123, cpu.getRAMState()[5]);
+            }{ // execute "pop [5]"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, sp:254);
+                Assert.Equal(69, cpu.getRAMState()[5]);
             }
         }
     }
