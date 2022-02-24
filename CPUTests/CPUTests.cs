@@ -147,7 +147,7 @@ namespace CPUTests{
         public void ARITHTest_Sulay()
         {
             byte[] program = {
-                0b1100_1000, 0b000_1010, 0b10,    //ADD A, 2
+                0b1100_1000, 0b000_1010, 2,    //ADD A, 2
                 0b1100_1000, 0b000_1001,          //ADD B, A
                 0b1100_1000, 0b001,               //ADD A, [B] 
                 0b0010, 10,                       //MOV C, 10
@@ -165,7 +165,7 @@ namespace CPUTests{
             };
             CPU.CPU cpu = new CPU.CPU(program);
 
-            { // execute add a, 2 
+            { // execute add a, 2 0b1100_1000, 0b000_1010, 0b10,
                 AssertCPUState(cpu, ra:0, rb:0, rc:0, rd:0, iar:0);
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, ra:2, rb:0, rc:0, rd:0, iar:3);
