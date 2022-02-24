@@ -191,6 +191,30 @@ namespace CPUTests{
             }
         }
         
+        [Fact]
+        public void PUSHTest(){
+            byte[] program = {
+                0b101_0110,             // push g
+                0b101_1000, 0b10_110,   // push [g+2]
+                0,0,69
+            };
+            CPU.CPU cpu = new CPU.CPU(program);
+
+            { // execute "push g"
+                cpu.setState(rg:3);
+                AssertCPUState(cpu, sp:255);
+
+                cpu.InstructionCycleTick();
+                
+                AssertCPUState(cpu, sp:254);
+                Assert.Equal(3,cpu.getRAMState()[255]);  
+            }
+            { // execute push "[g+2]"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, sp:253);
+                //Assert.Equal(69,cpu.getRAMState()[253]);
+            }
+        }
     }
 }
 

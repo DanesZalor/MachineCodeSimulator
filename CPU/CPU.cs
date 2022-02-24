@@ -113,18 +113,17 @@
             }
             
             byte doPUSH(){
-                
                 // PUSH R // [0101_0AAA]
-                if(IR.value <= 0b101_0111)
-                    ram.write(
-                        SP.value--, 
-                        GP[IR.value & 0b111].value
-                    );
+                if(IR.value <= 0b101_0111){
+                    ram.write( SP.value--, GP[IR.value & 0b111].value );
+                    return 1;
+                }
+                
+                // PUSH [RO] // [0101_1000 <5:Offset>AAA]
                 else if(IR.value <= 0b101_1000){
-                    
                     ram.write(
                         SP.value--,
-                        0
+                        getOffsetByteFromInstruction(IAR.value+1)
                     );
                 }
                     
