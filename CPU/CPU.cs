@@ -120,13 +120,18 @@
                 }
                 
                 // PUSH [RO] // [0101_1000 <5:Offset>AAA]
-                else if(IR.value <= 0b101_1000){
+                else if(IR.value == 0b101_1000)
                     ram.write(
                         SP.value--,
-                        getOffsetByteFromInstruction(IAR.value+1)
+                        ram.read(getOffsetByteFromInstruction(IAR.value+1))
                     );
-                }
-                    
+                
+                // PUSH [C] // [0101_1001 <8:Const>]
+                else if(IR.value == 0b101_1001)
+                    ram.write(
+                        SP.value--,
+                        ram.read(ram.read(IAR.value+1))
+                    );
 
                 return 2;
             }
