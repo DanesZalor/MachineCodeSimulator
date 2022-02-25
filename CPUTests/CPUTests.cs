@@ -129,6 +129,21 @@ namespace CPUTests{
         }
 
         [Fact]
+        public void JMPJCAZTest_Kokong(){
+
+            byte[] program = {
+
+            };
+
+            CPU.CPU cpu = new CPU.CPU(program);
+        }
+
+        [Fact]
+        public void pushPopTest_kokong(){
+
+        }
+
+        [Fact]
         public void MOVTest_Kokong()
         {
             byte[] program = {
