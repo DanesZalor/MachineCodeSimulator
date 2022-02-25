@@ -6,11 +6,12 @@ namespace CPU
         [Flags]
         public enum FLAG : byte
         {
+            NONE = 0b1111_1000,
             OFF = 0b0000_0000,
-            ON = 0b0000_1111,
-            C = 0b1000,
-            A = 0b0100,
-            Z = 0b0001,
+            ON = 0b1111_1111,
+            C = 0b100,
+            A = 0b010,
+            Z = 0b001,
         };
 
         public enum OP_CODE : byte

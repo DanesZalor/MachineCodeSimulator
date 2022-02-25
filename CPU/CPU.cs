@@ -33,105 +33,154 @@
 
         public void InstructionCycleTick(){
 
+            byte getOffsetByteFromInstruction(int instructionAddress){
+                byte instruction = ram.read(instructionAddress);
+                byte offsetCode = (byte)((instruction & 0b0111_1000) >> 3);
+                
+                return (byte)(
+                    GP[instruction & 0b111].value + 
+                    ( ((instruction&0b1000_0000)>0)?( (offsetCode+1)*-1 ):(offsetCode) )
+                );
+            }
+
             byte doMOV(){
-                // MOV R,R // [0000_0AAA,0000_0BBB] 
-                if(IR.value <= 0b111){ 
-                    
-                    // RA.value = RB.value
-                    GP[
-                        IR.value // AAA
-                    ].value = GP[ 
-                        ram.read(IAR.value+1) // BBB 
-                    ].value; 
-                }
-                // MOV R,C // [0000_1AAA, <8:Const>] 
-                else if(IR.value <= 0b1111){
-                    
-                    // RA.value = Const
-                    GP[ 
-                        (byte)(IR.value & 0b111) // AAA
-                    ].value = ram.read(IAR.value+1); // Const
-                }
-                // MOV R,[RO] // [0001_0AAA <5:Offset>BBB]
-                else if(IR.value <= 0b1_0111){ 
 
-                    // adjacent ram cell to the pointed cell (instruction)
-                    byte i2 = ram.read(IAR.value+1);
-                    
-                    // get BBB
-                    byte bbbCode = (byte)(i2 & 0b111);
-                    
-                    // get <5:offset>
-                    byte offsetCode = (byte)((i2 & 0b0111_1000) >> 3);
-                    sbyte offset = (sbyte)( ((i2&0b1000_0000)>0)?( (offsetCode+1)*-1 ):(offsetCode));
-                    
-                    // RA.value = RAM[ RB.value + Offset ]
-                    GP[
-                        (byte)(IR.value & 0b111) // AAA
-                    ].value = ram.read(
-                        GP[bbbCode].value // BBB 
-                        + offset          // Offset
-                    );
-                }
+                // MOV R,R // [0000_0AAA,0000_0BBB] // RA.value = RB.value 
+                if(IR.value <= 0b111)
+                    GP[ IR.value ].value = GP[ ram.read(IAR.value+1) ].value; 
+                
+                // MOV R,C // [0000_1AAA, <8:Const>] // RA.value = Const 
+                else if(IR.value <= 0b1111)
+                    GP[ (byte)(IR.value & 0b111) ].value = ram.read(IAR.value+1); 
+                
+                // MOV R,[RO] // [0001_0AAA <5:Offset>BBB] // RA.value = RAM[ RB.value + Offset ]
+                else if(IR.value <= 0b1_0111) 
+                    GP[ (byte)(IR.value & 0b111) ].value = ram.read( getOffsetByteFromInstruction(IAR.value+1) );
+                
+                //  MOV R,[C] // [0001_1AAA <8:Const>] // RA.value = RAM[Const]
+                else if(IR.value <= 0b1_1111)    
+                    GP[ (byte)(IR.value & 0b111) ].value = ram.read( ram.read(IAR.value+1) );
+                
+                //  MOV [RO],R // [0010_0BBB <5:Offset>AAA] // RAM[ RA.value + offset ] = RB.value
+                else if(IR.value <= 0b10_0111)
 
-                //  MOV R,[C] // [0001_1AAA <8:Const>]
-                else if(IR.value <= 0b1_1111){
-                    
-                    GP[
-                        (byte)(IR.value & 0b111) // AAA
-                    ].value = ram.read(
-                        ram.read(IAR.value+1) // Const
-                    );
-                }
-
-                //  MOV [RO],R // [0010_0BBB <5:Offset>AAA]
-                else if(IR.value <= 0b10_0111){ 
-                    
-                    byte i2 = ram.read(IAR.value+1);
-
-                    // get <5:offset>
-                    byte offsetCode = (byte)((i2 & 0b0111_1000) >> 3);
-                    sbyte offset = (sbyte)( ((i2&0b1000_0000)>0)?( (offsetCode+1)*-1 ):(offsetCode));
-
-                    // RAM[ RA.value + offset ] = RB.value
                     ram.write(
-                        (byte)( GP[ i2 & 0b111 ].value + offset ), // AAA + Offset
+                        getOffsetByteFromInstruction(IAR.value+1), // AAA + Offset
                         GP[IR.value & 0b111].value
                     );
-                }
-
+                
                 //  MOV [C],R // [0010_1AAA <8:Const>]
-                else if(IR.value <= 0b10_1111){
+                else if(IR.value <= 0b10_1111)
 
                     ram.write(
                         ram.read(IAR.value+1), // Const
                         GP[ IR.value & 0b111 ].value // AAA
                     );
-                }
+                
                 return 2;
             }
 
             byte doJMP(){
+
                 // JMP R // [0011_0AAA]
-                if(IAR.value <= 0b11_0111)
-                    IAR.value = GP[ IAR.value & 0b111 ].value;
+                if(IR.value <= 0b11_0111)
+                    IAR.value = GP[ IR.value & 0b111 ].value;
                 
                 // JMP C // [0011_1000 <8:Const>]
-                else if(IAR.value == 0b11_1000) 
-                    IAR.value = GP[ ram.read(IAR.value+1) ].value;
+                else //if(IR.value == 0b11_1000) 
+                    IAR.value = ram.read(IAR.value+1);
 
                 return 0;
             }
 
+            byte doJCAZ(){
+                
+                // evaluate IR (the jump flags)
+                if(alu.evaluateFlags( (ALU.FLAG)(IR.value & 0b111) )){
+
+                     if(IR.value <= 0b100_0111)
+                        // next byte in ram will be read as the REG to jump towards
+                        IAR.value = GP[ ram.read(IAR.value+1) & 0b111 ].value;
+
+                    // evaluate IR (the jump flags)
+                    else if(alu.evaluateFlags( (ALU.FLAG)(IR.value & 0b111) ))
+                        // next byte in ram will be read as the CONST to jump towards
+                        IAR.value = ram.read(IAR.value+1);
+
+                    return 0;
+                }
+                else return 2;
+            }
             
+            byte doPUSH(){
+                // PUSH R // [0101_0AAA]
+                if(IR.value <= 0b101_0111){
+                    ram.write( SP.value--, GP[IR.value & 0b111].value );
+                    return 1;
+                }
+                
+                // PUSH [RO] // [0101_1000 <5:Offset>AAA]
+                else if(IR.value == 0b101_1000)
+                    ram.write(
+                        SP.value--,
+                        ram.read(getOffsetByteFromInstruction(IAR.value+1))
+                    );
+                
+                // PUSH [C] // [0101_1001 <8:Const>]
+                else if(IR.value == 0b101_1001)
+                    ram.write(
+                        SP.value--,
+                        ram.read(ram.read(IAR.value+1))
+                    );
+                
+                // PUSH C // [0101_1010 <8:Const>]
+                else if(IR.value == 0b101_1010)
+                    ram.write(
+                        SP.value--,
+                        ram.read(IAR.value+1)
+                    );
+
+                return 2;
+            }
+
+            byte doPOP(){
+                
+                // POP R // [0110_0AAA]
+                if(IR.value <= 0b110_0111){
+                    GP[ IR.value & 0b111 ].value = ram.read(++SP.value);
+                    return 1;
+                }
+
+                // POP [RO] // [0110_1000 <5:Offset>AAA]
+                else if(IR.value <= 0b110_1000)
+                    ram.write(
+                        getOffsetByteFromInstruction(IAR.value+1),
+                        ram.read(++SP.value)
+                    );
+                
+                else if(IR.value <= 0b110_1001)
+                    ram.write(
+                        ram.read(IAR.value+1),
+                        ram.read(++SP.value)
+                    );
+
+                return 2;
+            }
+
             {// DO Instruction
                 IR.value = ram.read(IAR.value); // Set Instruction Register 
                 byte increment = 0;
                 if(IR.value <= 0b10_1111) // MOVs instructions
                     increment = doMOV();
-                else if(IR.value <= 0b100_1111) // JMP instructions
-                    doJMP();
-                
+                else if(IR.value <= 0b11_1000) // JMP instructions
+                    increment = doJMP();
+                else if(IR.value <= 0b100_1111) // JCAZ instructions
+                    increment = doJCAZ();
+                else if(IR.value <= 0b101_1010) // PUSH instructions
+                    increment = doPUSH();
+                else if(IR.value <= 0b0110_1001) // POP instructions
+                    increment = doPOP();
+
                 IAR.value += increment;
             }
         }
@@ -139,6 +188,9 @@
 
         /*************   FOR TESTING ONLY   **************/
         // REQUIRED for automated testing. DO NOT REMOVE
+        // can remove this when putting it in the game.
+
+        /// <summary> TESTING PURPOSE ONLY <br> DO NOT USE UNLESS FOR AUTOMATED TESTING </summary>
         public void printState(){
             
             string get_GP_State(){
@@ -157,9 +209,12 @@
             Console.WriteLine(prt);
         }
 
+        /// <summary> TESTING PURPOSE ONLY <br> DO NOT USE UNLESS FOR AUTOMATED TESTING </summary>
         public byte[] getRAMState(){
             return ram.getState();
         }
+
+        /// <summary> TESTING PURPOSE ONLY <br> DO NOT USE UNLESS FOR AUTOMATED TESTING </summary>
         public Dictionary<string,byte> getState(){
             Dictionary<string,byte> r = new Dictionary<string,byte>();
             
@@ -173,10 +228,11 @@
             return r;
         }
 
-        /// <summary> All short arguements yes, but make sure to use byte values (0-255) </summary>
+        /// <summary> TESTING PURPOSE ONLY <br> DO NOT USE UNLESS FOR AUTOMATED TESTING 
+        /// <br> All short arguements yes, but make sure to use byte values (0-255) </summary>
         public void setState(
             short ra=-1, short rb=-1, short rc=-1, short rd=-1,short re=-1, 
-            short rf=-1, short rg=-1, short sp=-1, short ir=-1,short iar=-1){
+            short rf=-1, short rg=-1, short sp=-1, short ir=-1,short iar=-1, ALU.FLAG aluflags=ALU.FLAG.NONE){
             
             Register[] r = {GP[0], GP[1], GP[2], GP[3], GP[4], GP[5], GP[6], SP, IR, IAR};
             short[] args = {ra,rb,rc,rd,re,rf,rg,sp,ir,iar};
@@ -185,6 +241,9 @@
                 if(args[i]>=0 && args[i]<256)
                     r[i].value = (byte)args[i];
             }
+
+            if(aluflags != ALU.FLAG.NONE )
+                alu.setFlags(aluflags);
         }
     }
 }

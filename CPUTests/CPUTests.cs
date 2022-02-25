@@ -31,7 +31,7 @@ namespace CPUTests{
 
         [Fact]
         public void MOVTests(){
-            byte[] program = {
+ m           byte[] program = {
                 0b1000, 0b1010,         // mov a,10 
                 0b1001, 0b10,           // mov b,2
                 0b0010, 0b0001,         // mov c,b
@@ -129,17 +129,66 @@ namespace CPUTests{
         }
 
         [Fact]
-        public void stateTest(){
-            
-            // arrange
-            byte[] program = {};
+        public void JMPTest(){
+            byte[] program = {
+                0b1110, 10,         // mov g,10
+                0b0011_0110,        // jmp g
+                3,4,5,6,7,8,9,      // filler
+                0b11_1000, 2,    // jmp 2
+            };
             CPU.CPU cpu = new CPU.CPU(program);
 
-            // act
-            cpu.setState(ra:10,rb:20,rc:30,rd:40,re:50,rf:60,sp:70,iar:80,ir:90);
+            { // execute mov g,10
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, rg:10, iar:2);
+            }
+            { // execute jmp g
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:10);
+            }
+            { // execute jmp 2
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:2);
+            }
+        }
 
-            // assert
-            AssertCPUState(cpu, ra:10,rb:20,rc:30,rd:40,re:50,rf:60,sp:70,iar:80,ir:90);
+        [Fact]
+        public void JCAZTest(){
+            
+            byte[] program = {
+                0b100_0100, 0b1,        // jc b
+                0,0,0,0,0,0,            // filler
+                0b100_1010, 0,          // ja 0
+            };
+            CPU.CPU cpu = new CPU.CPU(program);
+
+            { // execute "jc b"
+                cpu.setState(rb:8, aluflags:ALU.FLAG.C);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, rb:8, iar:8);
+            }
+            { // execute "ja 0"
+                cpu.setState(aluflags:ALU.FLAG.A);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:0);
+            }
+            { // execute "jc b" again but with wrong flags
+                cpu.setState(aluflags:ALU.FLAG.Z);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu,iar:2);
+            }
+            { // execute fillers "0,0" = "mov a,a" which does nothing
+                AssertCPUState(cpu, iar:2);
+                cpu.InstructionCycleTick();
+                cpu.InstructionCycleTick();
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:8);
+            }
+            { // execute "ja 0" again but with wrong flags
+                cpu.setState(aluflags:ALU.FLAG.C);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu,iar:10);
+            }
         }
 
         [Fact]
@@ -211,6 +260,61 @@ namespace CPUTests{
                 AssertCPUState(cpu, ra:4, rb:2, rc:8, rd:0, iar:16);
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, ra:4, rb:2, rc:7, rd:0, iar:18);
+            }
+        }
+        
+        [Fact]
+        public void PUSHTest(){
+            byte[] program = {
+                0b101_0110,                 // push g
+                0b101_1000, 0b10_110,       // push [g+2]
+                0b11_1000,7,                // jmp 7
+                69,123,
+                0b101_1001, 6,              // push [6] 
+                0b101_1010, 169,            // push 169
+                0b110_0101,                 // pop f
+                0b110_1000, 0b10100_010,    // pop [c-5] // point to 69 or @5
+                0b110_1001, 5               // pop [5]
+            };
+            CPU.CPU cpu = new CPU.CPU(program);
+
+            { // execute "push g"
+                cpu.setState(rg:3);
+                AssertCPUState(cpu, sp:255);
+
+                cpu.InstructionCycleTick();
+                
+                AssertCPUState(cpu, sp:254);
+                Assert.Equal(3, cpu.getRAMState()[255]);  
+            }
+            { // execute push "[g+2]"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, sp:253);
+                Assert.Equal(69, cpu.getRAMState()[254]);
+            }
+            { // execute "jmp 7" and "push [6]"
+                cpu.InstructionCycleTick();
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:9, sp:252);
+                Assert.Equal(123, cpu.getRAMState()[253]);
+            }
+            { // execute "push 169"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:11, sp:251);
+                Assert.Equal(169, cpu.getRAMState()[252]);
+            }
+            { // execute "pop f"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, rf:169, sp:252);
+            }{ // execute "pop [c-5]"
+                cpu.setState(rc:10);
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, sp:253);
+                Assert.Equal(123, cpu.getRAMState()[5]);
+            }{ // execute "pop [5]"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, sp:254);
+                Assert.Equal(69, cpu.getRAMState()[5]);
             }
         }
     }

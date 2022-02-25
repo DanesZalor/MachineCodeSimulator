@@ -4,7 +4,7 @@ namespace CPU{
     public class RAM {
         private byte[] content;
         
-        public RAM(byte size = 255){
+        public RAM(short size = 256){
             content = new byte[size];
         }
 
