@@ -175,14 +175,14 @@ namespace CPUTests{
                 Assert.Equal(5, cpu.getRAMState()[2]);
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, rb:5, iar:14);
-                Assert.Equal(5, cpu.getRAMState()[2])                
+                Assert.Equal(5, cpu.getRAMState()[2]);                
             }
             {   // mov [1+1],a 
                 AssertCPUState(cpu, ra:1, iar:14);
-                Assert.Equal(5, cpu.getRAMState()[2]) 
+                Assert.Equal(5, cpu.getRAMState()[2]);
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, ra:1, iar:16);
-                Assert.Equal(1, cpu.getRAMState()[2])  
+                Assert.Equal(1, cpu.getRAMState()[2]);  
             }
         }
         
