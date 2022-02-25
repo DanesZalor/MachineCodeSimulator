@@ -31,7 +31,7 @@ namespace CPUTests{
 
         [Fact]
         public void MOVTests(){
- m           byte[] program = {
+            byte[] program = {
                 0b1000, 0b1010,         // mov a,10 
                 0b1001, 0b10,           // mov b,2
                 0b0010, 0b0001,         // mov c,b
