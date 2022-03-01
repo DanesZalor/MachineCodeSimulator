@@ -5,10 +5,10 @@ using Xunit;
 using CPU;
 
 namespace CPUTests{
-    public class CPUTests{
+    public class CPUTest{
         
         /// <summary> Assert the state of CPU c <br>set the optional parameters to make it undergo assertion </summary>
-        private void AssertCPUState(
+        private protected void AssertCPUState(
             CPU.CPU c, short ra=-1, short rb=-1, short rc=-1, short rd=-1,
             short re=-1, short rf=-1, short rg=-1, short sp=-1, short ir=-1, short iar=-1
             ){
