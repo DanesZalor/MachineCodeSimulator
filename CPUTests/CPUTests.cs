@@ -324,6 +324,9 @@ namespace CPUTests{
                 0b1110, 240,    // mov g,240
                 0b10000_110,    // not g
                 0b10001_110,    // inc g
+                0b10100_110,    // shr g
+                0b10010_110,    // dec g
+                0b10011_110,    // shl g
             };
             CPU.CPU cpu = new CPU.CPU(program);
 
@@ -335,6 +338,18 @@ namespace CPUTests{
             { // execute "inc g"
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, iar:4, rg:16);
+            }
+            { // execute "shr g"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:5, rg:8);
+            }
+            { // execute "dec g"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:6, rg:7);
+            }
+            { //execute"shl g"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, rg:14);
             }
         }
     }
