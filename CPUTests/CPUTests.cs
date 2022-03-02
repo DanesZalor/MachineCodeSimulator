@@ -264,6 +264,7 @@ namespace CPUTests{
             { // execute "mov a,7" and "call a"
                 cpu.InstructionCycleTick();
                 cpu.InstructionCycleTick();
+                cpu.printState();
                 AssertCPUState(cpu, ra:7, iar:7);
             }
             {

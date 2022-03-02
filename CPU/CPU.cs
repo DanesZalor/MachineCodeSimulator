@@ -175,13 +175,13 @@
                 // CALL R // [0111_0AAA]
                 if(IR.value <= 0b111_0111){
                     IAR.value = GP[ IR.value & 0b111 ].value; // jump to R
-                    return 1;
+                    return 0;
                 }
 
                 // CALL Const // [0111_1000 <8:Const>] 
                 else{ //if(IR.value <= 0b111_1000)
                     IAR.value = ram.read(IAR.value+1);
-                    return 2;
+                    return 0;
                 }
             }
 
