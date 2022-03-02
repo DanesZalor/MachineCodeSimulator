@@ -214,13 +214,15 @@
                     if(i2 <= 0b0111) // regB
                         arg2 = GP[ i2 & 0b111 ].value; 
                     else if(i2 == 0b1000) // [regB+Offset]
-                        arg2 = ram.read( getOffsetByteFromInstruction( ram.read(IAR.value+2) ) );
+                        arg2 = ram.read( getOffsetByteFromInstruction( IAR.value+2 ) );
                     else if(i2 == 0b1001) // [const]
                         arg2 = ram.read( ram.read(IAR.value+2) );
                     else if(i2 == 0b1010) // const
                         arg2 = ram.read(IAR.value+2);
                 }
 
+                //Console.WriteLine(String.Format("op:{0}  arg1:{1}  arg2:{2}",
+                //            opcode, GP[regA].value,arg2));
                 switch(opcode){
                     case 0b0000: alu.CMP( GP[regA].value, arg2 ); break;
                     case 0b0001: alu.XOR( ref GP[regA].value, arg2 ); break;
