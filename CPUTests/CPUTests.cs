@@ -371,7 +371,9 @@ namespace CPUTests{
                 0b1100_0000, 0b0010_1010, 10,           // cmp c,10
                 0b1100_0000, 0b0010_1010, 9,            // cmp c,9
                 0b1100_0000, 0b0010_1010, 11,           // cmp c,11
-                0b1100_0000, 0b0010_1000, 0b1_000       // cmp c,[a+1]
+                0b1100_0000, 0b0010_1000, 0b1_000,      // cmp c,[a+1]
+                0b1100_0000, 0b0010_1000, 0b10_000,     // cmp c,[a+2]
+                0b1100_0000, 0b0010_1000, 0b1111_000,   // cmp c,[a+15]
             };
             CPU.CPU cpu = new CPU.CPU(program);
 
@@ -416,6 +418,14 @@ namespace CPUTests{
             { // execute "cmp c,[a+1]"
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, iar:31, aluflags:ALU.FLAG.Z);
+            }
+            { // execute "cmp c,[a+2]"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:34, aluflags:ALU.FLAG.C);
+            }
+            { // execute "cmp c,[a+15]"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:37, aluflags:ALU.FLAG.A);
             }
         }
     }
