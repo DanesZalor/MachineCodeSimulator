@@ -360,9 +360,14 @@ namespace CPUTests{
         [Fact]
         public void ALU2_Tests(){
             byte[] program = {
-                0b1010, 10,                 // mov c,10
-                0b1011, 20,                 // mov d,20
-                0b1100_0000, 0b0011_0010,   // cmp d,c
+                0b1010, 10,                             // mov c,10
+                0b1011, 20,                             // mov d,20
+                0b1100_0000, 0b0011_0010,               // cmp d,c
+                0b1100_0000, 0b0010_0011,               // cmp c,d
+                0b1100_0000, 0b0011_0011,               // cmp c,d
+                0b1100_0000, 0b0011_1001, 1,            // cmp d,[1]
+                0b1100_0000, 0b0011_1001, 3,            // cmp d,[3]
+                0b1100_0000, 0b0011_1001, 4,            // cmp d,[4]
             };
             CPU.CPU cpu = new CPU.CPU(program);
 
@@ -371,6 +376,26 @@ namespace CPUTests{
                 cpu.InstructionCycleTick();
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, iar:6, rc:10, rd:20, aluflags:ALU.FLAG.A);
+            }
+            { // execte "cmp c,d"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:8, aluflags:ALU.FLAG.C);
+            }
+            { // execute "cmp d,d"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:10, aluflags:ALU.FLAG.Z);
+            }
+            { // execute "cmp d,[1]"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:13, aluflags:ALU.FLAG.A);
+            }
+            { // execute "cmp d,[3]"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:16, aluflags:ALU.FLAG.Z);
+            }
+            { // execute "cmp d,[4]"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:19, aluflags:ALU.FLAG.C);
             }
         }
     }
