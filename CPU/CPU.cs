@@ -169,8 +169,6 @@
 
             byte doCALL(){
                 
-                
-
                 // CALL R // [0111_0AAA]
                 if(IR.value <= 0b111_0111){
 
