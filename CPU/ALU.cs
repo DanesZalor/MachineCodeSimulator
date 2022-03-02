@@ -60,6 +60,7 @@ namespace CPU
         {
             setFlagsIf(A > B, FLAG.A);
             setFlagsIf(A == B, FLAG.Z);
+            setFlagsIf(A < B, FLAG.C);
         }
 
         /// <summary same as CMP(A,B) but also does A xor B and put the result in A </summary>

@@ -234,7 +234,7 @@
                     case 0b1001: alu.SUB( ref GP[regA].value, arg2 ); break;
                 }
 
-                return (byte)((i2 <= 0b0111)?1:2);
+                return (byte)((i2 <= 0b0111)?2:3);
             }
 
             byte doETC(){

@@ -360,9 +360,18 @@ namespace CPUTests{
         [Fact]
         public void ALU2_Tests(){
             byte[] program = {
-                // 
+                0b1010, 10,                 // mov c,10
+                0b1011, 20,                 // mov d,20
+                0b1100_0000, 0b0011_0010,   // cmp d,c
             };
             CPU.CPU cpu = new CPU.CPU(program);
+
+            { // execute "mov c,10", "mov d,20" & "cmp d,c"
+                cpu.InstructionCycleTick();
+                cpu.InstructionCycleTick();
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:6, rc:10, rd:20, aluflags:ALU.FLAG.A);
+            }
         }
     }
 }
