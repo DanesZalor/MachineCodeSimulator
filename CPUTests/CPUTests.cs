@@ -255,7 +255,7 @@ namespace CPUTests{
                 0b1001, 0,      // mov b,0
                 0b1000, 2,      // mov a,2
                 0b1001, 3,      // mov b,3
-                0b1101_0010     // ret
+                0b1101_0001     // ret
                 
 
             };
@@ -264,13 +264,18 @@ namespace CPUTests{
             { // execute "mov a,7" and "call a"
                 cpu.InstructionCycleTick();
                 cpu.InstructionCycleTick();
-                cpu.printState();
                 AssertCPUState(cpu, ra:7, iar:7);
+                Assert.Equal(3, cpu.getRAMState()[255]);
             }
-            {
-
+            { // execute "mov a,2" & "mov b,3"
+                cpu.InstructionCycleTick();
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, ra:2, rb:3);
             }
-
+            { // execute "ret"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:3);
+            }
         }
     }
 }
