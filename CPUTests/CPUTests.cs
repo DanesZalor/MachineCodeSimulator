@@ -316,7 +316,6 @@ namespace CPUTests{
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, iar:6, ra:0, rb:0);
             }
-            
         }
     }
 }
