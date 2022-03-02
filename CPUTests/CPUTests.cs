@@ -317,6 +317,26 @@ namespace CPUTests{
                 AssertCPUState(cpu, iar:6, ra:0, rb:0);
             }
         }
+        
+        [Fact]
+        public void ALU1_Tests(){
+            byte[] program = {
+                0b1110, 240,    // mov g,240
+                0b10000_110,    // not g
+                0b10001_110,    // inc g
+            };
+            CPU.CPU cpu = new CPU.CPU(program);
+
+            { // execute "mov g,240" and "not g" 
+                cpu.InstructionCycleTick();
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:3, rg: 15);
+            }
+            { // execute "inc g"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:4, rg:16);
+            }
+        }
     }
 }
 

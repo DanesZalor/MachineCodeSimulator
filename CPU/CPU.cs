@@ -191,7 +191,7 @@
             }
 
             byte doALU1(){
-                byte opcode = (byte)(IR.value & 0b0011_1000);
+                byte opcode = (byte)( (IR.value & 0b0011_1000)>>3 );
                 byte reg = (byte)(IR.value & 0b111);
 
                 switch(opcode){
