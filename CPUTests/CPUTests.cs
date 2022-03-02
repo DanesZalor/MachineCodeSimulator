@@ -276,6 +276,11 @@ namespace CPUTests{
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, iar:3);
             }
+            { // execute "mov a,0" & "mov b,0"
+                cpu.InstructionCycleTick();
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:7, ra:0, rb:0);
+            }
         }
     }
 }
