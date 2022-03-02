@@ -167,6 +167,37 @@
                 return 2;
             }
 
+            byte doCALL(){
+                
+                // PUSH the address of the next instruction to the stack
+                ram.write( SP.value-- , (byte)(IAR.value+1) ); 
+
+                // CALL R // [0111_0AAA]
+                if(IR.value <= 0b111_0111){
+                    IAR.value = GP[ IR.value & 0b111 ].value; // jump to R
+                    return 1;
+                }
+
+                // CALL Const // [0111_1000 <8:Const>] 
+                else //if(IR.value <= 0b111_1000)
+                    IAR.value = ram.read(IAR.value+1);
+
+                return 2;
+            }
+
+            byte doETC(){
+                switch(IR.value){
+                    case 0b1101_0000:   alu.clearFlags();   break;
+                    case 0b1101_0001:
+                        IAR.value = ram.read(++SP.value); // JUMP to the POP'd value
+                    break;
+                    case 0b1101_0010:
+                        // HLT
+                    break;
+                }
+                return 1;
+            }
+
             {// DO Instruction
                 IR.value = ram.read(IAR.value); // Set Instruction Register 
                 byte increment = 0;
@@ -180,6 +211,10 @@
                     increment = doPUSH();
                 else if(IR.value <= 0b0110_1001) // POP instructions
                     increment = doPOP();
+                else if(IR.value <= 0b0111_1000) // CALL instructions
+                    increment = doCALL();
+                else if(IR.value <= 0b1101_0010) // ETC instructions
+                    increment = doETC();
 
                 IAR.value += increment;
             }
