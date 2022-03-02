@@ -179,23 +179,24 @@
                 }
 
                 // CALL Const // [0111_1000 <8:Const>] 
-                else //if(IR.value <= 0b111_1000)
+                else{ //if(IR.value <= 0b111_1000)
                     IAR.value = ram.read(IAR.value+1);
-
-                return 2;
+                    return 2;
+                }
             }
 
             byte doETC(){
                 switch(IR.value){
-                    case 0b1101_0000:   alu.clearFlags();   break;
+                    case 0b1101_0000:   alu.clearFlags();   return 1;
                     case 0b1101_0001:
                         IAR.value = ram.read(++SP.value); // JUMP to the POP'd value
-                    break;
+                    return 1;
+                    
                     case 0b1101_0010:
                         // HLT
                     break;
                 }
-                return 1;
+                return 0;
             }
 
             {// DO Instruction

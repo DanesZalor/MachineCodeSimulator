@@ -245,6 +245,32 @@ namespace CPUTests{
                 Assert.Equal(69, cpu.getRAMState()[5]);
             }
         }
+
+        [Fact]
+        public void CALLandRETtest(){
+            byte[] program = {
+                0b1000, 7,      // mov a,7
+                0b111_0000,     // call a
+                0b1000, 0,      // mov a,0
+                0b1001, 0,      // mov b,0
+                0b1000, 2,      // mov a,2
+                0b1001, 3,      // mov b,3
+                0b1101_0010     // ret
+                
+
+            };
+            CPU.CPU cpu = new CPU.CPU(program);
+
+            { // execute "mov a,7" and "call a"
+                cpu.InstructionCycleTick();
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, ra:7, iar:7);
+            }
+            {
+
+            }
+
+        }
     }
 }
 
