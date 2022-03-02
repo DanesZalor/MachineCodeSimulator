@@ -195,36 +195,46 @@
                 byte reg = (byte)(IR.value & 0b111);
 
                 switch(opcode){
-                    case 0b000: 
-                        alu.NOT(ref GP[reg].value);
-                        break;
-                    case 0b001:
-                        alu.ADD(ref GP[reg].value, 1);
-                        break;
-                    case 0b010:
-                        alu.SUB(ref GP[reg].value, 1);
-                        break;
-                    case 0b011:
-                        alu.SHL(ref GP[reg].value, 1);
-                        break;
-                    case 0b100:
-                        alu.SHR(ref GP[reg].value, 1);
-                        break;
+                    case 0b000: alu.NOT(ref GP[reg].value); break;
+                    case 0b001: alu.ADD(ref GP[reg].value, 1); break;
+                    case 0b010: alu.SUB(ref GP[reg].value, 1); break;
+                    case 0b011: alu.SHL(ref GP[reg].value, 1); break;
+                    case 0b100: alu.SHR(ref GP[reg].value, 1); break;
                 }
-
                 return 1;
             }
 
             byte doALU2(){
                 byte opcode = (byte)(IR.value & 0b1111);
-                byte regAcode = (byte)((ram.read(IAR.value+1) & 0b0111_0000) >> 4);
-                byte i2 = (byte)(ram.read(IAR.value+1) & 0b1111);
+                byte regA = (byte)((ram.read(IAR.value+1) & 0b0111_0000) >> 4);
+                byte i2 = (byte)(ram.read(IAR.value+1) & 0b1111); // only get first 4 bits
                 
-                if(i2 <= 0b0111){
-                    
+                
+                byte arg2 = 0; /* 2nd arguement*/{
+                    if(i2 <= 0b0111) // regB
+                        arg2 = GP[ i2 & 0b111 ].value; 
+                    else if(i2 == 0b1000) // [regB+Offset]
+                        arg2 = ram.read( getOffsetByteFromInstruction( ram.read(IAR.value+2) ) );
+                    else if(i2 == 0b1001) // [const]
+                        arg2 = ram.read( ram.read(IAR.value+2) );
+                    else if(i2 == 0b1010) // const
+                        arg2 = ram.read(IAR.value+2);
                 }
 
-                return 0;
+                switch(opcode){
+                    case 0b0000: alu.CMP( GP[regA].value, arg2 ); break;
+                    case 0b0001: alu.XOR( ref GP[regA].value, arg2 ); break;
+                    case 0b0010: alu.AND( ref GP[regA].value, arg2 ); break;
+                    case 0b0011: alu.OR( ref GP[regA].value, arg2 ); break;
+                    case 0b0100: alu.SHL( ref GP[regA].value, arg2 ); break;
+                    case 0b0101: alu.SHR( ref GP[regA].value, arg2 ); break;
+                    case 0b0110: alu.MUL( ref GP[regA].value, arg2 ); break;
+                    case 0b0111: alu.DIV( ref GP[regA].value, arg2 ); break;
+                    case 0b1000: alu.ADD( ref GP[regA].value, arg2 ); break;
+                    case 0b1001: alu.SUB( ref GP[regA].value, arg2 ); break;
+                }
+
+                return (byte)((i2 <= 0b0111)?1:2);
             }
 
             byte doETC(){
