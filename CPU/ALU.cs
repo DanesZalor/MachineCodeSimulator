@@ -95,7 +95,7 @@ namespace CPU
         public void SHL(ref byte A, byte B)
         {
             // CARRY ON if A<<B which is an INT32 is greater than the byte.MaxValue
-            int res = A << B;
+            int res = A << B; // int32 to save the exceeding bits for checking
             setFlagsIf((res) > byte.MaxValue, FLAG.C);
             A = (byte)res;
             setFlagsIf(A == 0, FLAG.Z);
