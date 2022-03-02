@@ -352,6 +352,11 @@ namespace CPUTests{
                 AssertCPUState(cpu, rg:14);
             }
         }
+
+        [Fact]
+        public void ALU2_Tests(){
+            
+        }
     }
 }
 

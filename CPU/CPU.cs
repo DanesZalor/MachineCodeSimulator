@@ -196,23 +196,35 @@
 
                 switch(opcode){
                     case 0b000: 
-                        GP[reg].value = (byte)~GP[reg].value;
+                        alu.NOT(ref GP[reg].value);
                         break;
                     case 0b001:
-                        GP[reg].value++;
+                        alu.ADD(ref GP[reg].value, 1);
                         break;
                     case 0b010:
-                        GP[reg].value--;
+                        alu.SUB(ref GP[reg].value, 1);
                         break;
                     case 0b011:
-                        GP[reg].value = (byte)(GP[reg].value<<1); 
+                        alu.SHL(ref GP[reg].value, 1);
                         break;
                     case 0b100:
-                        GP[reg].value = (byte)(GP[reg].value>>1);
+                        alu.SHR(ref GP[reg].value, 1);
                         break;
                 }
 
                 return 1;
+            }
+
+            byte doALU2(){
+                byte opcode = (byte)(IR.value & 0b1111);
+                byte regAcode = (byte)((ram.read(IAR.value+1) & 0b0111_0000) >> 4);
+                byte i2 = (byte)(ram.read(IAR.value+1) & 0b1111);
+                
+                if(i2 <= 0b0111){
+                    
+                }
+
+                return 0;
             }
 
             byte doETC(){
@@ -248,6 +260,8 @@
                     increment = doCALL();
                 else if(IR.value <= 0b10100_111) // ALU nomadic instructions
                     increment = doALU1();
+                else if(IR.value <= 0b1100_1001) // ALU dyadic instructions
+                    increment = doALU2();
                 else if(IR.value <= 0b1101_0010) // ETC instructions
                     increment = doETC();
 
