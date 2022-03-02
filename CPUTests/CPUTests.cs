@@ -10,7 +10,8 @@ namespace CPUTests{
         /// <summary> Assert the state of CPU c <br>set the optional parameters to make it undergo assertion </summary>
         private void AssertCPUState(
             CPU.CPU c, short ra=-1, short rb=-1, short rc=-1, short rd=-1,
-            short re=-1, short rf=-1, short rg=-1, short sp=-1, short ir=-1, short iar=-1
+            short re=-1, short rf=-1, short rg=-1, short sp=-1, short ir=-1, 
+            short iar=-1, ALU.FLAG aluflags = ALU.FLAG.NONE
             ){
             
             short[] args = {ra,rb,rc,rd,re,rf,rg,sp,ir,iar};
@@ -27,6 +28,9 @@ namespace CPUTests{
                     );
                 }
             }
+
+            if(aluflags != ALU.FLAG.NONE)
+                Assert.Equal(aluflags, c.getALUFlags());
         }
 
         [Fact]
@@ -355,7 +359,10 @@ namespace CPUTests{
 
         [Fact]
         public void ALU2_Tests(){
-            
+            byte[] program = {
+                // 
+            };
+            CPU.CPU cpu = new CPU.CPU(program);
         }
     }
 }

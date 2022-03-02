@@ -322,6 +322,11 @@
             return r;
         }
 
+        /// <summary> TESTING PURPOSE ONLY <br> DO NOT USE UNLESS FOR AUTOMATED TESTING </summary>
+        public ALU.FLAG getALUFlags(){
+            return alu.getFlags();
+        }
+
         /// <summary> TESTING PURPOSE ONLY <br> DO NOT USE UNLESS FOR AUTOMATED TESTING 
         /// <br> All short arguements yes, but make sure to use byte values (0-255) </summary>
         public void setState(
