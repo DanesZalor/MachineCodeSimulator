@@ -55,7 +55,7 @@ namespace CPU
             flags = f;
         }
 
-        /// <summary> compares A and B. Affected flags [A,E,Z] </summary> 
+        /// <summary> compares A and B. Affected flags [A,Z] </summary> 
         public void CMP(byte A, byte B)
         {
             setFlagsIf(A > B, FLAG.A);
