@@ -282,6 +282,42 @@ namespace CPUTests{
                 AssertCPUState(cpu, iar:7, ra:0, rb:0);
             }
         }
+
+        [Fact]
+        public void CALLandRETtest2(){
+            byte[] program = {
+                0b111_1000, 6,  // call 6
+                0b1000, 0,      // mov a,0
+                0b1001, 0,      // mov b,0
+                0b1000, 2,      // mov a,2
+                0b1001, 3,      // mov b,3
+                0b1101_0001     // ret
+                
+
+            };
+            CPU.CPU cpu = new CPU.CPU(program);
+
+            { // execute "mov a,7" and "call a"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:6);
+                Assert.Equal(2, cpu.getRAMState()[255]);
+            }
+            { // execute "mov a,2" & "mov b,3"
+                cpu.InstructionCycleTick();
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, ra:2, rb:3);
+            }
+            { // execute "ret"
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:2);
+            }
+            { // execute "mov a,0" & "mov b,0"
+                cpu.InstructionCycleTick();
+                cpu.InstructionCycleTick();
+                AssertCPUState(cpu, iar:6, ra:0, rb:0);
+            }
+            
+        }
     }
 }
 
