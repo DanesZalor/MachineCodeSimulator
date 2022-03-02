@@ -168,7 +168,7 @@
             }
 
             byte doCALL(){
-                
+
                 // CALL R // [0111_0AAA]
                 if(IR.value <= 0b111_0111){
 
@@ -188,6 +188,31 @@
                     IAR.value = ram.read(IAR.value+1);
                     return 0;
                 }
+            }
+
+            byte doALU1(){
+                byte opcode = (byte)(IR.value & 0b0011_1000);
+                byte reg = (byte)(IR.value & 0b111);
+
+                switch(opcode){
+                    case 0b000: 
+                        GP[reg].value = (byte)~GP[reg].value;
+                        break;
+                    case 0b001:
+                        GP[reg].value++;
+                        break;
+                    case 0b010:
+                        GP[reg].value--;
+                        break;
+                    case 0b011:
+                        GP[reg].value = (byte)(GP[reg].value<<1); 
+                        break;
+                    case 0b100:
+                        GP[reg].value = (byte)(GP[reg].value>>1);
+                        break;
+                }
+
+                return 1;
             }
 
             byte doETC(){
@@ -221,6 +246,8 @@
                     increment = doPOP();
                 else if(IR.value <= 0b0111_1000) // CALL instructions
                     increment = doCALL();
+                else if(IR.value <= 0b10100_111) // ALU nomadic instructions
+                    increment = doALU1();
                 else if(IR.value <= 0b1101_0010) // ETC instructions
                     increment = doETC();
 
