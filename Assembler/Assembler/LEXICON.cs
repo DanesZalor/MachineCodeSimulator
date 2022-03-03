@@ -1,4 +1,4 @@
-namespace Assembler;
+namespace Assembler{
 
 /// <summary> Base lexicon, does not include the labels </summary>
 public static class LEXICON
@@ -66,4 +66,6 @@ public static class LEXICON
         public const string JCAZ = "(j((ca?z?)|(c?az?)|(c?a?z)))";
         ///<summary> jcaz reg </summary>
     }
+}
+
 }

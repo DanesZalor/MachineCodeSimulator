@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Assembler;
+namespace Assembler{
 
 /// <summary> Contains the necessary function for the translation </summary>
 public static class Translator
@@ -311,4 +311,6 @@ public static class Translator
 
         return finalbin;
     }
+}
+
 }

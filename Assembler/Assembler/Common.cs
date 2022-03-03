@@ -1,4 +1,4 @@
-namespace Assembler;
+namespace Assembler{
 using System.Text.RegularExpressions;
 
 /// <summary> Contains common stuff </summary>
@@ -20,4 +20,6 @@ public static class Common
     public static string replace(string line, string pattern, string replacement){
         return Regex.Replace(line, pattern, replacement, RegexOptions.IgnoreCase);
     }
+}
+
 }

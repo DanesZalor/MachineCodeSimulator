@@ -1,4 +1,4 @@
-﻿namespace Assembler;
+﻿namespace Assembler{
 
 public static class Assembler{
 
@@ -16,3 +16,4 @@ public static class Assembler{
     }
 }
 
+}

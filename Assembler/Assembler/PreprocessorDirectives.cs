@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace Assembler;
+namespace Assembler{
 
 /// <summary> Pretranslation that happens before compilation. In this stage, comments are removed, aliases (such as Jxxx) are translated, 
 /// and labels are converted to constants. Before this phase, the custom written program should already be syntactically correct </summary>
@@ -167,4 +167,6 @@ public static class PreprocessorDirectives
         linesOfCode = removeExcessWhitespace(linesOfCode);
         return linesOfCode;
     }
+}
+
 }
