@@ -78,7 +78,7 @@ hlt      ; ....in this case it  turns on because compare 1 and 1 is 0
 inc a    ; <-- increments a (a + 1)
 jmp 4    ; <-- unconditional jump to jump back to cmp a,b
 ```
-There is a table below showing the aliases and derivation of conditional jumps and also the conditional jump's meaning/condition. **Note that aliases will be derived during compilation**
+There is a table below showing the aliases and derivation of conditional jumps and also the conditional jump's meaning/condition. <ins>**Note that aliases will be derived during compilation**<ins>
 |   Alias   |   Derivation   |  Meaning |
 |--|--|--|
 |   JNC | JAZ | `011` 
@@ -94,9 +94,51 @@ There is a table below showing the aliases and derivation of conditional jumps a
 |   JNBE| JA  | `!(A<=B)` → **A>B**
 
 ## PUSH AND POP
-
+Will add soon
 
 ## CALL
-
+Will add soon
 
 ## ALU
+some Arithmetic & Logic Unit (ALU) operations can operate with 1 arguement, 2 arguements, or both. ALU has two types of Ops, Nomadic and Dynamic Ops. These operations can <ins>**modify the C, A, Z flags.**<ins/>
+| Nomadic Ops | Instruction | Meaning |
+|--|--|--|
+| 000 | `NOT`| Not/False| 
+| 001 | `INC`| Increment|
+| 010 | `DEC`| Decrement|	
+| 011 | `SHL`| Shift Left (once)|
+| 100 | `SHR`| Shift Right (once)|
+
+| Dynamic Ops | Instruction | Meaning|
+|--|--|--|
+| 0000 | `CMP`| Compare|
+| 0001 | `XOR`| XOR |
+| 0010 | `AND`| AND|
+| 0011 | `OR`| OR |
+| 0100 | `SHL`| Shift Left (can shift  more than once)|
+| 0101 | `SHR`| Shift Right (can shift  more than once)| 
+| 0110 | `MUL`| Multiply|
+| 0111 | `DIV`| Divide|	
+| 1000 | `ADD`| Add|
+| 1001 | `SUB`| Subtract|
+
+examples:
+```
+MOV a, 1
+INC a      ; <-- increments a = 1 to a = 2
+
+MOV a, 2 
+MOV b, 2 
+XOR a,b    ; <-- XOR of a=2 & b=2 == 0 therefore Z flag is triggered
+JZ 10      ; <-- will jump because XOR of a and b will trigger the Z flag
+INC a      ; <-- ignored/skipped
+HLT        ; <-- JZ jumps here
+```
+
+## ETC
+Other instructions that are used but is on a different category of other instructions.
+```
+CLF - Clear flags, clears the C, A, and Z flags
+RET - Exits a subroutines by popping the return address previously pushed by the CALL instruction.
+HLT - Halts/ends the program
+```
