@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using System;
 
 namespace Assembler{
 public static class SyntaxChecker
