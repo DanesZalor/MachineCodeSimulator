@@ -167,6 +167,94 @@
                 return 2;
             }
 
+            byte doCALL(){
+
+                // CALL R // [0111_0AAA]
+                if(IR.value <= 0b111_0111){
+
+                    // PUSH the address of the next instruction to the stack
+                    ram.write( SP.value-- , (byte)(IAR.value+1) ); 
+
+                    IAR.value = GP[ IR.value & 0b111 ].value; // jump to R
+                    return 0;
+                }
+
+                // CALL Const // [0111_1000 <8:Const>] 
+                else{ //if(IR.value <= 0b111_1000)
+                    
+                    // PUSH the address of the next instruction to the stack
+                    ram.write( SP.value-- , (byte)(IAR.value+2) ); 
+                    
+                    IAR.value = ram.read(IAR.value+1);
+                    return 0;
+                }
+            }
+
+            byte doALU1(){
+                byte opcode = (byte)( (IR.value & 0b0011_1000)>>3 );
+                byte reg = (byte)(IR.value & 0b111);
+
+                switch(opcode){
+                    case 0b000: alu.NOT(ref GP[reg].value); break;
+                    case 0b001: alu.ADD(ref GP[reg].value, 1); break;
+                    case 0b010: alu.SUB(ref GP[reg].value, 1); break;
+                    case 0b011: alu.SHL(ref GP[reg].value, 1); break;
+                    case 0b100: alu.SHR(ref GP[reg].value, 1); break;
+                }
+                return 1;
+            }
+
+            byte doALU2(){
+                byte opcode = (byte)(IR.value & 0b1111);
+                byte regA = (byte)((ram.read(IAR.value+1) & 0b0111_0000) >> 4);
+                byte i2 = (byte)(ram.read(IAR.value+1) & 0b1111); // only get first 4 bits
+                
+                
+                byte arg2 = 0; /* 2nd arguement*/{
+                    if(i2 <= 0b0111) // regB
+                        arg2 = GP[ i2 & 0b111 ].value; 
+                    else if(i2 == 0b1000) // [regB+Offset]
+                        arg2 = ram.read( getOffsetByteFromInstruction( IAR.value+2 ) );
+                    else if(i2 == 0b1001) // [const]
+                        arg2 = ram.read( ram.read(IAR.value+2) );
+                    else if(i2 == 0b1010) // const
+                        arg2 = ram.read(IAR.value+2);
+                }
+
+                //Console.WriteLine(String.Format("op:{0}  arg1:{1}  arg2:{2}",
+                //            opcode, GP[regA].value,arg2));
+                switch(opcode){
+                    case 0b0000: alu.CMP( GP[regA].value, arg2 ); break;
+                    case 0b0001: alu.XOR( ref GP[regA].value, arg2 ); break;
+                    case 0b0010: alu.AND( ref GP[regA].value, arg2 ); break;
+                    case 0b0011: alu.OR( ref GP[regA].value, arg2 ); break;
+                    case 0b0100: alu.SHL( ref GP[regA].value, arg2 ); break;
+                    case 0b0101: alu.SHR( ref GP[regA].value, arg2 ); break;
+                    case 0b0110: alu.MUL( ref GP[regA].value, arg2 ); break;
+                    case 0b0111: alu.DIV( ref GP[regA].value, arg2 ); break;
+                    case 0b1000: alu.ADD( ref GP[regA].value, arg2 ); break;
+                    case 0b1001: alu.SUB( ref GP[regA].value, arg2 ); break;
+                }
+
+                return (byte)((i2 <= 0b0111)?2:3);
+            }
+
+            byte doETC(){
+                
+                switch(IR.value){
+                    case 0b1101_0000:   
+                        alu.clearFlags();   
+                        return 1;
+                    case 0b1101_0001:
+                        IAR.value = ram.read(++SP.value); // JUMP to the POP'd value
+                        return 0;
+                    case 0b1101_0010:
+                        // HLT
+                        break;
+                }
+                return 0;
+            }
+
             {// DO Instruction
                 IR.value = ram.read(IAR.value); // Set Instruction Register 
                 byte increment = 0;
@@ -180,6 +268,14 @@
                     increment = doPUSH();
                 else if(IR.value <= 0b0110_1001) // POP instructions
                     increment = doPOP();
+                else if(IR.value <= 0b0111_1000) // CALL instructions
+                    increment = doCALL();
+                else if(IR.value <= 0b10100_111) // ALU nomadic instructions
+                    increment = doALU1();
+                else if(IR.value <= 0b1100_1001) // ALU dyadic instructions
+                    increment = doALU2();
+                else if(IR.value <= 0b1101_0010) // ETC instructions
+                    increment = doETC();
 
                 IAR.value += increment;
             }
@@ -226,6 +322,11 @@
             r.Add("iar", IAR.value);
 
             return r;
+        }
+
+        /// <summary> TESTING PURPOSE ONLY <br> DO NOT USE UNLESS FOR AUTOMATED TESTING </summary>
+        public ALU.FLAG getALUFlags(){
+            return alu.getFlags();
         }
 
         /// <summary> TESTING PURPOSE ONLY <br> DO NOT USE UNLESS FOR AUTOMATED TESTING 
