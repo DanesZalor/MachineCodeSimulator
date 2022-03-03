@@ -38,7 +38,7 @@ namespace CPUTests
 
         [Theory]
         [InlineData(200, 200, (ALU.FLAG.Z))]
-        [InlineData(100, 101, (ALU.FLAG.OFF))]
+        [InlineData(100, 101, (ALU.FLAG.C))]
         [InlineData(102, 99, (ALU.FLAG.A))]
         public void CMP_modifiesFlagsCorrectly(byte A, byte B, ALU.FLAG expected_flags)
         {
@@ -49,7 +49,7 @@ namespace CPUTests
         [Theory]
         [InlineData(0b1010, 0b0110, 0b1100, ALU.FLAG.A)]
         [InlineData(0b0011, 0b0011, 0b0000, ALU.FLAG.Z)]
-        [InlineData(0b0011, 0b1100, 0b1111)]
+        [InlineData(0b0011, 0b1100, 0b1111, ALU.FLAG.C)]
         public void XOR_modifiesFlagsCorrectlyAndChangesA(byte A, byte B, byte expected_A, ALU.FLAG expected_flags = ALU.FLAG.OFF)
         {
             alu.XOR(ref A, B);

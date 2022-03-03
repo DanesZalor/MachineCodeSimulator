@@ -183,7 +183,7 @@ public static class Translator
         if(Common.match(arg, LEXICON.TOKENS.REGISTER,true)) // call reg
             r = new byte[1] { RegToByte(arg, 0b0111_0000)};
 
-        else if (Common.match(arg, LEXICON.TOKENS.DECIMAL)){
+        else if (Common.match(arg, LEXICON.TOKENS.DECIMAL)){ // call const
             r[0] = 0b0111_1000;
             r[1] = Convert.ToByte(arg);
         } 

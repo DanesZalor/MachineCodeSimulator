@@ -55,11 +55,12 @@ namespace CPU
             flags = f;
         }
 
-        /// <summary> compares A and B. Affected flags [A,E,Z] </summary> 
+        /// <summary> compares A and B. Affected flags [A,Z] </summary> 
         public void CMP(byte A, byte B)
         {
             setFlagsIf(A > B, FLAG.A);
             setFlagsIf(A == B, FLAG.Z);
+            setFlagsIf(A < B, FLAG.C);
         }
 
         /// <summary same as CMP(A,B) but also does A xor B and put the result in A </summary>
@@ -94,7 +95,7 @@ namespace CPU
         public void SHL(ref byte A, byte B)
         {
             // CARRY ON if A<<B which is an INT32 is greater than the byte.MaxValue
-            int res = A << B;
+            int res = A << B; // int32 to save the exceeding bits for checking
             setFlagsIf((res) > byte.MaxValue, FLAG.C);
             A = (byte)res;
             setFlagsIf(A == 0, FLAG.Z);
