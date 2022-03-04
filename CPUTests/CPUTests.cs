@@ -97,38 +97,38 @@ namespace CPUTests{
                 AssertCPUState(cpu, rb:49, iar:18);
             }
             { // execute mov [a],b
-                Assert.Equal(0b10010,cpu.getRAMState()[8]);
+                Assert.Equal(0b10010,cpu.readFromRAM(8));
                 // ram[18] : 0b10010 -> 49
 
                 cpu.InstructionCycleTick();
-                Assert.Equal(49,cpu.getRAMState()[8]);
+                Assert.Equal(49,cpu.readFromRAM(8));
             }
             { // execute mov [a-8],f
-                Assert.Equal(8,cpu.getRAMState()[0]);
+                Assert.Equal(8,cpu.readFromRAM(0));
                 // ram[0] : 0b1000 -> 20
 
                 cpu.InstructionCycleTick();
-                Assert.Equal(20,cpu.getRAMState()[0]);
+                Assert.Equal(20,cpu.readFromRAM(0));
             }
             { // execute mov [e+6],f
-                Assert.Equal(10, cpu.getRAMState()[15]);
+                Assert.Equal(10, cpu.readFromRAM(15));
                 // ram[15] : 10 -> 20
 
                 cpu.InstructionCycleTick();
-                Assert.Equal(20, cpu.getRAMState()[15]);
+                Assert.Equal(20, cpu.readFromRAM(15));
             }
             { // execute mov [240],d
                 cpu.InstructionCycleTick();
-                Assert.Equal(10, cpu.getRAMState()[240]);
+                Assert.Equal(10, cpu.readFromRAM(240));
             }
             { // execute mov [129],b
                 cpu.InstructionCycleTick();
-                Assert.Equal(49, cpu.getRAMState()[129]);   
+                Assert.Equal(49, cpu.readFromRAM(129));   
             }
             { // execute mov [239],f
                 cpu.InstructionCycleTick();
-                Assert.Equal(20, cpu.getRAMState()[239]);
-                Assert.Equal(10, cpu.getRAMState()[240]);
+                Assert.Equal(20, cpu.readFromRAM(239));
+                Assert.Equal(10, cpu.readFromRAM(240));
             }
         }
 
@@ -289,23 +289,23 @@ namespace CPUTests{
                 cpu.InstructionCycleTick();
                 
                 AssertCPUState(cpu, sp:254);
-                Assert.Equal(3, cpu.getRAMState()[255]);  
+                Assert.Equal(3, cpu.readFromRAM(255));  
             }
             { // execute push "[g+2]"
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, sp:253);
-                Assert.Equal(69, cpu.getRAMState()[254]);
+                Assert.Equal(69, cpu.readFromRAM(254));
             }
             { // execute "jmp 7" and "push [6]"
                 cpu.InstructionCycleTick();
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, iar:9, sp:252);
-                Assert.Equal(123, cpu.getRAMState()[253]);
+                Assert.Equal(123, cpu.readFromRAM(253));
             }
             { // execute "push 169"
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, iar:11, sp:251);
-                Assert.Equal(169, cpu.getRAMState()[252]);
+                Assert.Equal(169, cpu.readFromRAM(252));
             }
             { // execute "pop f"
                 cpu.InstructionCycleTick();
@@ -314,11 +314,11 @@ namespace CPUTests{
                 cpu.setState(rc:10);
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, sp:253);
-                Assert.Equal(123, cpu.getRAMState()[5]);
+                Assert.Equal(123, cpu.readFromRAM(5));
             }{ // execute "pop [5]"
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, sp:254);
-                Assert.Equal(69, cpu.getRAMState()[5]);
+                Assert.Equal(69, cpu.readFromRAM(5));
             }
         }
 
@@ -341,7 +341,7 @@ namespace CPUTests{
                 cpu.InstructionCycleTick();
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, ra:7, iar:7);
-                Assert.Equal(3, cpu.getRAMState()[255]);
+                Assert.Equal(3, cpu.readFromRAM(255));
             }
             { // execute "mov a,2" & "mov b,3"
                 cpu.InstructionCycleTick();
@@ -376,7 +376,7 @@ namespace CPUTests{
             { // execute "mov a,7" and "call a"
                 cpu.InstructionCycleTick();
                 AssertCPUState(cpu, iar:6);
-                Assert.Equal(2, cpu.getRAMState()[255]);
+                Assert.Equal(2, cpu.readFromRAM(255));
             }
             { // execute "mov a,2" & "mov b,3"
                 cpu.InstructionCycleTick();

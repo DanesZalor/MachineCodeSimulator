@@ -243,7 +243,7 @@
                 
                 switch(IR.value){
                     case 0b1101_0000:   
-                        alu.clearFlags();   
+                        alu.CLF();   
                         return 1;
                     case 0b1101_0001:
                         IAR.value = ram.read(++SP.value); // JUMP to the POP'd value
@@ -281,34 +281,20 @@
             }
         }
 
+        // Peripherals Purposes
+        /// <summary> For Peripherals purposes only. </sumary>
+        public byte readFromRAM(byte address){
+            return ram.read(address);
+        }
+
+        public void writeToRAM(byte address, byte data){
+            ram.write(address,data);
+        }
+
 
         /*************   FOR TESTING ONLY   **************/
         // REQUIRED for automated testing. DO NOT REMOVE
         // can remove this when putting it in the game.
-
-        /// <summary> TESTING PURPOSE ONLY <br> DO NOT USE UNLESS FOR AUTOMATED TESTING </summary>
-        public void printState(){
-            
-            string get_GP_State(){
-                return String.Format(
-                    "[{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}]",
-                    GP[0].value, GP[1].value, GP[2].value,
-                    GP[3].value, GP[4].value, GP[5].value,
-                    GP[6].value, GP[7].value
-                );
-            }
-
-            string prt = String.Format(
-                "GP = {0}\nIR = {1}\tIAR = {2}\tSP = {3}",
-                get_GP_State(), IR.value, IAR.value, SP.value
-            );
-            Console.WriteLine(prt);
-        }
-
-        /// <summary> TESTING PURPOSE ONLY <br> DO NOT USE UNLESS FOR AUTOMATED TESTING </summary>
-        public byte[] getRAMState(){
-            return ram.getState();
-        }
 
         /// <summary> TESTING PURPOSE ONLY <br> DO NOT USE UNLESS FOR AUTOMATED TESTING </summary>
         public Dictionary<string,byte> getState(){

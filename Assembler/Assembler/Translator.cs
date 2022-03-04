@@ -303,7 +303,7 @@ public static class Translator
     public static byte[] translateProgram(string linesOfCode){
         byte[] bin = new byte[256];
 
-        string[] lines = linesOfCode.Split("\n");
+        string[] lines = linesOfCode.Split('\n');
         byte ctr = 0;
         foreach(string line in lines){
             byte[] bytes = translateLine(line);
