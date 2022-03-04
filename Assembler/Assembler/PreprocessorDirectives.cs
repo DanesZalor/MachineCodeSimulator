@@ -160,14 +160,21 @@ public static class PreprocessorDirectives
 
     public static string translateAlias(string linesOfCode)
     {
-        // lowercase the entire code
+        // lowercase the entire coded
         linesOfCode = new string(linesOfCode.ToLower()); 
+
         // separate label declarations into different lines
         linesOfCode = new string(linesOfCode.Replace(":",":\n")); 
 
-        linesOfCode = replaceAliases(linesOfCode);
-        linesOfCode = replaceLabels(linesOfCode);
-        linesOfCode = removeExcessWhitespace(linesOfCode);
+        try{
+            linesOfCode = replaceAliases(linesOfCode); // System.TypeLoadException
+            linesOfCode = replaceLabels(linesOfCode);
+            linesOfCode = removeExcessWhitespace(linesOfCode);
+        }catch(System.TypeLoadException e){ // catch System.TypeLoadException from Converts
+            Console.WriteLine(e);
+            return "";
+        }
+        
         return linesOfCode;
     }
 }
