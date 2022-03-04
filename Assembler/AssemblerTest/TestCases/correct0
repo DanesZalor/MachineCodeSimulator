@@ -1,0 +1,3 @@
+
+MOV     A,  5 ; test comment
+MOV     B, 10 ; testing sex

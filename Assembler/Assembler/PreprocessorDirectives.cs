@@ -1,6 +1,8 @@
+using System;
+using System.IO;
 using System.Text.RegularExpressions;
 
-namespace Assembler;
+namespace Assembler{
 
 /// <summary> Pretranslation that happens before compilation. In this stage, comments are removed, aliases (such as Jxxx) are translated, 
 /// and labels are converted to constants. Before this phase, the custom written program should already be syntactically correct </summary>
@@ -17,7 +19,7 @@ public static class PreprocessorDirectives
             {"(( ){1,}\\])","]"}
         }; 
         for(int i = 0; i<4; i++)
-            newLines = new string(Regex.Replace(newLines,grammarReplace[i,0],grammarReplace[i,1]));
+            newLines = new string(Common.replace(newLines,grammarReplace[i,0],grammarReplace[i,1]));
     
         foreach(char c in "+-,") newLines = String.Join(c, newLines.Split(c, StringSplitOptions.TrimEntries));
 
@@ -52,18 +54,18 @@ public static class PreprocessorDirectives
             {"(0b([01]{1,8}))","<BIN>"}
         };
         string newLines = "";
-
-        using (var reader = new StringReader(linesOfCode))
-        {
-            for (string? line = reader.ReadLine(); line != null; line = reader.ReadLine())
+        string[] linesOfCodeArr = linesOfCode.Split('\n');
+            
+            for (int l=0; l<linesOfCodeArr.Length; l++)
             {
+                string line = linesOfCodeArr[l];
                 // removes the comments
                 string newLine = Common.replace(line, ";.*","").Trim();
                 for (int i = 0; i < 20; i++)
                 {
                     if (Common.match(newLine, Aliases[i, 0]))
                     {
-                        newLine = Regex.Replace(newLine, Aliases[i, 0], Aliases[i, 1]);
+                        newLine = Common.replace(newLine, Aliases[i, 0], Aliases[i, 1]);
                         if(i>18){
                             string binary = Common.getMatch(line, " (0b([01]{1,8}))").Value.Trim();
                             int dec = 0;
@@ -72,7 +74,7 @@ public static class PreprocessorDirectives
                                 dec += mul*(Convert.ToByte(binary[b]) - 48);
                                 mul = Convert.ToByte(mul<<1);
                             }
-                            newLine = Regex.Replace(newLine, "<BIN>", Convert.ToString(dec));
+                            newLine = Common.replace(newLine, "<BIN>", Convert.ToString(dec));
                         }
                         else if(i>17){ // hex alias to decimal
                             int convertHexToDec(char s){
@@ -82,12 +84,12 @@ public static class PreprocessorDirectives
                                 else return -1;
                             }
                             string hex = Common.getMatch(line, " (0x([0-9]|[a-f]){1,2})").Value.Trim();
-                            newLine = Regex.Replace(newLine, "<HEX>", Convert.ToString(
+                            newLine = Common.replace(newLine, "<HEX>", Convert.ToString(
                                 convertHexToDec(hex[2])*16 + convertHexToDec(hex[3])
                             ));
                         }
                         else if (i >= 14)
-                            newLine = Regex.Replace(newLine, "<REG>", Common.getMatch(line, " "+LEXICON.TOKENS.REGISTER).Value.Trim());
+                            newLine = Common.replace(newLine, "<REG>", Common.getMatch(line, " "+LEXICON.TOKENS.REGISTER).Value.Trim());
                         
 
                         break;
@@ -95,7 +97,7 @@ public static class PreprocessorDirectives
                 }
                 if(newLine.Length>0) newLines = new string(string.Concat(newLines,newLine.Trim()+"\n"));
             }
-        }
+        
         return newLines.Trim();
     }
 
@@ -127,13 +129,14 @@ public static class PreprocessorDirectives
         string labels = "";
         string labelCoords = "";
 
+        
         // gather labels and coordinates
-        using (var reader = new StringReader(linesOfCode))
         {
             int coordCounter = 0;
-
-            for (string? line = reader.ReadLine(); line != null; line = reader.ReadLine())
+            string[] linesOfCodeArr = linesOfCode.Split('\n');
+            for (int i=0; i<linesOfCodeArr.Length; i++)
             {
+                string line = linesOfCodeArr[i];
                 if (line.Contains(':')) { // if label, record it's coordinate
                     labels = new string(string.Concat(labels, (labels.Length>0?"|":"") + line.Split(':')[0] ));
                     labelCoords = new string(string.Concat(labelCoords, (labelCoords.Length>0?",":"") + Convert.ToString(coordCounter) ));
@@ -147,24 +150,33 @@ public static class PreprocessorDirectives
         string newLines = linesOfCode;
     
         // remove all ":"
-        newLines = new string(Regex.Replace(newLines,".*:","")); 
+        newLines = new string(Common.replace(newLines,".*:","")); 
 
         // replace every label with their corresponding coordinate
         for(int i = 0; i<labelsArray.Length; i++)
-            newLines = Regex.Replace(newLines,"\\b"+labelsArray[i]+"\\b", coordsArray[i]);
+            newLines = Common.replace(newLines,"\\b"+labelsArray[i]+"\\b", coordsArray[i]);
         return newLines.Trim();
     }
 
     public static string translateAlias(string linesOfCode)
     {
-        // lowercase the entire code
+        // lowercase the entire coded
         linesOfCode = new string(linesOfCode.ToLower()); 
+
         // separate label declarations into different lines
         linesOfCode = new string(linesOfCode.Replace(":",":\n")); 
 
-        linesOfCode = replaceAliases(linesOfCode);
-        linesOfCode = replaceLabels(linesOfCode);
-        linesOfCode = removeExcessWhitespace(linesOfCode);
+        try{
+            linesOfCode = replaceAliases(linesOfCode); // System.TypeLoadException
+            linesOfCode = replaceLabels(linesOfCode);
+            linesOfCode = removeExcessWhitespace(linesOfCode);
+        }catch(System.TypeLoadException e){ // catch System.TypeLoadException from Converts
+            Console.WriteLine(e);
+            return "";
+        }
+        
         return linesOfCode;
     }
+}
+
 }
