@@ -66,6 +66,7 @@ public static class PreprocessorDirectives
             //special case : i18
             {"(0b([01]{1,8}))","<BIN>"}
         };
+
         string newLines = "";
         string[] linesOfCodeArr = linesOfCode.Split('\n');
             
