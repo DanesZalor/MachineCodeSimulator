@@ -46,7 +46,7 @@
 
                 // MOV R,R // [0000_0AAA,0000_0BBB] // RA.value = RB.value 
                 if(IR.value <= 0b111)
-                    GP[ IR.value ].value = GP[ ram.read(IAR.value+1) ].value; 
+                    GP[ IR.value ].value = GP[ ram.read(IAR.value+1) & 0b111 ].value; 
                 
                 // MOV R,C // [0000_1AAA, <8:Const>] // RA.value = Const 
                 else if(IR.value <= 0b1111)
@@ -276,7 +276,7 @@
                 else if(IR.value <= 0b1101_0010) // ETC instructions
                     increment = doETC();
 
-                IAR.value += increment;
+                IAR.value = IAR.value + increment;
             }
         }
 
@@ -300,8 +300,8 @@
         public void setStackPointerValue(byte v){
             SP.value = v;
         }
-	
-	/*************   FOR TESTING ONLY   **************/
+
+        /*************   FOR TESTING ONLY   **************/
         // REQUIRED for automated testing. DO NOT REMOVE
         // can remove this when putting it in the game.
 
