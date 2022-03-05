@@ -276,7 +276,7 @@
                 else if(IR.value <= 0b1101_0010) // ETC instructions
                     increment = doETC();
 
-                IAR.value = IAR.value + increment;
+                IAR.value += increment;
             }
         }
 
