@@ -1,6 +1,7 @@
 using System.Text.RegularExpressions;
-namespace Assembler;
+using System;
 
+namespace Assembler{
 public static class SyntaxChecker
 {
     /// <summary> Lexicon containing somewhat correct grammar that can be recognized for evaluation </summary>
@@ -47,7 +48,7 @@ public static class SyntaxChecker
         {
             private static string EXISTING_LABELS = "()";
             public static string labels() { return EXISTING_LABELS; }
-            public static void labelsClear() { EXISTING_LABELS = new String("()"); }
+            public static void labelsClear() { EXISTING_LABELS = "()"; }
             public static string labelsAdd(string label)
             {
                 if(label.Length<1) return "";
@@ -56,7 +57,7 @@ public static class SyntaxChecker
                 else if(Common.match(label, EXISTING_LABELS,true)) return "label '"+label+"' is a duplicate";
                 else if (Common.match(label, VAGUE_LEXICON.TOKENS.LABEL, true))
                 {
-                    EXISTING_LABELS = new String(EXISTING_LABELS.Replace(")", (EXISTING_LABELS == "()" ? "" : "|") + (label + ")")));
+                    EXISTING_LABELS = EXISTING_LABELS.Replace(")", (EXISTING_LABELS == "()" ? "" : "|") + (label + ")"));
                     return "";
                 }
                 return "Some unforeseen error";
@@ -292,7 +293,7 @@ public static class SyntaxChecker
         if(!Common.match(etcline,"(call|ret|hlt|clf)",true)) return "unrecognzied statement";
         else return "";
     }
-
+    
     private static Func<string, string>[] lineEvaluatorFuncs = {
         evaluateMOV, evaluateJMP, evaluateJmpIf, evaluatePUSH, 
         evaluatePOP, evaluateCALL, evaluateALU, evaluateDB, evaluateETC
@@ -337,7 +338,7 @@ public static class SyntaxChecker
             if(temp.Length<1) continue;
             string label_res = NEW_LEXICON.TOKENS.labelsAdd(temp);
             if(label_res.Length>0){
-                codeEval = new String(string.Concat(codeEval, String.Format("[Line {0}] {1}\n{2}\n", i+1, lines[i], label_res)));
+                codeEval = string.Concat(codeEval, String.Format("[Line {0}] {1}\n{2}\n", i+1, lines[i], label_res));
             }
         }
 
@@ -352,11 +353,13 @@ public static class SyntaxChecker
             
             string lineEval = evaluateLine(singleLine);
             if (lineEval != "")
-                codeEval = new String(string.Concat(codeEval, String.Format("[Line {0}] {1}\n{2}\n", i+1, lines[i].Trim(), lineEval)));
+                codeEval = string.Concat(codeEval, String.Format("[Line {0}] {1}\n{2}\n", i+1, lines[i].Trim(), lineEval));
        
         }
 
         if (codeEval != "") codeEval = "SYNTAX ERROR(s)\n" + codeEval;
         return codeEval;
     }
+}
+
 }

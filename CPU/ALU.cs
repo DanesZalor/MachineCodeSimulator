@@ -1,4 +1,4 @@
-
+using System;
 namespace CPU
 {
     public class ALU
@@ -13,11 +13,6 @@ namespace CPU
             A = 0b010,
             Z = 0b001,
         };
-
-        public enum OP_CODE : byte
-        {
-
-        }
 
         private FLAG flags = 0b0000;
         private void setFlagsIf(bool cond, FLAG mask)
@@ -39,23 +34,12 @@ namespace CPU
         }
 
         /// <summary> sets flags to turn all bits off </summary>
-        public void clearFlags()
+        public void CLF()
         {
             flags = FLAG.OFF;
         }
 
-        /// <remarks> debugging purposes only </remarks>
-        public FLAG getFlags()
-        {
-            return flags;
-        }
-        /// <remarks> debugging purposes only </remarks>
-        public void setFlags(FLAG f)
-        {
-            flags = f;
-        }
-
-        /// <summary> compares A and B. Affected flags [A,Z] </summary> 
+        /// <summary> compares A and B. Affected flags [C,A,Z] </summary> 
         public void CMP(byte A, byte B)
         {
             setFlagsIf(A > B, FLAG.A);
@@ -142,6 +126,19 @@ namespace CPU
             setFlagsIf(res > byte.MaxValue, FLAG.C);
             A = (byte)res;
             setFlagsIf(A == 0, FLAG.Z);
+        }
+
+        /*************** TESTING PURPOSES ONLY ******************/
+        // You can remove this after putting it in the game
+        /// <remarks> debugging purposes only </remarks>
+        public FLAG getFlags()
+        {
+            return flags;
+        }
+        /// <remarks> debugging purposes only </remarks>
+        public void setFlags(FLAG f)
+        {
+            flags = f;
         }
 
     }
