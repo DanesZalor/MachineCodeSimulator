@@ -32,6 +32,7 @@ public class AssemblerTest{
         0b0100_1110, 30
     })]*/
     [InlineData("correct9", new byte[74]{
+        
     })]
     public void testCompile(string filename, byte[] expected_res){
         
