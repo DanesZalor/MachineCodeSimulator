@@ -101,26 +101,26 @@ Will add soon
 
 ## ALU
 some Arithmetic & Logic Unit (ALU) operations can operate with 1 arguement, 2 arguements, or both. ALU has two types of Ops, Nomadic and Dynamic Ops. These operations can <ins>**modify the C, A, Z flags.**<ins/>
-| Nomadic Ops | Instruction | Meaning |
-|--|--|--|
-| 000 | `NOT`| Not/False| 
-| 001 | `INC`| Increment|
-| 010 | `DEC`| Decrement|	
-| 011 | `SHL`| Shift Left (once)|
-| 100 | `SHR`| Shift Right (once)|
 
-| Dynamic Ops | Instruction | Meaning|
-|--|--|--|
-| 0000 | `CMP`| Compare|
-| 0001 | `XOR`| XOR |
-| 0010 | `AND`| AND|
-| 0011 | `OR`| OR |
-| 0100 | `SHL`| Shift Left (can shift  more than once)|
-| 0101 | `SHR`| Shift Right (can shift  more than once)| 
-| 0110 | `MUL`| Multiply|
-| 0111 | `DIV`| Divide|	
-| 1000 | `ADD`| Add|
-| 1001 | `SUB`| Subtract|
+<br> Note: It is possible to **trigger multiple flags** on a single ALU instruction <br/>
+| Instruction | Meaning |
+|--|--|
+| `NOT`| **Not/False** <br> This op may trigger the Z flag, for example when you do the instruction NOT 1111, the result will be 0000 therefore triggering the Z  flag <br/>| 
+| `INC`| **Increment** <br> This op may trigger the C and Z flags, for example INC 255, it would trigger the C value because it is over the 255 byte limit. Additionally it also would trigger the Z flag since the result of INC 255 is 0.   <br/> |
+| `DEC`| **Decrement** <br> This op may trigger  the C and Z flags, for example DEC 0 would trigger the C flag and DEC 1 would trigger the Z flag since the result will be 0. <br/>|		
+| `SHL`| **Shift Left (once)** <br> This op may trigger the C & Z flags if for example shift left once with the value 1 (1) will become 0.  <br/>|
+| `SHR`| **Shift Right (once)** <br> This op may trigger the C & Z flags if for example shift right once with the binary value of 1 (1) will become 0.  <br/>|
+|--|--|
+| `CMP`| **Compare** <br> This op may trigger the C, A, and Z flags. For example, when A > B it will trigger the C flags, A < B it will trigger A flag, and A == B it will trigger the Z flag. <br/> |
+| `XOR`| **XOR** <br> This op may trigger the Z flag for example when you XOR 6 and 6 result being a 0 and will trigger the flag. <br/> |
+| `AND`| **AND** <br> This op may trigger the Z flag, for example XOR of the binary value of 1 AND 0 will result to 0 and will trigger the Z flag.<br/> |
+| `OR`| **OR** <br> This op  may  trigger the Z flag, for example when the two binary values are 0 and using the OR instruction will result to 0 and triggering the Z flag.<br/>  |
+| `SHL`| **Shift Left (can shift  more than once)** <br> This op may trigger the C & Z flag if for example shift left 4 times with the binary value 1001 (9) will become 0. <br/>|
+| `SHR`| **Shift Right (can shift  more than once)** <br> This op may trigger the C & Z flag if for example shift right 4 the value 1010 (10) will become 0. <br/>|  
+| `MUL`| **Multiply** <br> This op may trigger the C & Z flags, if for example when you multiply two values and it exceeds the byte limit (255) it would trigger the C flag. Furthermore, if it exceeds and has a product 0 or multiplied with a 0 it will trigger the Z flag. <br/>|
+| `DIV`| **Divide** <br> This op may trigger the Z flag, it occurs when the first value or register has the value of 0 and therefore triggering the Z flag. <br/>  |	
+| `ADD`| **Add** <br> This op may trigger the C and Z flags, for example ADD two values and it exceeds the byte limit therefore triggering the C flag. Additionally, if that result is 0 then it would also trigger the Z flag. <br/> |
+| `SUB`| **Subtract** <br> This op may trigger the C and Z flag, for example when subtracting below 0 would trigger the C flag. Furthermore, if the result would be 0 it would trigger the Z Flag. <br/> |
 
 examples:
 ```
