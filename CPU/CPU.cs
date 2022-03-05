@@ -32,7 +32,6 @@
         
 
         public void InstructionCycleTick(){
-
             byte getOffsetByteFromInstruction(int instructionAddress){
                 byte instruction = ram.read(instructionAddress);
                 byte offsetCode = (byte)((instruction & 0b0111_1000) >> 3);
@@ -287,12 +286,22 @@
             return ram.read(address);
         }
 
+        /// <summary> For Peripherals purposes only. </sumary>
         public void writeToRAM(byte address, byte data){
             ram.write(address,data);
         }
 
+        /// <summary> For Peripherals purposes only. </sumary>
+        public byte getStackPointerValue(){
+            return SP.value;
+        }
 
-        /*************   FOR TESTING ONLY   **************/
+        /// <summary> For Peripherals purposes only. </sumary>
+        public void setStackPointerValue(byte v){
+            SP.value = v;
+        }
+	
+	/*************   FOR TESTING ONLY   **************/
         // REQUIRED for automated testing. DO NOT REMOVE
         // can remove this when putting it in the game.
 
