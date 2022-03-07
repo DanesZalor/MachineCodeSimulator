@@ -93,11 +93,40 @@ There is a table below showing the aliases and derivation of conditional jumps a
 |   JBE | JCZ | `!JA or JE`→ `JCZ or JZ` → **JCZ**
 |   JNBE| JA  | `!(A<=B)` → **A>B**
 
-## PUSH AND POP
-Will add soon
+## PUSH
+Pushes a value to the stack. The stack grows down and the current position is available in the stack pointer(SP) register . This instruction will decrease the SP.
+```
+PUSH Reg
+PUSH [Reg + offset]
+PUSH [Const]
+Push Const
+
+Examples:
+PUSH a        ; pushes the value of register a to the top of the stack
+PUSH [a + 4]  ; the resulting value of [a.value + 4] would become an address pointer to get the value of that specific address and pushes the value to the top of the stack
+PUSH [7]      ; the same as PUSH[Reg + offset], get the value of the RAM address [7] and pushes that value to the top of the stack.
+PUSH 4        ; pushes value of const (4) to the  top of the stack
+```
+
+## POP
+Pops a value from the stack to a register. This instruction will increase the SP.
+```
+POP Reg
+POP [Reg + Offset]
+POP [Const]
+
+Examples:
+POP a              ; Increases the Stack pointer then gets the value of RAM[stackpointer] then places the value to register a.
+POP [a + Offset]   ; Increases the stack pointer then gets the value of RAM[stackpointer] then places the value at RAM address [a + Offset].
+POP [Const]        ; Same as POP[a + Offset], it increases the stack pointer then gets the value of RAM [stackpointer] then places the value of RAM address [Const].
+```
 
 ## CALL
-Will add soon
+Call can be used to jump into a subroutine (function). Pushes the instruction address of the next instruction to the stack and jumps to the specified address.
+```
+CALL Reg
+CALL Const
+```
 
 ## ALU
 some Arithmetic & Logic Unit (ALU) operations can operate with 1 arguement, 2 arguements, or both. ALU has two types of Ops, Nomadic and Dynamic Ops. These operations can <ins>**modify the C, A, Z flags.**<ins/>
