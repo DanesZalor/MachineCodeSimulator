@@ -5,8 +5,8 @@ namespace AssemblerTest;
 
 public class AssemblerTest{
 
-    [Theory]
-    /*[InlineData("correct0", new byte[4]{
+    [Theory]/*
+    [InlineData("correct0", new byte[4]{
         0b1000, 5,
         0b1001, 10
     })]
@@ -31,8 +31,21 @@ public class AssemblerTest{
         0b1100_0000, 0b0000_0001,
         0b0100_1110, 30
     })]*/
-    [InlineData("correct9", new byte[74]{
-        
+
+    [InlineData("correct9", new byte[16]{
+        0b0000_1001, 5,
+        0b0000_1011, 232,
+        0b1001_0001,
+        0b1000_1010, //what INC C??
+        0b1100_1000, 0b0000_1010, 2,
+        0b0010_0000, 0b0000_0011,
+        0b1000_1011,
+        0b1100_0000, 0b0001_0010,
+        0b0100_1110, 5
+    })]
+
+    [InlineData("test_add", new byte[1]{
+        0b1000_1010,
     })]
     public void testCompile(string filename, byte[] expected_res){
         
@@ -50,6 +63,8 @@ public class AssemblerTest{
         {
             System.Console.Write(System.String.Format("{0}, ", b));
         }
+
+        System.Console.WriteLine("bruh");
 
         Assert.Equal(expected_res, actual_res);
     }
