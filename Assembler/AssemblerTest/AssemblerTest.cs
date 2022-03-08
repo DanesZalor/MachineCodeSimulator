@@ -31,7 +31,7 @@ public class AssemblerTest{
         0b1100_0000, 0b0000_0001,
         0b0100_1110, 30
     })] */
-/*
+
     [InlineData("correct9", new byte[16]{
         0b0000_1001, 5,
         0b0000_1011, 232,
@@ -73,10 +73,17 @@ public class AssemblerTest{
         0b1100_0000, 0b0000_1000, 0b0000_1001,
         0b1100_0000, 0b0000_1001, 69,
         0b1100_0000, 0b0000_1010, 69
-    })] */
+    })] 
 
-    
-
+    [InlineData("test_ALU_xor", new byte[b]{
+        0b0000_1000, 255,
+        0b0000_1001, 153,
+        0b1100_0001, 0b0000_0001,
+        0b1100_0001, 0b0001_
+        0b1100_0001, 
+        0b1100_0001, 
+    })]    
+*/
     public void testCompile(string filename, byte[] expected_res){
         
         byte[] actual_res = Assembler.Assembler.compile(Common.readFile(filename));
