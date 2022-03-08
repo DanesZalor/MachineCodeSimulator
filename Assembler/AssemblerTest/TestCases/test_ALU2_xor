@@ -1,0 +1,6 @@
+mov a,255
+mov b,153
+xor a,b
+xor b,[a+1]
+xor c,[2]
+xor d,255

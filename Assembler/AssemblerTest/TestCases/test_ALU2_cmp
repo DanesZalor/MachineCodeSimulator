@@ -1,0 +1,8 @@
+mov a,4
+mov b,5
+mov c,1
+mov [69],c
+cmp a,b
+cmp a,[b+1]
+cmp a,[69]
+cmp a,69
