@@ -1,0 +1,6 @@
+mov a, 25
+not a
+inc a
+dec a
+shl a
+shr a
