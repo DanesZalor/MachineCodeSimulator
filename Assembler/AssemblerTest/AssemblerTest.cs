@@ -5,7 +5,8 @@ namespace AssemblerTest;
 
 public class AssemblerTest{
 
-    [Theory]/*
+    [Theory]
+
     [InlineData("correct0", new byte[4]{
         0b1000, 5,
         0b1001, 10
@@ -30,7 +31,7 @@ public class AssemblerTest{
         0b1000_1011,
         0b1100_0000, 0b0000_0001,
         0b0100_1110, 30
-    })] */
+    })] 
 
     [InlineData("correct9", new byte[16]{
         0b0000_1001, 5,
@@ -44,7 +45,7 @@ public class AssemblerTest{
         0b0100_1110, 5
     })]
 
-/*
+
     [InlineData("test_add", new byte[7]{
         0b1000_1000,
         0b1000_1001,
@@ -54,7 +55,7 @@ public class AssemblerTest{
         0b1000_1101,
         0b1000_1110,
     })]
-/*
+
     [InlineData("test_ALU1", new byte[7]{
         0b0000_1000, 25,
         0b1000_0000,
@@ -75,15 +76,15 @@ public class AssemblerTest{
         0b1100_0000, 0b0000_1010, 69
     })] 
 
-    [InlineData("test_ALU_xor", new byte[b]{
+    [InlineData("test_ALU2_xor", new byte[15]{
         0b0000_1000, 255,
         0b0000_1001, 153,
         0b1100_0001, 0b0000_0001,
-        0b1100_0001, 0b0001_
-        0b1100_0001, 
-        0b1100_0001, 
+        0b1100_0001, 0b0001_1000, 0b0000_1000,
+        0b1100_0001, 0b0010_1001, 2,
+        0b1100_0001, 0b0011_1010, 255
     })]    
-*/
+
     public void testCompile(string filename, byte[] expected_res){
         
         byte[] actual_res = Assembler.Assembler.compile(Common.readFile(filename));
@@ -93,15 +94,6 @@ public class AssemblerTest{
         {
             System.Console.Write(System.String.Format("{0}, ", b));
         }
-
-        System.Console.WriteLine("bruh");
-
-        foreach(byte b in actual_res)
-        {
-            System.Console.Write(System.String.Format("{0}, ", b));
-        }
-
-        System.Console.WriteLine("bruh");
 
         Assert.Equal(expected_res, actual_res);
     }
