@@ -129,7 +129,7 @@ CALL Const
 ```
 
 ## ALU
-some Arithmetic & Logic Unit (ALU) operations can operate with 1 arguement, 2 arguements, or both. ALU has two types of Ops, Nomadic and Dynamic Ops. These operations can <ins>**modify the C, A, Z flags.**<ins/>
+some Arithmetic & Logic Unit (ALU) operations can operate with 1 arguement, 2 arguements, or both. ALU has two types of Ops, Nomadic and Dyadic Ops. These operations can <ins>**modify the C, A, Z flags.**<ins/>
 
 <br> Note: It is possible to **trigger multiple flags** on a single ALU instruction <br/>
 | Instruction | Meaning |
