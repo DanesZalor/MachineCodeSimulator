@@ -37,7 +37,7 @@ public class AssemblerTest{
         0b0000_1001, 5,
         0b0000_1011, 232,
         0b1001_0001,
-        0b1000_1010, //what INC C??
+        0b1000_1010,
         0b1100_1000, 0b0000_1010, 2,
         0b0010_0000, 0b0000_0011,
         0b1000_1011,
@@ -88,12 +88,6 @@ public class AssemblerTest{
     public void testCompile(string filename, byte[] expected_res){
         
         byte[] actual_res = Assembler.Assembler.compile(Common.readFile(filename));
-
-
-        foreach(byte b in expected_res)
-        {
-            System.Console.Write(System.String.Format("{0}, ", b));
-        }
 
         Assert.Equal(expected_res, actual_res);
     }
