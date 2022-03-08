@@ -102,9 +102,10 @@ public static class PreprocessorDirectives
                                 convertHexToDec(hex[2])*16 + convertHexToDec(hex[3])
                             ));
                         }
-                        else if (i >= 14)
-                            newLine = Common.replace(newLine, "<REG>", Common.getMatch(line, " "+LEXICON.TOKENS.REGISTER).Value.Trim());
-                        
+                        else if (i >= 14){
+                            string reg = Common.getMatch(line.Trim(), " ("+LEXICON.SYNTAX.ARGUEMENTS.R+"( )*,)").Value.Trim().Replace(",","");
+                            newLine = Common.replace(newLine, "<REG>", reg );
+                        }
 
                         break;
                     }
