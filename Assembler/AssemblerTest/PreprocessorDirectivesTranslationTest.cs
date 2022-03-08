@@ -11,6 +11,7 @@ public class PreprocessorDirectivesTest
     [InlineData("correct6")]
     [InlineData("correct7")]
     [InlineData("correct8")]
+    [InlineData("correct9")]
     [InlineData("correct10")]
     [InlineData("correct11")]
     [InlineData("correct12")]
@@ -20,8 +21,8 @@ public class PreprocessorDirectivesTest
 
         string actual_res = Assembler.PreprocessorDirectives.translateAlias(filecontent);
         string expected_res = Common.readFile(filename+"_Derived");
-
-        Assert.Equal(expected_res,actual_res);
+        //Assert.Equal(expected_res,actual_res);
+        Assert.True(expected_res==actual_res, actual_res);
     }
 
 }
