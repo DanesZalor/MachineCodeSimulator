@@ -31,7 +31,7 @@ public class AssemblerTest{
         0b1100_0000, 0b0000_0001,
         0b0100_1110, 30
     })] */
-
+/*
     [InlineData("correct9", new byte[16]{
         0b0000_1001, 5,
         0b0000_1011, 232,
@@ -62,19 +62,21 @@ public class AssemblerTest{
         0b1001_0000,
         0b1001_1000,
         0b1010_0000,
-    })]*/
-/*
-    [InlineData("test_ALU2_cmp", new byte[a]{
+    })]
+
+    [InlineData("test_ALU2_cmp", new byte[19]{
         0b0000_1000, 4,
-        0b0000_0001, 5,
-        0b0000_0010, 1,
+        0b0000_1001, 5,
+        0b0000_1010, 1,
         0b0010_1010, 69,
         0b1100_0000, 0b0000_0001,
         0b1100_0000, 0b0000_1000, 0b0000_1001,
         0b1100_0000, 0b0000_1001, 69,
-        0b1100_0000, 0b0000
-    })]
-*/
+        0b1100_0000, 0b0000_1010, 69
+    })] */
+
+    
+
     public void testCompile(string filename, byte[] expected_res){
         
         byte[] actual_res = Assembler.Assembler.compile(Common.readFile(filename));
