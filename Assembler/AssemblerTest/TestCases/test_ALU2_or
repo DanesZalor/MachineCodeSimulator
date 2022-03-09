@@ -1,0 +1,6 @@
+mov a,255
+mov b,153
+or a,b
+or b,[a+1]
+or c,[2]
+or d,255

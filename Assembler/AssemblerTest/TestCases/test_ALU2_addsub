@@ -1,0 +1,10 @@
+mov a,255
+mov b,153
+add a,b
+add b,[a+1]
+add c,[2]
+add d,255
+sub a,b
+sub b,[a+1]
+sub c,[2]
+sub d,255

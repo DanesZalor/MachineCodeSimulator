@@ -1,0 +1,6 @@
+mov a,255
+mov b,153
+and a,b
+and b,[a+1]
+and c,[2]
+and d,255

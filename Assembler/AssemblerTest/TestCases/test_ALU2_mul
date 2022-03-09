@@ -1,0 +1,6 @@
+mov a,255
+mov b,153
+mul a,b
+mul b,[a+1]
+mul c,[2]
+mul d,255
