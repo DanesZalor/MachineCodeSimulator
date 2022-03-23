@@ -79,19 +79,19 @@ inc a    ; <-- increments a (a + 1)
 jmp 4    ; <-- unconditional jump to jump back to cmp a,b
 ```
 There is a table below showing the aliases and derivation of conditional jumps and also the conditional jump's meaning/condition. <ins>**Note that aliases will be derived during compilation**<ins>
-|   Alias   |   Derivation   |  Meaning |
-|--|--|--|
-|   JNC | JAZ | `011` 
-|   JNA | JCZ | `!(A>B)`→`(A<=B)`
-|   JNZ | JCA |  `output!=0`
-|   JE  | JZ  | `(A xor B)==0` → **(A==B)**|
-|   JNE | JCA |  JE → JZ so...
-|   JB  | JC    | `!((A>B) or (A==B))` → `(A<=B) and (A!=B)` → **(A<B)** |
-|   JNB | JAZ | `!(A<B)`→`(A>=B)` |
-|   JAE | JAZ   | `JA or JE which is JZ` → **(A>=B)** |
-|   JNAE| JC  | JNAE → JB → **JC**
-|   JBE | JCZ | `!JA or JE`→ `JCZ or JZ` → **JCZ**
-|   JNBE| JA  | `!(A<=B)` → **A>B**
+|   Alias   | Description |   Derivation   |  Meaning |
+|--|--|--|--|
+|   JNC | Jump if no carry | JAZ | `011` 
+|   JNA | Jump if not > | JCZ | `!(A>B)`→`(A<=B)`
+|   JNZ | Jump if no zero | JCA |  `output!=0`
+|   JE  | Jump if equal | JZ  | `(A xor B)==0` → **(A==B)**|
+|   JNE | Jump if not equal | JCA |  JE → JZ so...
+|   JB  | Jump if < | JC  | `!((A>B) or (A==B))` → `(A<=B) and (A!=B)` → **(A<B)** |
+|   JNB | Jump if not < | JAZ | `!(A<B)`→`(A>=B)` |
+|   JAE | Jump if >= | JAZ | `JA or JE which is JZ` → **(A>=B)** |
+|   JNAE| Jump if not >= | JC  | JNAE → JB → **JC**
+|   JBE | Jump if <= | JCZ | `!JA or JE`→ `JCZ or JZ` → **JCZ**
+|   JNBE| Jump if not <= | JA  | `!(A<=B)` → **A>B** |
 
 ## PUSH
 Pushes a value to the stack. The stack grows down and the current position is available in the stack pointer(SP) register . This instruction will decrease the SP.
